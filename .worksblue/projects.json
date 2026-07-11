@@ -1,0 +1,71 @@
+[
+  {
+    "id": "worksblue",
+    "name": "WorksBlue",
+    "description": "Developer workspace untuk planning, delivery, dan dokumentasi project.",
+    "status": "Cancelled",
+    "progress": 80,
+    "version": "v1.0.0",
+    "deadline": "2026-08-04T09:00:00Z",
+    "stack": [
+      "Next.js",
+      "TypeScript",
+      "Astryx"
+    ],
+    "openTasks": 0,
+    "techStack": [
+      "Next.js",
+      "TypeScript",
+      "Astryx"
+    ],
+    "createdAt": "2026-07-13T18:15:55.713Z",
+    "totalTasks": 5,
+    "repository": "",
+    "liveEnvironment": "",
+    "figmaDesign": ""
+  },
+  {
+    "id": "atlas-api",
+    "name": "Atlas API",
+    "description": "API gateway dan service observability untuk platform internal.",
+    "status": "At risk",
+    "progress": 100,
+    "version": "v0.8.2",
+    "deadline": "2026-07-21T09:00:00Z",
+    "stack": [
+      "Node.js",
+      "PostgreSQL",
+      "Docker"
+    ],
+    "openTasks": 0,
+    "techStack": [
+      "Node.js",
+      "PostgreSQL",
+      "Docker"
+    ],
+    "createdAt": "2026-07-13T18:15:55.713Z",
+    "totalTasks": 1
+  },
+  {
+    "id": "launchpad",
+    "name": "Launchpad",
+    "description": "Starter kit deployment dan release checklist untuk solo developer.",
+    "status": "Planning",
+    "progress": 0,
+    "version": "v0.2.0",
+    "deadline": "2026-09-12T09:00:00Z",
+    "stack": [
+      "React",
+      "GitHub Actions",
+      "Vercel"
+    ],
+    "openTasks": 0,
+    "techStack": [
+      "React",
+      "GitHub Actions",
+      "Vercel"
+    ],
+    "createdAt": "2026-07-13T18:15:55.713Z",
+    "totalTasks": 0
+  }
+]

@@ -1,0 +1,99 @@
+[
+  {
+    "title": "tas baru",
+    "description": "",
+    "status": "failed",
+    "priority": "high",
+    "labels": [],
+    "dueDate": "",
+    "id": "task-6tkrvsicl",
+    "projectId": "worksblue",
+    "createdAt": "2026-07-14T01:43:48.686Z",
+    "updatedAt": "2026-07-14T01:57:05.426Z"
+  },
+  {
+    "title": "aaaa",
+    "description": "Lorem Ipsum is the printing and typesetting industry's standard dummy text. It is used as a placeholder to demonstrate visual layouts and fonts without distracting readers with readable content. The nonsensical text is derived from a scrambled 45 BCE philosophical treatise by Cicero",
+    "status": "failed",
+    "priority": "low",
+    "labels": [
+      "bug"
+    ],
+    "dueDate": "2026-07-13",
+    "assignee": "Developer",
+    "id": "task-cvkp1gi61",
+    "projectId": "worksblue",
+    "createdAt": "2026-07-13T23:46:32.580Z",
+    "updatedAt": "2026-07-14T00:37:28.782Z"
+  },
+  {
+    "title": "ini adalah task yang ada di backlog",
+    "description": "",
+    "status": "testing",
+    "priority": "medium",
+    "labels": [],
+    "dueDate": "",
+    "assignee": "Developer",
+    "id": "task-hviv44lsd",
+    "projectId": "worksblue",
+    "createdAt": "2026-07-14T01:09:51.784Z",
+    "updatedAt": "2026-07-14T01:45:19.661Z"
+  },
+  {
+    "title": "tes",
+    "description": "tes",
+    "status": "done",
+    "priority": "medium",
+    "labels": [
+      "sd",
+      "sd",
+      "sd"
+    ],
+    "dueDate": "",
+    "id": "task-zqvzkas6c",
+    "projectId": "worksblue",
+    "createdAt": "2026-07-14T01:46:14.624Z",
+    "updatedAt": "2026-07-14T01:47:44.969Z"
+  },
+  {
+    "title": "tesss",
+    "description": "es",
+    "status": "done",
+    "priority": "medium",
+    "labels": [],
+    "dueDate": "",
+    "assignee": "raya",
+    "id": "task-jeythtf1r",
+    "projectId": "worksblue",
+    "createdAt": "2026-07-14T02:02:18.639Z",
+    "updatedAt": "2026-07-14T02:02:22.806Z"
+  },
+  {
+    "title": "ssss",
+    "description": "s",
+    "status": "done",
+    "priority": "medium",
+    "labels": [],
+    "dueDate": "",
+    "assignee": "Developer",
+    "id": "task-3ef3qamky",
+    "projectId": "worksblue",
+    "createdAt": "2026-07-14T01:51:13.669Z",
+    "updatedAt": "2026-07-14T01:51:13.669Z"
+  },
+  {
+    "title": "tes",
+    "description": "tes",
+    "status": "done",
+    "priority": "medium",
+    "labels": [
+      "tes"
+    ],
+    "dueDate": "",
+    "assignee": "hilman",
+    "id": "task-8x3pl9n5n",
+    "projectId": "worksblue",
+    "createdAt": "2026-07-14T02:02:03.213Z",
+    "updatedAt": "2026-07-14T02:02:21.911Z"
+  }
+]
