@@ -154,12 +154,9 @@ function ProjectCard({ p }: { p: Project }) {
           <ProgressBar value={p.progress} />
         </div>
         
-        <div className="flex items-center flex-wrap gap-2 mt-2 pt-4 border-t border-white/[0.06]">
+        <div className="flex items-center gap-4 text-xs text-foreground-muted mt-auto pt-4 border-t border-white/[0.02]">
           <span className="text-xs text-foreground-subtle mr-2">{p.version}</span>
           <span className="text-xs text-foreground-subtle mr-2">{p.openTasks} open tasks</span>
-          {p.techStack.map((s) => (
-            <Badge key={s} variant="neutral">{s}</Badge>
-          ))}
         </div>
       </div>
     </Card>

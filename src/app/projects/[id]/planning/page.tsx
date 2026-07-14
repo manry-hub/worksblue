@@ -4,7 +4,7 @@ import { use, useEffect, useState } from "react";
 import { useProjectStore, type Project } from "@/store/project-store";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { PlusIcon, XMarkIcon, CalendarIcon, DocumentTextIcon, UsersIcon, CommandLineIcon, FlagIcon } from "@heroicons/react/24/outline";
+import { PlusIcon, XMarkIcon, CalendarIcon, DocumentTextIcon, UsersIcon, FlagIcon } from "@heroicons/react/24/outline";
 
 export default function PlanningPage(props: { params: Promise<{ id: string }> }) {
   const params = use(props.params);
@@ -18,8 +18,6 @@ export default function PlanningPage(props: { params: Promise<{ id: string }> })
   const [stakeholders, setStakeholders] = useState<string[]>([]);
   const [newStakeholder, setNewStakeholder] = useState("");
 
-  const [techStack, setTechStack] = useState<string[]>([]);
-  const [newTech, setNewTech] = useState("");
 
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
@@ -31,7 +29,6 @@ export default function PlanningPage(props: { params: Promise<{ id: string }> })
       setProblemStatement(project.problemStatement || "");
       setObjective(project.objective || "");
       setStakeholders(project.stakeholders || []);
-      setTechStack(project.techStack || []);
       if (project.timeline) {
         setStartDate(project.timeline.startDate || "");
         setEndDate(project.timeline.endDate || "");
@@ -65,20 +62,6 @@ export default function PlanningPage(props: { params: Promise<{ id: string }> })
     saveChanges({ stakeholders: updated });
   };
 
-  const addTech = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newTech.trim() || techStack.includes(newTech.trim())) return;
-    const updated = [...techStack, newTech.trim()];
-    setTechStack(updated);
-    setNewTech("");
-    saveChanges({ techStack: updated });
-  };
-
-  const removeTech = (t: string) => {
-    const updated = techStack.filter(x => x !== t);
-    setTechStack(updated);
-    saveChanges({ techStack: updated });
-  };
 
   const updateTimelineDates = (start: string, end: string) => {
     setStartDate(start);
@@ -127,33 +110,7 @@ export default function PlanningPage(props: { params: Promise<{ id: string }> })
             />
           </Card>
 
-          <Card className="p-6 bg-background-elevated/40 backdrop-blur-sm border-white/5">
-            <div className="flex items-center gap-2 mb-4">
-              <CalendarIcon className="w-5 h-5 text-orange-400" />
-              <h3 className="text-lg font-medium text-foreground">Project Timeline</h3>
-            </div>
-            
-            <div className="flex flex-wrap gap-4 mb-6">
-              <div className="flex-1 min-w-[200px]">
-                <label className="block text-xs font-medium text-foreground-muted mb-1">Start Date</label>
-                <input 
-                  type="date" 
-                  value={startDate}
-                  onChange={(e) => updateTimelineDates(e.target.value, endDate)}
-                  className="w-full bg-white/[0.02] border border-white/10 rounded-lg p-2.5 text-sm text-foreground focus:outline-none focus:border-accent/50 focus:bg-white/[0.04] transition-all"
-                />
-              </div>
-              <div className="flex-1 min-w-[200px]">
-                <label className="block text-xs font-medium text-foreground-muted mb-1">Target End Date</label>
-                <input 
-                  type="date" 
-                  value={endDate}
-                  onChange={(e) => updateTimelineDates(startDate, e.target.value)}
-                  className="w-full bg-white/[0.02] border border-white/10 rounded-lg p-2.5 text-sm text-foreground focus:outline-none focus:border-accent/50 focus:bg-white/[0.04] transition-all"
-                />
-              </div>
-            </div>
-          </Card>
+          
         </div>
 
         {/* Sidebar Column */}
@@ -189,38 +146,35 @@ export default function PlanningPage(props: { params: Promise<{ id: string }> })
               </Button>
             </form>
           </Card>
-
           <Card className="p-6 bg-background-elevated/40 backdrop-blur-sm border-white/5">
             <div className="flex items-center gap-2 mb-4">
-              <CommandLineIcon className="w-5 h-5 text-sky-400" />
-              <h3 className="text-lg font-medium text-foreground">Tech Stack</h3>
+              <CalendarIcon className="w-5 h-5 text-orange-400" />
+              <h3 className="text-lg font-medium text-foreground">Project Timeline</h3>
             </div>
             
-            <div className="flex flex-wrap gap-2 mb-4">
-              {techStack.length === 0 && <span className="text-sm text-foreground-muted italic">No technologies added</span>}
-              {techStack.map(t => (
-                <div key={t} className="flex items-center gap-1 bg-sky-500/10 text-sky-300 border border-sky-500/20 px-2.5 py-1 rounded-full text-xs font-medium font-mono">
-                  {t}
-                  <button onClick={() => removeTech(t)} className="hover:text-white ml-1">
-                    <XMarkIcon className="w-3 h-3" />
-                  </button>
-                </div>
-              ))}
+            <div className="flex flex-wrap gap-4 mb-6">
+              <div className="flex-1 min-w-[200px]">
+                <label className="block text-xs font-medium text-foreground-muted mb-1">Start Date</label>
+                <input 
+                  type="date" 
+                  value={startDate}
+                  onChange={(e) => updateTimelineDates(e.target.value, endDate)}
+                  className="w-full bg-white/[0.02] border border-white/10 rounded-lg p-2.5 text-sm text-foreground focus:outline-none focus:border-accent/50 focus:bg-white/[0.04] transition-all"
+                />
+              </div>
+              <div className="flex-1 min-w-[200px]">
+                <label className="block text-xs font-medium text-foreground-muted mb-1">Target End Date</label>
+                <input 
+                  type="date" 
+                  value={endDate}
+                  onChange={(e) => updateTimelineDates(startDate, e.target.value)}
+                  className="w-full bg-white/[0.02] border border-white/10 rounded-lg p-2.5 text-sm text-foreground focus:outline-none focus:border-accent/50 focus:bg-white/[0.04] transition-all"
+                />
+              </div>
             </div>
-
-            <form onSubmit={addTech} className="flex gap-2">
-              <input 
-                type="text" 
-                value={newTech}
-                onChange={(e) => setNewTech(e.target.value)}
-                placeholder="e.g. Next.js, Postgres..."
-                className="flex-1 bg-white/[0.02] border border-white/10 rounded-lg p-2 text-sm text-foreground focus:outline-none focus:border-accent/50"
-              />
-              <Button type="submit" variant="secondary" className="px-3">
-                <PlusIcon className="w-4 h-4" />
-              </Button>
-            </form>
           </Card>
+
+
         </div>
 
       </div>

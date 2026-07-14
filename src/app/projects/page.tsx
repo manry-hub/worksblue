@@ -71,12 +71,6 @@ function ProjectCard({ p }: { p: Project }) {
           </div>
           <ProgressBar value={p.progress} />
         </div>
-        
-        <div className="flex items-center flex-wrap gap-2 mt-4 pt-4 border-t border-white/[0.06]">
-          {p.techStack.map((s) => (
-            <Badge key={s} variant="neutral">{s}</Badge>
-          ))}
-        </div>
       </div>
     </Card>
   );

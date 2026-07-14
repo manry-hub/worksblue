@@ -125,8 +125,6 @@ Berisi:
 
 - Functional Requirements
 - Non-functional Requirements
-- User Stories
-- Acceptance Criteria
 
 ---
 
@@ -281,37 +279,34 @@ Resources
 
 ---
 
-# MVP (v1)
+# MVP (v1) - Implemented Features
 
-Menurut saya, inilah ruang lingkup MVP yang ideal:
+Berikut adalah ruang lingkup MVP (v1) yang telah selesai diimplementasikan secara aktual:
 
-### Workspace
+### 1. Workspace & Project Overview
+- **Projects Dashboard**: Ringkasan project aktif, Tech Stack, Repository, Deadline, Live Environment, dsb.
+- **Local JSON Database**: Menggunakan file `.worksblue/projects.json` untuk manajemen state yang portabel dan cepat.
+- **Mock Authentication**: Simulasi login menggunakan `jose` (JWT) dan `bcryptjs`.
 
-- Dashboard
-- Workspace
-- Projects
+### 2. Scrumban (Project Management)
+- **Backlog**: Daftar tugas yang belum dikerjakan.
+- **Kanban Board**: Drag-and-drop tugas antar status (Todo, In Progress, Review, Done) menggunakan `@dnd-kit/core`.
 
-### Project Management
+### 3. SDLC Documentation Modules
+Seluruh fase pengembangan telah diimplementasikan dalam UI interaktif (CRUD lengkap):
+- **Planning**: Visi, Misi, Target.
+- **Requirements**: Grouping dan CRUD untuk Functional, Non-Functional, dan External Interface Requirements.
+- **Design**:
+  - Upload Diagram Interaktif (Context, Usecase, ERD) dengan konversi otomatis ke `.webp` via Canvas API di sisi klien.
+  - Tabel Matrix RBAC dinamis berdasarkan daftar Stakeholders.
+  - Desain Endpoint API.
+  - Technology Specifications (Tech Specs).
+- **Implementation**: Halaman khusus berisi progress tracking / checklist interaktif.
+- **Testing**: Tabel eksekusi Test Cases dengan fitur *search dropdown*, grouping otomatis berdasarkan Requirement ID, *auto-resizing textareas*, dan Preview Modal UI.
+- **Deployment**: Manajemen Platform, Platform Accounts, Environment Configuration (`.env`), dan User Seeds.
 
-- Task Management
-- Kanban Board
+### 4. Utilities & Infrastructure
+- **Server-side Asset Serving**: Rute `/api/uploads/[filename]` untuk merender dan menyajikan file statis yang diunggah secara dinamis.
+- **Custom UI / UX**: Antarmuka estetis bertema *dark-glassmorphism*, *micro-animations*, dan desain premium yang responsif.
 
-### Project Documentation
-
-- Planning
-- Requirements
-- Design
-- Implementation
-- Testing
-- Deployment
-- Maintenance
-- Documentation
-- Changelog
-
-### Utilities
-
-- Markdown Editor
-- Search
-- Tags
-- Export & Backup
-
+*(Catatan: Modul Maintenance, Documentation terpisah, Changelog, dan Export/Backup dapat menjadi ruang lingkup pada fase iterasi pengembangan selanjutnya).*

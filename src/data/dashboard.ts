@@ -133,5 +133,4 @@ export const lifecycle: LifecycleStage[] = [
   { name: "Implementation", progress: 56, state: "active" },
   { name: "Testing", progress: 18, state: "active" },
   { name: "Deployment", progress: 0, state: "upcoming" },
-  { name: "Maintenance", progress: 0, state: "upcoming" },
 ];

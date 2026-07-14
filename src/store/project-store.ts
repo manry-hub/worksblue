@@ -6,13 +6,39 @@ export interface Project {
   description: string;
   status: "Planning" | "In progress" | "On Hold" | "Completed" | "Cancelled";
   progress: number;
-  techStack: string[];
   problemStatement?: string;
   objective?: string;
   stakeholders?: string[];
   timeline?: {
     startDate?: string;
     endDate?: string;
+  };
+  design?: {
+    contextDiagrams?: { id: string; title: string; url: string }[];
+    usecaseDiagrams?: { id: string; title: string; url: string }[];
+    erds?: { id: string; title: string; url: string }[];
+    rbacGroups?: { id: string; name: string; }[];
+    rbac?: {
+       id: string;
+       groupId?: string;
+       permission: string;
+       roles?: Record<string, boolean>;
+    }[];
+    apiDesignGroups?: { id: string; name: string; }[];
+    apiDesign?: {
+       id: string;
+       groupId?: string;
+       verb: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
+       path: string;
+       action: string;
+       usedFor: string;
+    }[];
+    techSpecs?: {
+       id: string;
+       need: string;
+       name: string;
+       version: string;
+    }[];
   };
   requirements?: {
     functionalGroups?: {
@@ -25,18 +51,58 @@ export interface Project {
       requirement: string;
       description?: string;
     }[];
+    nonFunctionalGroups?: {
+      id: string;
+      name: string;
+    }[];
     nonFunctional: {
       id: string;
-      category: string;
+      groupId?: string;
       requirement: string;
       description?: string;
     }[];
-    technology: {
+    externalInterfaceGroups?: {
       id: string;
-      need: string;
-      technology: string;
-      version?: string;
+      name: string;
+    }[];
+    externalInterface: {
+      id: string;
+      groupId?: string;
+      requirement: string;
       description?: string;
+    }[];
+  };
+  implementationTasks?: Record<string, boolean>;
+  testCases?: {
+    id: string;
+    requirementId?: string;
+    testCaseId: string;
+    testSteps: string;
+    inputData: string;
+    expectedResult: string;
+    actualResult: string;
+    executionStatus: 'Pending' | 'Passed' | 'Failed';
+    notes: string;
+  }[];
+  deployment?: {
+    platform?: string;
+    accounts?: {
+      id: string;
+      platform: string;
+      description: string;
+      email: string;
+      password?: string;
+    }[];
+    environments?: {
+      id: string;
+      name: string;
+      value: string;
+    }[];
+    seeds?: {
+      id: string;
+      role: string;
+      email: string;
+      password?: string;
     }[];
   };
   repository?: string;

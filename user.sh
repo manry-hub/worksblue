@@ -1,0 +1,1 @@
+node -e "const bcrypt = require('bcryptjs'); const hash = bcrypt.hashSync('Sorry.0000', 10); const fs = require('fs'); const dir = '.worksblue'; fs.mkdirSync(dir, {recursive:true}); fs.writeFileSync(dir + '/users.json', JSON.stringify([{id:'hilman',username:'hilman',name:'Hilman',passwordHash:hash}], null, 2)); console.log('User created with hash:', hash);"

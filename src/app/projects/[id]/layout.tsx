@@ -12,7 +12,8 @@ import {
   HomeIcon,
   Bars3Icon,
   XMarkIcon,
-  ArrowLeftIcon
+  ArrowLeftIcon,
+  WindowIcon
 } from "@heroicons/react/24/outline";
 import type { ReactNode } from "react";
 import { CommandPaletteSearch } from "@/components/shell/command-palette-search";
@@ -83,19 +84,22 @@ function ProjectSidebar({ isOpen, onClose, projectId }: { isOpen: boolean; onClo
         <div className="flex-1 overflow-y-auto p-4 space-y-6">
           <div className="space-y-1">
             <NavItem icon={HomeIcon} label="Overview" href={basePath} isActive={pathname === basePath} />
-            <NavItem icon={ClipboardDocumentCheckIcon} label="Backlog" href={`${basePath}/backlog`} isActive={pathname === `${basePath}/backlog`} />
-            <NavItem icon={RectangleGroupIcon} label="Kanban" href={`${basePath}/kanban`} isActive={pathname === `${basePath}/kanban`} />
+            
           </div>
 
           <div className="space-y-1">
-            <p className="px-3 mb-2 text-xs font-mono tracking-widest uppercase text-foreground-subtle">SDLC Phases</p>
+            <p className="px-3 mb-2 text-xs font-mono tracking-widest uppercase text-foreground-subtle">SDLC Phase Docs</p>
             <NavItem icon={MapIcon} label="Planning" href={`${basePath}/planning`} isActive={pathname === `${basePath}/planning`} />
             <NavItem icon={DocumentMagnifyingGlassIcon} label="Requirements" href={`${basePath}/requirements`} isActive={pathname === `${basePath}/requirements`} />
-            <NavItem icon={CodeBracketSquareIcon} label="Design" href={`${basePath}/design`} disabled />
-            <NavItem icon={CodeBracketSquareIcon} label="Implementation" href={`${basePath}/implementation`} disabled />
-            <NavItem icon={RocketLaunchIcon} label="Testing" href={`${basePath}/testing`} disabled />
-            <NavItem icon={RocketLaunchIcon} label="Deployment" href={`${basePath}/deployment`} disabled />
-            <NavItem icon={WrenchScrewdriverIcon} label="Maintenance" href={`${basePath}/maintenance`} disabled />
+            <NavItem icon={WindowIcon } label="Design" href={`${basePath}/design`} isActive={pathname === `${basePath}/design`} />
+            <NavItem icon={CodeBracketSquareIcon} label="Implementation" href={`${basePath}/implementation`} isActive={pathname === `${basePath}/implementation`} />
+            <NavItem icon={WrenchScrewdriverIcon} label="Testing" href={`${basePath}/testing`} isActive={pathname === `${basePath}/testing`} />
+            <NavItem icon={RocketLaunchIcon} label="Deployment" href={`${basePath}/deployment`} isActive={pathname === `${basePath}/deployment`} />
+          </div>
+          <div className="space-y-1">
+            <p className="px-3 mb-2 text-xs font-mono tracking-widest uppercase text-foreground-subtle">Scrumban Development</p>
+            <NavItem icon={ClipboardDocumentCheckIcon} label="Backlog" href={`${basePath}/backlog`} isActive={pathname === `${basePath}/backlog`} />
+            <NavItem icon={RectangleGroupIcon} label="Kanban" href={`${basePath}/kanban`} isActive={pathname === `${basePath}/kanban`} />
           </div>
         </div>
       </aside>

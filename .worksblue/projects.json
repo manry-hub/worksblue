@@ -2,9 +2,9 @@
   {
     "id": "worksblue",
     "name": "WorksBlue",
-    "description": "Developer workspace untuk planning, delivery, dan dokumentasi project.",
-    "status": "Cancelled",
-    "progress": 80,
+    "description": "Developer workspace untuk Scrumban sekaligus dokumentasi project.",
+    "status": "Planning",
+    "progress": 100,
     "version": "v1.0.0",
     "deadline": "2026-08-04T09:00:00Z",
     "stack": [
@@ -13,96 +13,343 @@
       "Astryx"
     ],
     "openTasks": 0,
-    "techStack": [
-      "Next.js",
-      "TypeScript",
-      "Astryx"
-    ],
+    "techStack": [],
     "createdAt": "2026-07-13T18:15:55.713Z",
-    "totalTasks": 5,
-    "repository": "",
-    "liveEnvironment": "",
-    "figmaDesign": "",
-    "problemStatement": "dsdsd\n",
-    "objective": "sdhusd",
+    "totalTasks": 1,
+    "repository": "https://github.com/hilman/worksblue-core",
+    "liveEnvironment": "https://worksblue.vercel.app",
+    "figmaDesign": "https://www.figma.com/design/k9sR5sLtxtk9tgSBugQUNg/hengketon?t=pfSZ4FbFVEEq9PHw-1",
+    "problemStatement": "WorksBlue adalah aplikasi web yang dirancang khusus untuk developer dalam mengelola seluruh siklus pengembangan perangkat lunak, mulai dari ide, perencanaan, implementasi, pengujian, hingga deployment dan maintenance.\n\nWorksBlue menyediakan satu workspace terstruktur sehingga seluruh aspek teknis dan manajemen project berada dalam satu tempat.",
+    "objective": "WorksBlue membantu developer untuk:\n\n- Merencanakan project secara terstruktur.\n- Mendokumentasikan seluruh keputusan teknis.\n- Mengelola task dan progres pengembangan.\n- Memvisualisasikan timeline project.\n- Menyusun deployment checklist.\n- Menyimpan dokumentasi project secara terorganisir.\n- Memudahkan maintenance setelah project selesai.",
     "stakeholders": [
-      "ddd",
-      "dsdsj",
-      "xfgfg",
-      "dgfdfgdfgd",
-      "dfgfgf",
-      "dfgdfg"
+      "Solo Developer",
+      "Freelancer",
+      "Full Stack Developer"
     ],
     "timeline": {
-      "startDate": "2026-07-23",
-      "endDate": "2026-07-23"
+      "startDate": "2026-07-12",
+      "endDate": "2026-07-25"
     },
     "requirements": {
-      "functional": [],
+      "functional": [
+        {
+          "id": "FR-001",
+          "groupId": "FG1",
+          "requirement": "User Login",
+          "description": "The system shall allow users to log in using email and password."
+        },
+        {
+          "id": "FR-002",
+          "groupId": "FG2",
+          "requirement": "Create Task",
+          "description": "Users must be able to create new tasks with title, description, and assignee."
+        }
+      ],
       "nonFunctional": [
         {
-          "id": "NFR-01",
-          "category": "",
-          "requirement": ""
+          "id": "NFR-001",
+          "groupId": "NFG1",
+          "requirement": "Page Load Time",
+          "description": "Dashboard must load in under 2 seconds."
+        },
+        {
+          "id": "NFR-002",
+          "groupId": "NFG1",
+          "requirement": "Data Encryption",
+          "description": "All passwords must be hashed using bcrypt."
         }
       ],
       "technology": [],
       "functionalGroups": [
         {
-          "id": "A",
-          "name": "New Group A"
+          "id": "FG1",
+          "name": "Authentication Module"
+        },
+        {
+          "id": "FG2",
+          "name": "Task Management"
+        }
+      ],
+      "externalInterface": [
+        {
+          "id": "EIR-001",
+          "groupId": "EIG1",
+          "requirement": "Email Service",
+          "description": "Integrate with Resend for transactional emails."
+        }
+      ],
+      "nonFunctionalGroups": [
+        {
+          "id": "NFG1",
+          "name": "Performance & Security"
+        }
+      ],
+      "externalInterfaceGroups": [
+        {
+          "id": "EIG1",
+          "name": "Third Party Integrations"
+        }
+      ]
+    },
+    "design": {
+      "contextDiagrams": [
+        {
+          "id": "1784048606831won6fa",
+          "title": "context",
+          "url": "/api/uploads/1784048606816-context.webp"
+        }
+      ],
+      "usecaseDiagrams": [
+        {
+          "id": "1784048618583grc30e",
+          "title": "usecase",
+          "url": "/api/uploads/1784048618559-usecase.webp"
+        }
+      ],
+      "rbacGroups": [
+        {
+          "id": "RG1",
+          "name": "Task Management Module"
+        }
+      ],
+      "rbac": [
+        {
+          "id": "R1",
+          "groupId": "RG1",
+          "permission": "View Task",
+          "roles": {
+            "Owner": true,
+            "PM": true,
+            "Dev": true,
+            "QA": true,
+            "UI/UX": true,
+            "Freelancer": true
+          }
+        },
+        {
+          "id": "R2",
+          "groupId": "RG1",
+          "permission": "Create Task",
+          "roles": {
+            "Owner": true,
+            "PM": true,
+            "Dev": true,
+            "QA": false,
+            "UI/UX": false,
+            "Freelancer": true
+          }
+        },
+        {
+          "id": "R3",
+          "groupId": "RG1",
+          "permission": "Delete Task",
+          "roles": {
+            "Owner": true,
+            "PM": true,
+            "Dev": false,
+            "QA": false,
+            "UI/UX": false,
+            "Full Stack Developer": true
+          }
+        }
+      ],
+      "apiDesignGroups": [
+        {
+          "id": "AG1",
+          "name": "Authentication API"
+        },
+        {
+          "id": "AG2",
+          "name": "Tasks API"
+        }
+      ],
+      "apiDesign": [
+        {
+          "id": "API1",
+          "groupId": "AG1",
+          "verb": "POST",
+          "path": "/api/auth/login",
+          "action": "loginUser",
+          "usedFor": "Authenticate users and return JWT token"
+        },
+        {
+          "id": "API2",
+          "groupId": "AG2",
+          "verb": "GET",
+          "path": "/api/tasks",
+          "action": "getTasks",
+          "usedFor": "Fetch all project tasks"
+        },
+        {
+          "id": "API3",
+          "groupId": "AG2",
+          "verb": "POST",
+          "path": "/api/tasks",
+          "action": "createTask",
+          "usedFor": "Create a new task in the database"
+        }
+      ],
+      "erds": [
+        {
+          "id": "1784048626078l13fx",
+          "title": "erd",
+          "url": "/api/uploads/1784048626061-erd.webp"
+        }
+      ],
+      "techSpecs": [
+        {
+          "id": "TS1",
+          "need": "Frontend Framework",
+          "name": "Next.js",
+          "version": "15.0.0"
+        },
+        {
+          "id": "TS2",
+          "need": "UI Styling",
+          "name": "Tailwind CSS",
+          "version": "3.4.1"
+        },
+        {
+          "id": "TS3",
+          "need": "State Management",
+          "name": "Zustand",
+          "version": "5.0.0"
+        },
+        {
+          "id": "TS4",
+          "need": "Database",
+          "name": "PostgreSQL (Supabase)",
+          "version": "15"
+        },
+        {
+          "id": "TS5",
+          "need": "Authentication",
+          "name": "jose + bcryptjs",
+          "version": "Latest"
+        }
+      ]
+    },
+    "implementationTasks": {
+      "1.1": true,
+      "1.2": true,
+      "1.3": true,
+      "2.1": true,
+      "3.1": true,
+      "3.2": true,
+      "3.3": false,
+      "4.1": true,
+      "4.2": true,
+      "4.3": true,
+      "4.4": true,
+      "5.1": false,
+      "6.1": true,
+      "6.2": false,
+      "7.1": false,
+      "7.2": true,
+      "7.3": false
+    },
+    "testCases": [
+      {
+        "id": "TC-001",
+        "requirementId": "FR-001",
+        "testCaseId": "TC-001",
+        "testSteps": "1. Navigate to /login\n2. Enter valid email 'hilman@worksblue.com'\n3. Enter password 'Sorry.0000'\n4. Click 'Sign In' ",
+        "inputData": "hilman@worksblue.com\nSorry.0000",
+        "expectedResult": "User is redirected to the dashboard successfully.",
+        "actualResult": "User is redirected to the dashboard successfully.",
+        "executionStatus": "Passed",
+        "notes": "Login logic using jose JWT works perfectly."
+      },
+      {
+        "id": "TC-002",
+        "requirementId": "FR-002",
+        "testCaseId": "TC-002",
+        "testSteps": "1. Navigate to /projects/[id]/kanban\n2. Click 'Add Task'\n3. Leave title blank\n4. Click 'Save'",
+        "inputData": "Title: <empty>",
+        "expectedResult": "System prevents submission and shows validation error 'Title is required'.",
+        "actualResult": "System throws an unhandled exception.",
+        "executionStatus": "Failed",
+        "notes": "Need to add Zod validation on the API side."
+      },
+      {
+        "id": "TC-003",
+        "requirementId": "NFR-001",
+        "testCaseId": "TC-003",
+        "testSteps": "1. Load dashboard on 4G network\n2. Check network tab for load time",
+        "inputData": "-",
+        "expectedResult": "Initial load finishes under 2 seconds.",
+        "actualResult": "Load time is 1.2 seconds.",
+        "executionStatus": "Passed",
+        "notes": "Next.js SSR really helps here."
+      },
+      {
+        "id": "TC-004",
+        "requirementId": "FR-001",
+        "testCaseId": "TC-004",
+        "testSteps": "1. Navigate to /login\n2. Enter invalid password\n3. Click Login",
+        "inputData": "hilman@worksblue.com\nWrongPass123",
+        "expectedResult": "Shows 'Invalid credentials' error message.",
+        "actualResult": "Pending execution.",
+        "executionStatus": "Pending",
+        "notes": ""
+      }
+    ],
+    "deployment": {
+      "platform": "Vercel",
+      "accounts": [
+        {
+          "id": "ACC-1",
+          "platform": "Vercel",
+          "description": "Frontend Hosting",
+          "email": "hilman@worksblue.com",
+          "password": "••••••••"
+        },
+        {
+          "id": "ACC-2",
+          "platform": "Supabase",
+          "description": "PostgreSQL Database",
+          "email": "hilman@worksblue.com",
+          "password": "••••••••"
+        },
+        {
+          "id": "ACC-3",
+          "platform": "Resend",
+          "description": "Transactional Emails",
+          "email": "hilman@worksblue.com",
+          "password": "••••••••"
+        }
+      ],
+      "environments": [
+        {
+          "id": "ENV-1",
+          "name": "DATABASE_URL",
+          "value": "postgresql://postgres:pass@db.supabase.co:5432/postgres"
+        },
+        {
+          "id": "ENV-2",
+          "name": "JWT_SECRET",
+          "value": "super-secret-key-for-jose"
+        },
+        {
+          "id": "ENV-3",
+          "name": "NEXT_PUBLIC_APP_URL",
+          "value": "https://worksblue.vercel.app"
+        }
+      ],
+      "seeds": [
+        {
+          "id": "SED-1",
+          "role": "Superadmin",
+          "email": "hilman@worksblue.com",
+          "password": "Sorry.0000"
+        },
+        {
+          "id": "SED-2",
+          "role": "QA Tester",
+          "email": "qa@worksblue.com",
+          "password": "password123"
         }
       ]
     }
-  },
-  {
-    "id": "atlas-api",
-    "name": "Atlas API",
-    "description": "API gateway dan service observability untuk platform internal.",
-    "status": "On Hold",
-    "progress": 100,
-    "version": "v0.8.2",
-    "deadline": "2026-07-21T09:00:00Z",
-    "stack": [
-      "Node.js",
-      "PostgreSQL",
-      "Docker"
-    ],
-    "openTasks": 0,
-    "techStack": [
-      "Node.js",
-      "PostgreSQL",
-      "Docker"
-    ],
-    "createdAt": "2026-07-13T18:15:55.713Z",
-    "totalTasks": 1,
-    "repository": "",
-    "liveEnvironment": "",
-    "figmaDesign": ""
-  },
-  {
-    "id": "launchpad",
-    "name": "Launchpad",
-    "description": "Starter kit deployment dan release checklist untuk solo developer.",
-    "status": "Completed",
-    "progress": 0,
-    "version": "v0.2.0",
-    "deadline": "2026-09-12T09:00:00Z",
-    "stack": [
-      "React",
-      "GitHub Actions",
-      "Vercel"
-    ],
-    "openTasks": 0,
-    "techStack": [
-      "React",
-      "GitHub Actions",
-      "Vercel"
-    ],
-    "createdAt": "2026-07-13T18:15:55.713Z",
-    "totalTasks": 0,
-    "repository": "",
-    "liveEnvironment": "",
-    "figmaDesign": ""
   }
 ]

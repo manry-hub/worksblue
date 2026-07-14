@@ -12,7 +12,6 @@ import { XMarkIcon } from "@heroicons/react/24/outline";
 const projectSchema = z.object({
   name: z.string().min(3, "Nama project minimal 3 karakter"),
   description: z.string().min(10, "Deskripsi minimal 10 karakter"),
-  techStack: z.string().min(1, "Masukkan tech stack (pisahkan dengan koma)"),
   status: z.enum(["Planning", "In progress", "On Hold", "Completed", "Cancelled"]),
   repository: z.string().optional(),
   deadline: z.string().optional(),
@@ -46,7 +45,6 @@ export function EditProjectModal({
       name: project.name,
       description: project.description,
       status: project.status,
-      techStack: project.techStack.join(", "),
       repository: project.repository || "",
       deadline: project.deadline || "",
       liveEnvironment: project.liveEnvironment || "",
@@ -60,7 +58,6 @@ export function EditProjectModal({
         name: project.name,
         description: project.description,
         status: project.status,
-        techStack: project.techStack.join(", "),
         repository: project.repository || "",
         deadline: project.deadline || "",
         liveEnvironment: project.liveEnvironment || "",
@@ -77,7 +74,6 @@ export function EditProjectModal({
       name: data.name,
       description: data.description,
       status: data.status,
-      techStack: data.techStack.split(",").map((s) => s.trim()).filter(Boolean),
       repository: data.repository,
       deadline: data.deadline,
       liveEnvironment: data.liveEnvironment,
@@ -138,18 +134,6 @@ export function EditProjectModal({
                 className="w-full bg-white/[0.03] border border-white/[0.08] rounded-lg px-4 py-2 text-foreground focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent transition-colors resize-none"
               />
               {errors.description && <p className="text-error text-xs mt-1">{errors.description.message}</p>}
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-foreground-muted mb-1">
-                Tech Stack (comma separated)
-              </label>
-              <input
-                {...register("techStack")}
-                type="text"
-                className="w-full bg-white/[0.03] border border-white/[0.08] rounded-lg px-4 py-2 text-foreground focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent transition-colors"
-              />
-              {errors.techStack && <p className="text-error text-xs mt-1">{errors.techStack.message}</p>}
             </div>
 
             <div>

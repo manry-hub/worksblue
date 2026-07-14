@@ -17,8 +17,7 @@ async function initDB() {
     } catch {
       // File doesn't exist, seed with initial mock data
       const seedData = initialMockProjects.map(p => ({
-        ...p,
-        techStack: p.stack,
+        progress: 0,
         createdAt: new Date().toISOString()
       }));
       await fs.writeFile(DB_FILE, JSON.stringify(seedData, null, 2));
