@@ -1,7 +1,7 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
+import { useState } from "react";
+import { SortableContext } from "@dnd-kit/sortable";
 import { useDroppable } from "@dnd-kit/core";
 import { Task, TaskStatus } from "@/store/task-store";
 import { KanbanCard } from "./kanban-card";
@@ -18,7 +18,6 @@ interface KanbanColumnProps {
 
 export function KanbanColumn({ id, title, tasks, onAddTask, onTaskClick }: KanbanColumnProps) {
   const [isCollapsed, setIsCollapsed] = useState(id === "failed");
-  const taskIds = useMemo(() => tasks.map((t) => t.id), [tasks]);
 
   const { setNodeRef, isOver } = useDroppable({
     id,

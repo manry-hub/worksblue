@@ -6,7 +6,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { IconButton } from "@/components/ui/icon-button";
-import { ClipboardDocumentCheckIcon, EllipsisHorizontalIcon, RocketLaunchIcon, PlusIcon, TrashIcon } from "@heroicons/react/24/outline";
+import { ClipboardDocumentCheckIcon, RocketLaunchIcon, PlusIcon, TrashIcon } from "@heroicons/react/24/outline";
 import { TaskDetailsModal } from "@/components/kanban/task-details-modal";
 
 export default function BacklogPage(props: { params: Promise<{ id: string }> }) {

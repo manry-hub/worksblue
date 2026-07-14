@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { useTaskStore, type Task, type TaskStatus } from "@/store/task-store";
+import { useTaskStore, type Task } from "@/store/task-store";
 import { useProjectStore } from "@/store/project-store";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -112,6 +112,7 @@ export function TaskDetailsModal({
   };
 
   const handleDelete = async () => {
+    if (!task) return;
     if (confirm("Are you sure you want to delete this task?")) {
       setIsDeleting(true);
       await deleteTask(projectId, task.id);

@@ -36,7 +36,7 @@ export async function GET() {
     const parsed = JSON.parse(data);
     
     // Backward compatibility for existing projects without columns
-    const withColumns = parsed.map((p: any) => ({
+    const withColumns = parsed.map((p: { id: string; columns?: { id: string; title: string }[] }) => ({
       ...p,
       columns: p.columns || [
         { id: "todo", title: "To Do" },

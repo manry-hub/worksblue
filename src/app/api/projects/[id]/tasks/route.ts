@@ -7,11 +7,11 @@ export const dynamic = "force-dynamic";
 const DB_DIR = path.join(process.cwd(), ".worksblue");
 const PROJECTS_FILE = path.join(DB_DIR, "projects.json");
 
-async function syncProjectStats(projectId: string, tasks: any[]) {
+async function syncProjectStats(projectId: string, tasks: { status: string }[]) {
   try {
     const data = await fs.readFile(PROJECTS_FILE, "utf-8");
     const projects = JSON.parse(data);
-    const index = projects.findIndex((p: any) => p.id === projectId);
+    const index = projects.findIndex((p: { id: string }) => p.id === projectId);
     
     if (index !== -1) {
       const backlogTasksCount = tasks.filter(t => t.status === "backlog").length;

@@ -6,7 +6,7 @@ import { CreateTaskModal } from "@/components/kanban/create-task-modal";
 import { TaskDetailsModal } from "@/components/kanban/task-details-modal";
 import { TaskStatus, type Task } from "@/store/task-store";
 import { Button } from "@/components/ui/button";
-import { PlusIcon, AdjustmentsHorizontalIcon } from "@heroicons/react/24/outline";
+import { PlusIcon } from "@heroicons/react/24/outline";
 
 export default function KanbanPage(props: { params: Promise<{ id: string }> }) {
   const params = use(props.params);

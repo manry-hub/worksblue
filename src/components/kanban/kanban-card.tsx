@@ -6,7 +6,7 @@ import { Task } from "@/store/task-store";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-import { ChatBubbleLeftIcon, PaperClipIcon, CalendarIcon, TagIcon } from "@heroicons/react/24/outline";
+import { CalendarIcon, TagIcon } from "@heroicons/react/24/outline";
 
 interface KanbanCardProps {
   task: Task;
@@ -57,7 +57,7 @@ export function KanbanCard({ task, onClick }: KanbanCardProps) {
       {...attributes}
       {...listeners}
       className="group relative cursor-grab active:cursor-grabbing mb-3"
-      onClick={(e) => {
+      onClick={() => {
         // Prevent click if we are dragging
         if (!isDragging && onClick) {
           onClick();
