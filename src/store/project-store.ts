@@ -7,6 +7,13 @@ export interface Project {
   status: "Planning" | "In progress" | "On Hold" | "Completed" | "Cancelled";
   progress: number;
   techStack: string[];
+  problemStatement?: string;
+  objective?: string;
+  stakeholders?: string[];
+  timeline?: {
+    startDate?: string;
+    endDate?: string;
+  };
   repository?: string;
   deadline?: string;
   liveEnvironment?: string;
