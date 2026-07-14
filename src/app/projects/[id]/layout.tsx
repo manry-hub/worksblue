@@ -90,7 +90,7 @@ function ProjectSidebar({ isOpen, onClose, projectId }: { isOpen: boolean; onClo
           <div className="space-y-1">
             <p className="px-3 mb-2 text-xs font-mono tracking-widest uppercase text-foreground-subtle">SDLC Phases</p>
             <NavItem icon={MapIcon} label="Planning" href={`${basePath}/planning`} isActive={pathname === `${basePath}/planning`} />
-            <NavItem icon={DocumentMagnifyingGlassIcon} label="Requirements" href={`${basePath}/requirements`} disabled />
+            <NavItem icon={DocumentMagnifyingGlassIcon} label="Requirements" href={`${basePath}/requirements`} isActive={pathname === `${basePath}/requirements`} />
             <NavItem icon={CodeBracketSquareIcon} label="Design" href={`${basePath}/design`} disabled />
             <NavItem icon={CodeBracketSquareIcon} label="Implementation" href={`${basePath}/implementation`} disabled />
             <NavItem icon={RocketLaunchIcon} label="Testing" href={`${basePath}/testing`} disabled />

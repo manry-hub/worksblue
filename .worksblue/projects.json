@@ -27,11 +27,27 @@
     "objective": "sdhusd",
     "stakeholders": [
       "ddd",
-      "dsdsj"
+      "dsdsj",
+      "xfgfg",
+      "dgfdfgdfgd",
+      "dfgfgf",
+      "dfgdfg"
     ],
     "timeline": {
       "startDate": "2026-07-23",
       "endDate": "2026-07-23"
+    },
+    "requirements": {
+      "functional": [],
+      "nonFunctional": [
+        {
+          "id": "NFR-01",
+          "category": "",
+          "requirement": ""
+        }
+      ],
+      "technology": [],
+      "functionalGroups": []
     }
   },
   {

@@ -14,6 +14,32 @@ export interface Project {
     startDate?: string;
     endDate?: string;
   };
+  requirements?: {
+    functionalGroups?: {
+      id: string;
+      name: string;
+    }[];
+    functional: {
+      id: string;
+      groupId?: string;
+      requirement: string;
+      description?: string;
+      access: Record<string, boolean>;
+    }[];
+    nonFunctional: {
+      id: string;
+      category: string;
+      requirement: string;
+      description?: string;
+    }[];
+    technology: {
+      id: string;
+      need: string;
+      technology: string;
+      version?: string;
+      description?: string;
+    }[];
+  };
   repository?: string;
   deadline?: string;
   liveEnvironment?: string;
