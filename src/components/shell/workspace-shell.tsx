@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   BellIcon,
   ClipboardDocumentCheckIcon,
@@ -10,7 +10,8 @@ import {
   FolderIcon,
   PlusIcon,
   Bars3Icon,
-  XMarkIcon
+  XMarkIcon,
+  ArrowRightStartOnRectangleIcon
 } from "@heroicons/react/24/outline";
 import { HomeIcon } from "@heroicons/react/24/solid";
 import type { ReactNode } from "react";
@@ -142,7 +143,40 @@ function Sidebar({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) 
 
 function Topbar({ onOpenSidebar }: { onOpenSidebar: () => void }) {
   const pathname = usePathname();
+  const router = useRouter();
   const isProjectsPage = pathname === "/projects";
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const [userName, setUserName] = useState("");
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    fetch("/api/auth/me")
+      .then(r => r.json())
+      .then(data => {
+        if (data.authenticated) setUserName(data.user.name);
+      })
+      .catch(() => {});
+  }, []);
+
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        setUserMenuOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const handleLogout = async () => {
+    await fetch("/api/auth/logout", { method: "POST" });
+    router.push("/login");
+    router.refresh();
+  };
+
+  const initials = userName
+    ? userName.split(" ").map(w => w[0]).join("").toUpperCase().slice(0, 2)
+    : "?";
 
   return (
     <header className="h-16 flex items-center justify-between px-4 sm:px-6 lg:px-8 border-b border-white/[0.04] bg-background-base/60 backdrop-blur-2xl sticky top-0 z-30 transition-all duration-300">
@@ -172,10 +206,33 @@ function Topbar({ onOpenSidebar }: { onOpenSidebar: () => void }) {
           </div>
         )}
         <IconButton variant="ghost" size="sm" icon={<BellIcon />} aria-label="Notifications" />
-        <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-accent to-sky-500 p-[1px] ml-2 cursor-pointer shadow-[0_0_15px_rgba(59,130,246,0.3)] hover:shadow-[0_0_20px_rgba(59,130,246,0.5)] transition-shadow">
-          <div className="w-full h-full rounded-full bg-background-elevated flex items-center justify-center text-xs font-semibold text-white">
-            UD
-          </div>
+        
+        {/* User Avatar with Dropdown */}
+        <div className="relative ml-2" ref={menuRef}>
+          <button 
+            onClick={() => setUserMenuOpen(!userMenuOpen)}
+            className="w-8 h-8 rounded-full bg-gradient-to-tr from-accent to-sky-500 p-[1px] cursor-pointer shadow-[0_0_15px_rgba(59,130,246,0.3)] hover:shadow-[0_0_20px_rgba(59,130,246,0.5)] transition-shadow"
+          >
+            <div className="w-full h-full rounded-full bg-background-elevated flex items-center justify-center text-xs font-semibold text-white">
+              {initials}
+            </div>
+          </button>
+
+          {userMenuOpen && (
+            <div className="absolute right-0 mt-2 w-48 bg-background-elevated border border-white/10 rounded-xl shadow-2xl overflow-hidden z-50">
+              <div className="px-4 py-3 border-b border-white/[0.06]">
+                <p className="text-sm font-medium text-foreground">{userName || "User"}</p>
+                <p className="text-xs text-foreground-muted">Logged in</p>
+              </div>
+              <button
+                onClick={handleLogout}
+                className="w-full flex items-center gap-3 px-4 py-3 text-sm text-red-400 hover:bg-white/[0.04] transition-colors"
+              >
+                <ArrowRightStartOnRectangleIcon className="w-4 h-4" />
+                Sign out
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </header>
