@@ -24,7 +24,6 @@ export interface Project {
       groupId?: string;
       requirement: string;
       description?: string;
-      access: Record<string, boolean>;
     }[];
     nonFunctional: {
       id: string;

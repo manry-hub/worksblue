@@ -47,14 +47,19 @@
         }
       ],
       "technology": [],
-      "functionalGroups": []
+      "functionalGroups": [
+        {
+          "id": "A",
+          "name": "New Group A"
+        }
+      ]
     }
   },
   {
     "id": "atlas-api",
     "name": "Atlas API",
     "description": "API gateway dan service observability untuk platform internal.",
-    "status": "At risk",
+    "status": "On Hold",
     "progress": 100,
     "version": "v0.8.2",
     "deadline": "2026-07-21T09:00:00Z",
@@ -70,13 +75,16 @@
       "Docker"
     ],
     "createdAt": "2026-07-13T18:15:55.713Z",
-    "totalTasks": 1
+    "totalTasks": 1,
+    "repository": "",
+    "liveEnvironment": "",
+    "figmaDesign": ""
   },
   {
     "id": "launchpad",
     "name": "Launchpad",
     "description": "Starter kit deployment dan release checklist untuk solo developer.",
-    "status": "Planning",
+    "status": "Completed",
     "progress": 0,
     "version": "v0.2.0",
     "deadline": "2026-09-12T09:00:00Z",
@@ -92,6 +100,9 @@
       "Vercel"
     ],
     "createdAt": "2026-07-13T18:15:55.713Z",
-    "totalTasks": 0
+    "totalTasks": 0,
+    "repository": "",
+    "liveEnvironment": "",
+    "figmaDesign": ""
   }
 ]

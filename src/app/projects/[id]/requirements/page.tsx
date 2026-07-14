@@ -4,7 +4,7 @@ import { use, useEffect, useState } from "react";
 import { useProjectStore, type Project } from "@/store/project-store";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { PlusIcon, TrashIcon, CheckIcon, ShieldCheckIcon, CpuChipIcon, ListBulletIcon, XMarkIcon, FolderPlusIcon, InformationCircleIcon } from "@heroicons/react/24/outline";
+import { PlusIcon, TrashIcon, ShieldCheckIcon, CpuChipIcon, ListBulletIcon, XMarkIcon, FolderPlusIcon, InformationCircleIcon } from "@heroicons/react/24/outline";
 
 type FunctionalGroup = NonNullable<NonNullable<Project['requirements']>['functionalGroups']>[0];
 type FunctionalReq = NonNullable<Project['requirements']>['functional'][0];
@@ -17,8 +17,6 @@ export default function RequirementsPage(props: { params: Promise<{ id: string }
   const { getProject, updateProject, fetchProjects } = useProjectStore();
   const project = getProject(projectId);
 
-  const stakeholders = project?.stakeholders || [];
-  
   const [functionalGroups, setFunctionalGroups] = useState<FunctionalGroup[]>([]);
   const [functional, setFunctional] = useState<FunctionalReq[]>([]);
   const [nonFunctional, setNonFunctional] = useState<NonFunctionalReq[]>([]);
@@ -90,10 +88,7 @@ export default function RequirementsPage(props: { params: Promise<{ id: string }
       newId = `FR-${nextNum.toString().padStart(2, '0')}`;
     }
     
-    const initialAccess: Record<string, boolean> = {};
-    stakeholders.forEach(s => { initialAccess[s] = false; });
-
-    const newReq: FunctionalReq = { id: newId, groupId, requirement: "", access: initialAccess };
+    const newReq: FunctionalReq = { id: newId, groupId, requirement: "" };
     const updated = [...functional, newReq];
     setFunctional(updated);
     saveChanges({ functional: updated });
@@ -102,10 +97,6 @@ export default function RequirementsPage(props: { params: Promise<{ id: string }
   const updateFunctionalReq = (id: string, field: string, value: string | boolean) => {
     const updated = functional.map(req => {
       if (req.id !== id) return req;
-      if (field.startsWith('access.')) {
-        const role = field.split('.')[1];
-        return { ...req, access: { ...req.access, [role]: value as boolean } };
-      }
       return { ...req, [field]: value as string };
     });
     setFunctional(updated);
@@ -207,17 +198,14 @@ export default function RequirementsPage(props: { params: Promise<{ id: string }
               <tr>
                 <th className="px-4 py-3 font-medium whitespace-nowrap w-32">ID</th>
                 <th className="px-4 py-3 font-medium min-w-[200px]">Requirement</th>
-                {stakeholders.map(s => (
-                  <th key={s} className="px-2 py-3 font-medium text-center whitespace-nowrap w-20 truncate" title={s}>{s}</th>
-                ))}
-                <th className="px-4 py-3 w-16"></th>
+                <th className="px-4 py-3 w-24"></th>
               </tr>
             </thead>
             
             {functionalGroups.length === 0 && functional.length === 0 && (
               <tbody>
                 <tr>
-                  <td colSpan={3 + stakeholders.length} className="px-4 py-8 text-center text-foreground-muted italic">
+                  <td colSpan={3} className="px-4 py-8 text-center text-foreground-muted italic">
                     No functional requirements defined yet. Add a group to get started.
                   </td>
                 </tr>
@@ -239,13 +227,11 @@ export default function RequirementsPage(props: { params: Promise<{ id: string }
                         placeholder="Group Name"
                       />
                     </td>
-                    <td colSpan={stakeholders.length} className="px-4 py-2 text-right">
-                      <Button onClick={() => addFunctionalReq(group.id)} variant="ghost" size="sm" className="h-7 text-xs gap-1 text-foreground-muted hover:text-foreground">
+                    <td className="px-4 py-2 text-right whitespace-nowrap">
+                      <Button onClick={() => addFunctionalReq(group.id)} variant="ghost" size="sm" className="h-7 text-xs gap-1 text-foreground-muted hover:text-foreground mr-2">
                         <PlusIcon className="w-3 h-3" /> Row
                       </Button>
-                    </td>
-                    <td className="px-4 py-2 text-right">
-                      <button onClick={() => removeGroup(group.id)} className="text-foreground-muted hover:text-red-400 opacity-0 group-hover/header:opacity-100 transition-opacity p-1">
+                      <button onClick={() => removeGroup(group.id)} className="text-foreground-muted hover:text-red-400 opacity-0 group-hover/header:opacity-100 transition-opacity p-1 align-middle">
                         <TrashIcon className="w-4 h-4" />
                       </button>
                     </td>
@@ -253,7 +239,7 @@ export default function RequirementsPage(props: { params: Promise<{ id: string }
                   
                   {groupReqs.length === 0 && (
                     <tr>
-                      <td colSpan={3 + stakeholders.length} className="px-4 py-4 text-center text-foreground-muted/50 italic text-xs">
+                      <td colSpan={3} className="px-4 py-4 text-center text-foreground-muted/50 italic text-xs">
                         No rows in this group.
                       </td>
                     </tr>
@@ -271,20 +257,6 @@ export default function RequirementsPage(props: { params: Promise<{ id: string }
                           className="w-full bg-transparent border-none p-0 focus:ring-0 text-foreground text-sm placeholder:text-foreground-muted/50"
                         />
                       </td>
-                      {stakeholders.map(s => (
-                        <td key={s} className="px-2 py-3 text-center">
-                          <button
-                            onClick={() => updateFunctionalReq(req.id, `access.${s}`, !req.access[s])}
-                            className={`w-6 h-6 rounded flex items-center justify-center mx-auto transition-colors border ${
-                              req.access[s] 
-                                ? 'bg-green-500/20 border-green-500/30 text-green-400' 
-                                : 'bg-white/5 border-white/10 text-transparent hover:bg-white/10 hover:border-white/20'
-                            }`}
-                          >
-                            {req.access[s] ? <CheckIcon className="w-4 h-4" /> : <XMarkIcon className="w-4 h-4 opacity-30 hover:opacity-100" />}
-                          </button>
-                        </td>
-                      ))}
                       <td className="px-4 py-3 text-right whitespace-nowrap">
                         <button onClick={() => setDetailModal({ type: 'functional', id: req.id })} className="text-foreground-muted hover:text-accent opacity-0 group-hover:opacity-100 transition-opacity p-1 mr-1">
                           <InformationCircleIcon className="w-4 h-4" />
@@ -303,7 +275,7 @@ export default function RequirementsPage(props: { params: Promise<{ id: string }
             {functional.filter(f => !f.groupId).length > 0 && (
               <tbody className="divide-y divide-white/5 border-t border-white/10">
                 <tr className="bg-white/[0.01]">
-                  <td colSpan={3 + stakeholders.length} className="px-4 py-2 font-medium text-foreground-muted text-xs uppercase tracking-wider">
+                  <td colSpan={3} className="px-4 py-2 font-medium text-foreground-muted text-xs uppercase tracking-wider">
                     Ungrouped
                   </td>
                 </tr>
@@ -319,20 +291,6 @@ export default function RequirementsPage(props: { params: Promise<{ id: string }
                         className="w-full bg-transparent border-none p-0 focus:ring-0 text-foreground text-sm placeholder:text-foreground-muted/50"
                       />
                     </td>
-                    {stakeholders.map(s => (
-                      <td key={s} className="px-2 py-3 text-center">
-                        <button
-                          onClick={() => updateFunctionalReq(req.id, `access.${s}`, !req.access[s])}
-                          className={`w-6 h-6 rounded flex items-center justify-center mx-auto transition-colors border ${
-                            req.access[s] 
-                              ? 'bg-green-500/20 border-green-500/30 text-green-400' 
-                              : 'bg-white/5 border-white/10 text-transparent hover:bg-white/10 hover:border-white/20'
-                          }`}
-                        >
-                          {req.access[s] ? <CheckIcon className="w-4 h-4" /> : <XMarkIcon className="w-4 h-4 opacity-30 hover:opacity-100" />}
-                        </button>
-                      </td>
-                    ))}
                     <td className="px-4 py-3 text-right whitespace-nowrap">
                       <button onClick={() => setDetailModal({ type: 'functional', id: req.id })} className="text-foreground-muted hover:text-accent opacity-0 group-hover:opacity-100 transition-opacity p-1 mr-1">
                         <InformationCircleIcon className="w-4 h-4" />
