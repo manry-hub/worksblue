@@ -16,7 +16,7 @@ export function CommandPaletteSearch() {
       >
         <div className="flex items-center gap-2">
           <MagnifyingGlassIcon className="w-4 h-4 text-foreground-muted" />
-          <span className="text-foreground-subtle">Cari project atau dokumentasi…</span>
+          <span className="text-foreground-subtle">search</span>
         </div>
       </button>
 
