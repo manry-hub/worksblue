@@ -31,13 +31,17 @@ export function IssueDetailsModal({
   onClose,
   issue,
   projectId,
-  mode = "edit"
+  mode = "edit",
+  initialStatus,
+  sprintId
 }: { 
   isOpen: boolean; 
   onClose: () => void;
   issue?: Issue | null;
   projectId: string;
   mode?: "edit" | "create";
+  initialStatus?: string;
+  sprintId?: string;
 }) {
   const { updateIssue, addIssue, deleteIssue, issues: allIssues } = useIssueStore();
   const project = useProjectStore((state) => state.projects.find(p => p.id === projectId));
@@ -116,8 +120,8 @@ export function IssueDetailsModal({
           title: "",
           description: "",
           type: "task",
-          status: "backlog",
-          priority: "medium",
+          status: initialStatus || "backlog",
+          priority: priorities[1]?.id || priorities[0]?.id || "medium",
           labels: "",
           dueDate: "",
           assignee: "",
@@ -148,6 +152,7 @@ export function IssueDetailsModal({
         assignee: data.assignee || "hilman",
         estimate: data.estimate ? parseFloat(data.estimate) : undefined,
         parentId: data.parentId || null,
+        sprintId: sprintId,
         checklist,
       });
     } else if (issue) {

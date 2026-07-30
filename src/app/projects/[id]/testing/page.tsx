@@ -5,6 +5,7 @@ import { useProjectStore, type Project } from "@/store/project-store";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { PlusIcon, TrashIcon, BeakerIcon, ListBulletIcon, FolderIcon } from "@heroicons/react/24/outline";
+import { EditableInput, EditableTextarea } from "@/components/ui/editable-input";
 
 type TestCase = NonNullable<Project['testCases']>[0];
 type RequirementItem = { id: string, type: 'FR' | 'NFR', title: string };
@@ -145,48 +146,47 @@ export default function TestingPage(props: { params: Promise<{ id: string }> }) 
             {items.map(item => (
               <tr key={item.id} className="bg-white/[0.02] hover:bg-white/[0.04] transition-colors">
                 <td className="p-2 align-top">
-                  <input
-                    type="text"
+                  <EditableInput
                     value={item.testCaseId}
-                    onChange={(e) => updateTestCase(item.id, 'testCaseId', e.target.value)}
+                    onSave={(val) => updateTestCase(item.id, 'testCaseId', val)}
                     placeholder="TC-001"
-                    className="w-full bg-transparent border-none text-foreground font-mono text-xs focus:ring-1 focus:ring-accent rounded px-2 py-1.5"
+                    className="w-full bg-transparent border-none text-foreground font-mono text-xs focus:ring-1 focus:ring-accent rounded px-2 py-1.5 outline-none"
                   />
                 </td>
                 <td className="p-2 align-top">
-                  <textarea
+                  <EditableTextarea
                     value={item.testSteps}
-                    onChange={(e) => updateTestCase(item.id, 'testSteps', e.target.value)}
+                    onSave={(val) => updateTestCase(item.id, 'testSteps', val)}
                     onInput={handleTextareaResize}
                     placeholder="1. Go to login..."
-                    className="w-full bg-transparent border-none text-foreground text-sm focus:ring-1 focus:ring-accent rounded px-2 py-1.5 resize-none overflow-hidden min-h-[38px] custom-scrollbar"
+                    className="w-full bg-transparent border-none text-foreground text-sm focus:ring-1 focus:ring-accent rounded px-2 py-1.5 resize-none overflow-hidden min-h-[38px] custom-scrollbar outline-none"
                   />
                 </td>
                 <td className="p-2 align-top">
-                  <textarea
+                  <EditableTextarea
                     value={item.inputData}
-                    onChange={(e) => updateTestCase(item.id, 'inputData', e.target.value)}
+                    onSave={(val) => updateTestCase(item.id, 'inputData', val)}
                     onInput={handleTextareaResize}
                     placeholder="user / pass"
-                    className="w-full bg-transparent border-none text-foreground text-sm focus:ring-1 focus:ring-accent rounded px-2 py-1.5 resize-none overflow-hidden min-h-[38px] custom-scrollbar"
+                    className="w-full bg-transparent border-none text-foreground text-sm focus:ring-1 focus:ring-accent rounded px-2 py-1.5 resize-none overflow-hidden min-h-[38px] custom-scrollbar outline-none"
                   />
                 </td>
                 <td className="p-2 align-top">
-                  <textarea
+                  <EditableTextarea
                     value={item.expectedResult}
-                    onChange={(e) => updateTestCase(item.id, 'expectedResult', e.target.value)}
+                    onSave={(val) => updateTestCase(item.id, 'expectedResult', val)}
                     onInput={handleTextareaResize}
                     placeholder="Login success"
-                    className="w-full bg-transparent border-none text-foreground text-sm focus:ring-1 focus:ring-accent rounded px-2 py-1.5 resize-none overflow-hidden min-h-[38px] custom-scrollbar"
+                    className="w-full bg-transparent border-none text-foreground text-sm focus:ring-1 focus:ring-accent rounded px-2 py-1.5 resize-none overflow-hidden min-h-[38px] custom-scrollbar outline-none"
                   />
                 </td>
                 <td className="p-2 align-top">
-                  <textarea
+                  <EditableTextarea
                     value={item.actualResult}
-                    onChange={(e) => updateTestCase(item.id, 'actualResult', e.target.value)}
+                    onSave={(val) => updateTestCase(item.id, 'actualResult', val)}
                     onInput={handleTextareaResize}
                     placeholder="Actual outcome"
-                    className="w-full bg-transparent border-none text-foreground text-sm focus:ring-1 focus:ring-accent rounded px-2 py-1.5 resize-none overflow-hidden min-h-[38px] custom-scrollbar"
+                    className="w-full bg-transparent border-none text-foreground text-sm focus:ring-1 focus:ring-accent rounded px-2 py-1.5 resize-none overflow-hidden min-h-[38px] custom-scrollbar outline-none"
                   />
                 </td>
                 <td className="p-2 align-top">
@@ -205,12 +205,12 @@ export default function TestingPage(props: { params: Promise<{ id: string }> }) 
                   </select>
                 </td>
                 <td className="p-2 align-top">
-                  <textarea
+                  <EditableTextarea
                     value={item.notes}
-                    onChange={(e) => updateTestCase(item.id, 'notes', e.target.value)}
+                    onSave={(val) => updateTestCase(item.id, 'notes', val)}
                     onInput={handleTextareaResize}
                     placeholder="Any notes..."
-                    className="w-full bg-transparent border-none text-foreground text-sm focus:ring-1 focus:ring-accent rounded px-2 py-1.5 resize-none overflow-hidden min-h-[38px] custom-scrollbar"
+                    className="w-full bg-transparent border-none text-foreground text-sm focus:ring-1 focus:ring-accent rounded px-2 py-1.5 resize-none overflow-hidden min-h-[38px] custom-scrollbar outline-none"
                   />
                 </td>
                 <td className="p-2 align-top text-center pt-3 flex items-center justify-center gap-1">

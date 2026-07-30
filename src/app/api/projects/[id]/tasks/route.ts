@@ -71,9 +71,26 @@ export async function POST(
   const dbFile = await initTaskDB(params.id);
   try {
     const body = await request.json();
+    
+    // Generate sequential ID
+    const projectsData = await fs.readFile(PROJECTS_FILE, "utf-8");
+    const projects = JSON.parse(projectsData);
+    const index = projects.findIndex((p: { id: string }) => p.id === params.id);
+    
+    let newId = `issue-${Math.random().toString(36).substr(2, 9)}`;
+    if (index !== -1) {
+      const project = projects[index];
+      const nextCounter = (project.lastIssueCounter || 0) + 1;
+      project.lastIssueCounter = nextCounter;
+      await fs.writeFile(PROJECTS_FILE, JSON.stringify(projects, null, 2));
+      
+      const prefix = project.issueNumberPrefix || "ISSUE-";
+      newId = `${prefix}${nextCounter}`;
+    }
+
     const newTask = {
       ...body,
-      id: `issue-${Math.random().toString(36).substr(2, 9)}`,
+      id: newId,
       projectId: params.id,
       labels: body.labels || [],
       createdAt: new Date().toISOString(),

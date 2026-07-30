@@ -5,6 +5,7 @@ import { useProjectStore, type Project } from "@/store/project-store";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { PlusIcon, TrashIcon, RocketLaunchIcon, KeyIcon, CommandLineIcon, UsersIcon, GlobeAltIcon } from "@heroicons/react/24/outline";
+import { EditableInput } from "@/components/ui/editable-input";
 
 type Account = NonNullable<NonNullable<Project['deployment']>['accounts']>[0];
 type EnvConfig = NonNullable<NonNullable<Project['deployment']>['environments']>[0];
@@ -89,32 +90,29 @@ export default function DeploymentPage(props: { params: Promise<{ id: string }> 
         <div className="p-6 bg-black/10 grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-2">
             <label className="text-sm font-medium text-foreground-muted">Deployment Platform</label>
-            <input 
-              type="text" 
+            <EditableInput 
               value={deployment.platform || ""} 
-              onChange={(e) => updateDeploymentField('platform', e.target.value)}
+              onSave={(val) => updateDeploymentField('platform', val)}
               placeholder="e.g. Vercel, AWS EC2, DigitalOcean..."
-              className="w-full bg-black/40 border border-white/10 text-sm focus:ring-1 focus:ring-accent rounded-lg px-3 py-2.5 text-foreground placeholder:text-white/20"
+              className="w-full bg-black/40 border border-white/10 text-sm focus:ring-1 focus:ring-accent rounded-lg px-3 py-2.5 text-foreground placeholder:text-white/20 outline-none"
             />
           </div>
           <div className="space-y-2">
             <label className="text-sm font-medium text-foreground-muted">Live Environment URL</label>
-            <input 
-              type="text" 
+            <EditableInput 
               value={project.liveEnvironment || ""} 
-              onChange={(e) => saveChanges({ liveEnvironment: e.target.value })}
+              onSave={(val) => saveChanges({ liveEnvironment: val })}
               placeholder="https://example.com"
-              className="w-full bg-black/40 border border-white/10 text-sm focus:ring-1 focus:ring-accent rounded-lg px-3 py-2.5 text-foreground placeholder:text-white/20"
+              className="w-full bg-black/40 border border-white/10 text-sm focus:ring-1 focus:ring-accent rounded-lg px-3 py-2.5 text-foreground placeholder:text-white/20 outline-none"
             />
           </div>
           <div className="space-y-2 md:col-span-2">
             <label className="text-sm font-medium text-foreground-muted">Repository URL</label>
-            <input 
-              type="text" 
+            <EditableInput 
               value={project.repository || ""} 
-              onChange={(e) => saveChanges({ repository: e.target.value })}
+              onSave={(val) => saveChanges({ repository: val })}
               placeholder="https://github.com/user/repo"
-              className="w-full bg-black/40 border border-white/10 text-sm focus:ring-1 focus:ring-accent rounded-lg px-3 py-2.5 text-foreground placeholder:text-white/20"
+              className="w-full bg-black/40 border border-white/10 text-sm focus:ring-1 focus:ring-accent rounded-lg px-3 py-2.5 text-foreground placeholder:text-white/20 outline-none"
             />
           </div>
         </div>
@@ -144,10 +142,10 @@ export default function DeploymentPage(props: { params: Promise<{ id: string }> 
               <tbody className="divide-y divide-white/5">
                 {accounts.map(acc => (
                   <tr key={acc.id} className="bg-white/[0.02] hover:bg-white/[0.04] transition-colors">
-                    <td className="p-2"><input type="text" value={acc.platform} onChange={e => updateAccount(acc.id, 'platform', e.target.value)} placeholder="Supabase" className="w-full bg-transparent border-none text-foreground focus:ring-1 focus:ring-accent rounded px-2 py-1.5" /></td>
-                    <td className="p-2"><input type="text" value={acc.description} onChange={e => updateAccount(acc.id, 'description', e.target.value)} placeholder="Database Provider" className="w-full bg-transparent border-none text-foreground focus:ring-1 focus:ring-accent rounded px-2 py-1.5" /></td>
-                    <td className="p-2"><input type="text" value={acc.email} onChange={e => updateAccount(acc.id, 'email', e.target.value)} placeholder="admin@example.com" className="w-full bg-transparent border-none text-foreground focus:ring-1 focus:ring-accent rounded px-2 py-1.5" /></td>
-                    <td className="p-2"><input type="text" value={acc.password || ""} onChange={e => updateAccount(acc.id, 'password', e.target.value)} placeholder="••••••••" className="w-full bg-transparent border-none text-foreground font-mono focus:ring-1 focus:ring-accent rounded px-2 py-1.5" /></td>
+                    <td className="p-2"><EditableInput value={acc.platform} onSave={val => updateAccount(acc.id, 'platform', val)} placeholder="Supabase" className="w-full bg-transparent border-none text-foreground focus:ring-1 focus:ring-accent rounded px-2 py-1.5 outline-none" /></td>
+                    <td className="p-2"><EditableInput value={acc.description} onSave={val => updateAccount(acc.id, 'description', val)} placeholder="Database Provider" className="w-full bg-transparent border-none text-foreground focus:ring-1 focus:ring-accent rounded px-2 py-1.5 outline-none" /></td>
+                    <td className="p-2"><EditableInput value={acc.email} onSave={val => updateAccount(acc.id, 'email', val)} placeholder="admin@example.com" className="w-full bg-transparent border-none text-foreground focus:ring-1 focus:ring-accent rounded px-2 py-1.5 outline-none" /></td>
+                    <td className="p-2"><EditableInput value={acc.password || ""} onSave={val => updateAccount(acc.id, 'password', val)} placeholder="••••••••" className="w-full bg-transparent border-none text-foreground font-mono focus:ring-1 focus:ring-accent rounded px-2 py-1.5 outline-none" /></td>
                     <td className="p-2 text-center"><button onClick={() => removeAccount(acc.id)} className="text-foreground-muted hover:text-red-400 p-1.5 rounded hover:bg-white/5 transition-colors"><TrashIcon className="w-4 h-4" /></button></td>
                   </tr>
                 ))}
@@ -186,8 +184,8 @@ export default function DeploymentPage(props: { params: Promise<{ id: string }> 
               <tbody className="divide-y divide-white/5">
                 {environments.map(env => (
                   <tr key={env.id} className="bg-white/[0.02] hover:bg-white/[0.04] transition-colors">
-                    <td className="p-2"><input type="text" value={env.name} onChange={e => updateEnvironment(env.id, 'name', e.target.value)} placeholder="DATABASE_URL" className="w-full bg-transparent border-none text-foreground font-mono text-xs focus:ring-1 focus:ring-accent rounded px-2 py-1.5" /></td>
-                    <td className="p-2"><input type="text" value={env.value} onChange={e => updateEnvironment(env.id, 'value', e.target.value)} placeholder="..." className="w-full bg-transparent border-none text-foreground font-mono text-xs focus:ring-1 focus:ring-accent rounded px-2 py-1.5" /></td>
+                    <td className="p-2"><EditableInput value={env.name} onSave={val => updateEnvironment(env.id, 'name', val)} placeholder="DATABASE_URL" className="w-full bg-transparent border-none text-foreground font-mono text-xs focus:ring-1 focus:ring-accent rounded px-2 py-1.5 outline-none" /></td>
+                    <td className="p-2"><EditableInput value={env.value} onSave={val => updateEnvironment(env.id, 'value', val)} placeholder="..." className="w-full bg-transparent border-none text-foreground font-mono text-xs focus:ring-1 focus:ring-accent rounded px-2 py-1.5 outline-none" /></td>
                     <td className="p-2 text-center"><button onClick={() => removeEnvironment(env.id)} className="text-foreground-muted hover:text-red-400 p-1.5 rounded hover:bg-white/5 transition-colors"><TrashIcon className="w-4 h-4" /></button></td>
                   </tr>
                 ))}
@@ -228,9 +226,9 @@ export default function DeploymentPage(props: { params: Promise<{ id: string }> 
               <tbody className="divide-y divide-white/5">
                 {seeds.map(seed => (
                   <tr key={seed.id} className="bg-white/[0.02] hover:bg-white/[0.04] transition-colors">
-                    <td className="p-2"><input type="text" value={seed.role} onChange={e => updateSeed(seed.id, 'role', e.target.value)} placeholder="Admin" className="w-full bg-transparent border-none text-foreground focus:ring-1 focus:ring-accent rounded px-2 py-1.5" /></td>
-                    <td className="p-2"><input type="text" value={seed.email} onChange={e => updateSeed(seed.id, 'email', e.target.value)} placeholder="admin@example.com" className="w-full bg-transparent border-none text-foreground focus:ring-1 focus:ring-accent rounded px-2 py-1.5" /></td>
-                    <td className="p-2"><input type="text" value={seed.password || ""} onChange={e => updateSeed(seed.id, 'password', e.target.value)} placeholder="••••••••" className="w-full bg-transparent border-none text-foreground font-mono focus:ring-1 focus:ring-accent rounded px-2 py-1.5" /></td>
+                    <td className="p-2"><EditableInput value={seed.role} onSave={val => updateSeed(seed.id, 'role', val)} placeholder="Admin" className="w-full bg-transparent border-none text-foreground focus:ring-1 focus:ring-accent rounded px-2 py-1.5 outline-none" /></td>
+                    <td className="p-2"><EditableInput value={seed.email} onSave={val => updateSeed(seed.id, 'email', val)} placeholder="admin@example.com" className="w-full bg-transparent border-none text-foreground focus:ring-1 focus:ring-accent rounded px-2 py-1.5 outline-none" /></td>
+                    <td className="p-2"><EditableInput value={seed.password || ""} onSave={val => updateSeed(seed.id, 'password', val)} placeholder="••••••••" className="w-full bg-transparent border-none text-foreground font-mono focus:ring-1 focus:ring-accent rounded px-2 py-1.5 outline-none" /></td>
                     <td className="p-2 text-center"><button onClick={() => removeSeed(seed.id)} className="text-foreground-muted hover:text-red-400 p-1.5 rounded hover:bg-white/5 transition-colors"><TrashIcon className="w-4 h-4" /></button></td>
                   </tr>
                 ))}

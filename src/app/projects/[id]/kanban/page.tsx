@@ -2,8 +2,8 @@
 
 import { use, useState } from "react";
 import { useSprintStore } from "@/store/sprint-store";
+import { useProjectStore } from "@/store/project-store";
 import { KanbanBoard } from "@/components/kanban/kanban-board";
-import { CreateIssueModal } from "@/components/kanban/create-issue-modal";
 import { IssueDetailsModal } from "@/components/kanban/issue-details-modal";
 import { IssueStatus, type Issue } from "@/store/issue-store";
 import { Button } from "@/components/ui/button";
@@ -27,13 +27,16 @@ export default function KanbanPage(props: { params: Promise<{ id: string }> }) {
   // Get active sprint
   const activeSprint = sprintsList.find(s => s.status === "Active" && s.projectId === projectId);
 
+  const project = useProjectStore(state => state.projects.find(p => p.id === projectId));
+  const defaultTodoStatus = project?.columns?.find(c => c.id !== "backlog")?.id || "todo";
+
   // Sprint options for selector
   const sprintOptions = sprintsList
     .filter(s => s.projectId === projectId && (s.status === "Active" || s.status === "Planned"))
     .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
-  const handleOpenCreateModal = (status: IssueStatus = "todo") => {
-    setCreateModalStatus(status);
+  const handleOpenCreateModal = (status?: IssueStatus) => {
+    setCreateModalStatus(status || (defaultTodoStatus as IssueStatus));
     setIsCreateModalOpen(true);
   };
 
@@ -113,7 +116,7 @@ export default function KanbanPage(props: { params: Promise<{ id: string }> }) {
             </button>
           </div>
           
-          <Button variant="ghost" size="sm" className="h-8 text-foreground-muted hover:bg-white/5 border border-white/10" onClick={() => handleOpenCreateModal("todo")}>
+          <Button variant="ghost" size="sm" className="h-8 text-foreground-muted hover:bg-white/5 border border-white/10" onClick={() => handleOpenCreateModal(defaultTodoStatus as IssueStatus)}>
             New issue
           </Button>
         </div>
@@ -129,10 +132,11 @@ export default function KanbanPage(props: { params: Promise<{ id: string }> }) {
         />
       </div>
 
-      <CreateIssueModal 
+      <IssueDetailsModal 
         isOpen={isCreateModalOpen} 
         onClose={() => setIsCreateModalOpen(false)} 
         projectId={projectId} 
+        mode="create"
         initialStatus={createModalStatus} 
         sprintId={selectedSprintId === "none" ? undefined : selectedSprintId}
       />

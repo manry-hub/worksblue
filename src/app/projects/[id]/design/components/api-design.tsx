@@ -4,6 +4,7 @@ import { useProjectStore, type Project } from "@/store/project-store";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { PlusIcon, TrashIcon, ServerIcon, FolderPlusIcon } from "@heroicons/react/24/outline";
+import { EditableInput } from "@/components/ui/editable-input";
 
 type ApiDesignReq = NonNullable<NonNullable<Project['design']>['apiDesign']>[0];
 
@@ -110,30 +111,27 @@ export function ApiDesignTable({ projectId }: { projectId: string }) {
                   </select>
                 </td>
                 <td className="p-2">
-                  <input
-                    type="text"
+                  <EditableInput
                     value={item.path}
-                    onChange={(e) => updateEndpoint(item.id, 'path', e.target.value)}
+                    onSave={(val) => updateEndpoint(item.id, 'path', val)}
                     placeholder="/api/v1/..."
-                    className="w-full bg-transparent border-none text-foreground font-mono text-xs focus:ring-1 focus:ring-accent rounded px-2 py-1.5"
+                    className="w-full bg-transparent border-none text-foreground font-mono text-xs focus:ring-1 focus:ring-accent rounded px-2 py-1.5 outline-none"
                   />
                 </td>
                 <td className="p-2">
-                  <input
-                    type="text"
+                  <EditableInput
                     value={item.action}
-                    onChange={(e) => updateEndpoint(item.id, 'action', e.target.value)}
+                    onSave={(val) => updateEndpoint(item.id, 'action', val)}
                     placeholder="e.g. Create new user"
-                    className="w-full bg-transparent border-none text-foreground focus:ring-1 focus:ring-accent rounded px-2 py-1.5"
+                    className="w-full bg-transparent border-none text-foreground focus:ring-1 focus:ring-accent rounded px-2 py-1.5 outline-none"
                   />
                 </td>
                 <td className="p-2">
-                  <input
-                    type="text"
+                  <EditableInput
                     value={item.usedFor}
-                    onChange={(e) => updateEndpoint(item.id, 'usedFor', e.target.value)}
+                    onSave={(val) => updateEndpoint(item.id, 'usedFor', val)}
                     placeholder="e.g. User registration form"
-                    className="w-full bg-transparent border-none text-foreground focus:ring-1 focus:ring-accent rounded px-2 py-1.5"
+                    className="w-full bg-transparent border-none text-foreground focus:ring-1 focus:ring-accent rounded px-2 py-1.5 outline-none"
                   />
                 </td>
                 <td className="p-2 text-center">
@@ -190,11 +188,10 @@ export function ApiDesignTable({ projectId }: { projectId: string }) {
                 <div className="px-2 py-1 bg-white/10 text-foreground-muted text-xs font-mono rounded">
                   Module: {group.id}
                 </div>
-                <input
-                  type="text"
+                <EditableInput
                   value={group.name}
-                  onChange={(e) => updateGroupName(group.id, e.target.value)}
-                  className="bg-transparent border-none text-foreground font-medium focus:ring-1 focus:ring-accent rounded px-2 py-1 w-full max-w-sm"
+                  onSave={(val) => updateGroupName(group.id, val)}
+                  className="bg-transparent border-none text-foreground font-medium focus:ring-1 focus:ring-accent rounded px-2 py-1 w-full max-w-sm outline-none"
                   placeholder="Module Name"
                 />
               </div>

@@ -4,6 +4,7 @@ import { use, useEffect, useState } from "react";
 import { useProjectStore, type Project } from "@/store/project-store";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { EditableTextarea } from "@/components/ui/editable-input";
 import { PlusIcon, XMarkIcon, CalendarIcon, DocumentTextIcon, UsersIcon, FlagIcon } from "@heroicons/react/24/outline";
 
 export default function PlanningPage(props: { params: Promise<{ id: string }> }) {
@@ -41,11 +42,17 @@ export default function PlanningPage(props: { params: Promise<{ id: string }> })
     await updateProject(projectId, updates);
   };
 
-  const handleBlurText = () => {
-    if (project?.problemStatement !== problemStatement || project?.objective !== objective) {
-      saveChanges({ problemStatement, objective });
+  const handleSaveText = (type: 'problemStatement' | 'objective', value: string) => {
+    if (type === 'problemStatement') {
+      setProblemStatement(value);
+      saveChanges({ problemStatement: value });
+    } else {
+      setObjective(value);
+      saveChanges({ objective: value });
     }
   };
+
+
 
   const addStakeholder = (e: React.FormEvent) => {
     e.preventDefault();
@@ -87,12 +94,11 @@ export default function PlanningPage(props: { params: Promise<{ id: string }> })
               <DocumentTextIcon className="w-5 h-5 text-accent" />
               <h3 className="text-lg font-medium text-foreground">Problem Statement</h3>
             </div>
-            <textarea
+            <EditableTextarea
               value={problemStatement}
-              onChange={(e) => setProblemStatement(e.target.value)}
-              onBlur={handleBlurText}
+              onSave={(val) => handleSaveText('problemStatement', val)}
               placeholder="What specific problem does this project solve? e.g. Users currently have to manually sync data between 3 different platforms..."
-              className="w-full min-h-[120px] bg-white/[0.02] border border-white/10 rounded-lg p-3 text-sm text-foreground focus:outline-none focus:border-accent/50 focus:bg-white/[0.04] transition-all resize-y"
+              className="w-full min-h-[120px] bg-white/[0.02] border border-white/10 rounded-lg p-3 text-sm text-foreground focus:outline-none focus:border-accent/50 focus:bg-white/[0.04] transition-all resize-none overflow-hidden"
             />
           </Card>
 
@@ -101,12 +107,11 @@ export default function PlanningPage(props: { params: Promise<{ id: string }> })
               <FlagIcon className="w-5 h-5 text-green-400" />
               <h3 className="text-lg font-medium text-foreground">Objective</h3>
             </div>
-            <textarea
+            <EditableTextarea
               value={objective}
-              onChange={(e) => setObjective(e.target.value)}
-              onBlur={handleBlurText}
+              onSave={(val) => handleSaveText('objective', val)}
               placeholder="What are the key goals and desired outcomes? e.g. Centralize data syncing to save 5 hours per week per user..."
-              className="w-full min-h-[120px] bg-white/[0.02] border border-white/10 rounded-lg p-3 text-sm text-foreground focus:outline-none focus:border-accent/50 focus:bg-white/[0.04] transition-all resize-y"
+              className="w-full min-h-[120px] bg-white/[0.02] border border-white/10 rounded-lg p-3 text-sm text-foreground focus:outline-none focus:border-accent/50 focus:bg-white/[0.04] transition-all resize-none overflow-hidden"
             />
           </Card>
 

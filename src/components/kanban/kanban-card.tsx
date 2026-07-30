@@ -120,7 +120,11 @@ export function KanbanCard({ issue, onClick }: KanbanCardProps) {
             })()}
             
             {/* Issue ID */}
-            <span className="text-xs font-medium text-foreground-muted">{issuePrefix}{String(issue.id).substring(0, 3)}</span>
+            <span className="text-xs font-medium text-foreground-muted">
+              {String(issue.id).startsWith("issue-") 
+                ? `${issuePrefix}${String(issue.id).substring(6, 9)}`
+                : issue.id}
+            </span>
             
             {/* Priority */}
             {currentPriority && (

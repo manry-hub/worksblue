@@ -5,6 +5,7 @@ import { useProjectStore, type Project } from "@/store/project-store";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { PlusIcon, TrashIcon, ShieldCheckIcon, ListBulletIcon, XMarkIcon, FolderPlusIcon, InformationCircleIcon, LinkIcon } from "@heroicons/react/24/outline";
+import { EditableInput, EditableTextarea } from "@/components/ui/editable-input";
 
 type FunctionalGroup = NonNullable<NonNullable<Project['requirements']>['functionalGroups']>[0];
 type FunctionalReq = NonNullable<Project['requirements']>['functional'][0];
@@ -296,11 +297,10 @@ export default function RequirementsPage(props: { params: Promise<{ id: string }
                 <tbody key={group.id} className="divide-y divide-white/5">
                   <tr className="bg-white/[0.03] border-t border-white/10 group/header">
                     <td colSpan={2} className="px-4 py-2 font-medium">
-                      <input 
-                        type="text" 
+                      <EditableInput 
                         value={group.name}
-                        onChange={(e) => updateGroupName(group.id, e.target.value)}
-                        className="bg-transparent border-none p-0 focus:ring-0 text-accent font-semibold w-full"
+                        onSave={(val) => updateGroupName(group.id, val)}
+                        className="bg-transparent border-none p-0 focus:ring-0 text-accent font-semibold w-full outline-none"
                         placeholder="Group Name"
                       />
                     </td>
@@ -326,12 +326,11 @@ export default function RequirementsPage(props: { params: Promise<{ id: string }
                     <tr key={req.id} className="hover:bg-white/[0.02] transition-colors group">
                       <td className="px-4 py-3 font-mono text-xs text-foreground-muted pl-6">{req.id}</td>
                       <td className="px-4 py-3">
-                        <input
-                          type="text"
+                        <EditableInput
                           value={req.requirement}
-                          onChange={(e) => updateFunctionalReq(req.id, 'requirement', e.target.value)}
+                          onSave={(val) => updateFunctionalReq(req.id, 'requirement', val)}
                           placeholder="e.g. User can login"
-                          className="w-full bg-transparent border-none p-0 focus:ring-0 text-foreground text-sm placeholder:text-foreground-muted/50"
+                          className="w-full bg-transparent border-none p-0 focus:ring-0 text-foreground text-sm placeholder:text-foreground-muted/50 outline-none"
                         />
                       </td>
                       <td className="px-4 py-3 text-right whitespace-nowrap">
@@ -360,12 +359,11 @@ export default function RequirementsPage(props: { params: Promise<{ id: string }
                   <tr key={req.id} className="hover:bg-white/[0.02] transition-colors group">
                     <td className="px-4 py-3 font-mono text-xs text-foreground-muted">{req.id}</td>
                     <td className="px-4 py-3">
-                      <input
-                        type="text"
+                      <EditableInput
                         value={req.requirement}
-                        onChange={(e) => updateFunctionalReq(req.id, 'requirement', e.target.value)}
+                        onSave={(val) => updateFunctionalReq(req.id, 'requirement', val)}
                         placeholder="e.g. User can login"
-                        className="w-full bg-transparent border-none p-0 focus:ring-0 text-foreground text-sm placeholder:text-foreground-muted/50"
+                        className="w-full bg-transparent border-none p-0 focus:ring-0 text-foreground text-sm placeholder:text-foreground-muted/50 outline-none"
                       />
                     </td>
                     <td className="px-4 py-3 text-right whitespace-nowrap">
@@ -430,11 +428,10 @@ export default function RequirementsPage(props: { params: Promise<{ id: string }
                 <tbody key={group.id} className="divide-y divide-white/5">
                   <tr className="bg-white/[0.03] border-t border-white/10 group/header">
                     <td colSpan={2} className="px-4 py-2 font-medium">
-                      <input 
-                        type="text" 
+                      <EditableInput 
                         value={group.name}
-                        onChange={(e) => updateNFRGroupName(group.id, e.target.value)}
-                        className="bg-transparent border-none p-0 focus:ring-0 text-purple-400 font-semibold w-full"
+                        onSave={(val) => updateNFRGroupName(group.id, val)}
+                        className="bg-transparent border-none p-0 focus:ring-0 text-purple-400 font-semibold w-full outline-none"
                         placeholder="Category Name (e.g. Performance)"
                       />
                     </td>
@@ -460,12 +457,11 @@ export default function RequirementsPage(props: { params: Promise<{ id: string }
                     <tr key={req.id} className="hover:bg-white/[0.02] transition-colors group">
                       <td className="px-4 py-3 font-mono text-xs text-foreground-muted pl-6">{req.id}</td>
                       <td className="px-4 py-3">
-                        <input
-                          type="text"
+                        <EditableInput
                           value={req.requirement}
-                          onChange={(e) => updateNonFunctionalReq(req.id, 'requirement', e.target.value)}
+                          onSave={(val) => updateNonFunctionalReq(req.id, 'requirement', val)}
                           placeholder="e.g. Response time < 3s"
-                          className="w-full bg-transparent border-none p-0 focus:ring-0 text-foreground text-sm placeholder:text-foreground-muted/50"
+                          className="w-full bg-transparent border-none p-0 focus:ring-0 text-foreground text-sm placeholder:text-foreground-muted/50 outline-none"
                         />
                       </td>
                       <td className="px-4 py-3 text-right whitespace-nowrap">
@@ -494,12 +490,11 @@ export default function RequirementsPage(props: { params: Promise<{ id: string }
                   <tr key={req.id} className="hover:bg-white/[0.02] transition-colors group">
                     <td className="px-4 py-3 font-mono text-xs text-foreground-muted">{req.id}</td>
                     <td className="px-4 py-3">
-                      <input
-                        type="text"
+                      <EditableInput
                         value={req.requirement}
-                        onChange={(e) => updateNonFunctionalReq(req.id, 'requirement', e.target.value)}
+                        onSave={(val) => updateNonFunctionalReq(req.id, 'requirement', val)}
                         placeholder="e.g. Response time < 3s"
-                        className="w-full bg-transparent border-none p-0 focus:ring-0 text-foreground text-sm placeholder:text-foreground-muted/50"
+                        className="w-full bg-transparent border-none p-0 focus:ring-0 text-foreground text-sm placeholder:text-foreground-muted/50 outline-none"
                       />
                     </td>
                     <td className="px-4 py-3 text-right whitespace-nowrap">
@@ -564,11 +559,10 @@ export default function RequirementsPage(props: { params: Promise<{ id: string }
                 <tbody key={group.id} className="divide-y divide-white/5">
                   <tr className="bg-white/[0.03] border-t border-white/10 group/header">
                     <td colSpan={2} className="px-4 py-2 font-medium">
-                      <input 
-                        type="text" 
+                      <EditableInput 
                         value={group.name}
-                        onChange={(e) => updateEIRGroupName(group.id, e.target.value)}
-                        className="bg-transparent border-none p-0 focus:ring-0 text-sky-400 font-semibold w-full"
+                        onSave={(val) => updateEIRGroupName(group.id, val)}
+                        className="bg-transparent border-none p-0 focus:ring-0 text-sky-400 font-semibold w-full outline-none"
                         placeholder="Category Name"
                       />
                     </td>
@@ -594,12 +588,11 @@ export default function RequirementsPage(props: { params: Promise<{ id: string }
                     <tr key={req.id} className="hover:bg-white/[0.02] transition-colors group">
                       <td className="px-4 py-3 font-mono text-xs text-foreground-muted pl-6">{req.id}</td>
                       <td className="px-4 py-3">
-                        <input
-                          type="text"
+                        <EditableInput
                           value={req.requirement}
-                          onChange={(e) => updateExternalInterfaceReq(req.id, 'requirement', e.target.value)}
+                          onSave={(val) => updateExternalInterfaceReq(req.id, 'requirement', val)}
                           placeholder="e.g. API Integration with Stripe"
-                          className="w-full bg-transparent border-none p-0 focus:ring-0 text-foreground text-sm placeholder:text-foreground-muted/50"
+                          className="w-full bg-transparent border-none p-0 focus:ring-0 text-foreground text-sm placeholder:text-foreground-muted/50 outline-none"
                         />
                       </td>
                       <td className="px-4 py-3 text-right whitespace-nowrap">
@@ -628,12 +621,11 @@ export default function RequirementsPage(props: { params: Promise<{ id: string }
                   <tr key={req.id} className="hover:bg-white/[0.02] transition-colors group">
                     <td className="px-4 py-3 font-mono text-xs text-foreground-muted">{req.id}</td>
                     <td className="px-4 py-3">
-                      <input
-                        type="text"
+                      <EditableInput
                         value={req.requirement}
-                        onChange={(e) => updateExternalInterfaceReq(req.id, 'requirement', e.target.value)}
+                        onSave={(val) => updateExternalInterfaceReq(req.id, 'requirement', val)}
                         placeholder="e.g. API Integration with Stripe"
-                        className="w-full bg-transparent border-none p-0 focus:ring-0 text-foreground text-sm placeholder:text-foreground-muted/50"
+                        className="w-full bg-transparent border-none p-0 focus:ring-0 text-foreground text-sm placeholder:text-foreground-muted/50 outline-none"
                       />
                     </td>
                     <td className="px-4 py-3 text-right whitespace-nowrap">
@@ -679,12 +671,12 @@ export default function RequirementsPage(props: { params: Promise<{ id: string }
 
               <div>
                 <label className="text-xs text-foreground-muted font-medium mb-1 block uppercase tracking-wider">Extended Description</label>
-                <textarea 
+                <EditableTextarea 
                   value={activeReq.description || ""}
-                  onChange={(e) => {
-                    if (detailModal.type === 'functional') updateFunctionalReq(activeReq.id, 'description', e.target.value);
-                    else if (detailModal.type === 'nonFunctional') updateNonFunctionalReq(activeReq.id, 'description', e.target.value);
-                    else updateExternalInterfaceReq(activeReq.id, 'description', e.target.value);
+                  onSave={(val) => {
+                    if (detailModal.type === 'functional') updateFunctionalReq(activeReq.id, 'description', val);
+                    else if (detailModal.type === 'nonFunctional') updateNonFunctionalReq(activeReq.id, 'description', val);
+                    else updateExternalInterfaceReq(activeReq.id, 'description', val);
                   }}
                   placeholder="Add more details, acceptance criteria, or notes about this requirement..."
                   className="w-full bg-white/[0.02] border border-white/10 rounded-lg p-3 text-sm text-foreground focus:ring-1 focus:ring-accent min-h-[150px] resize-y focus:outline-none"

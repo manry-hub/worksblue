@@ -25,20 +25,29 @@ interface BacklogIssueRowProps {
   parentLabel?: string;
 }
 
-const getStatusBadge = (status: string) => {
+const getStatusBadge = (status: string, projectColumns?: { id: string; title: string }[]) => {
   if (!status) return null;
-  switch (status.toLowerCase()) {
-    case "todo": return <span className="bg-[#DFE1E6]/10 text-[#DFE1E6] text-[11px] font-bold px-2 py-0.5 rounded uppercase tracking-wide">TO DO ⌄</span>;
-    case "in-progress":
-    case "inprogress":
-    case "in progress": return <span className="bg-[#0052CC]/30 text-[#4BADE8] text-[11px] font-bold px-2 py-0.5 rounded uppercase tracking-wide">IN PROGRESS ⌄</span>;
-    case "in-review":
-    case "in review":
-    case "review": return <span className="bg-[#FF991F]/20 text-[#FF991F] text-[11px] font-bold px-2 py-0.5 rounded uppercase tracking-wide">IN REVIEW ⌄</span>;
-    case "done": return <span className="bg-[#00875A]/20 text-[#57A55A] text-[11px] font-bold px-2 py-0.5 rounded uppercase tracking-wide">DONE ⌄</span>;
-    case "cancelled": return <span className="bg-[#E5493A]/20 text-[#E5493A] text-[11px] font-bold px-2 py-0.5 rounded uppercase tracking-wide">CANCELLED ⌄</span>;
-    default: return <span className="bg-white/10 text-white text-[11px] font-bold px-2 py-0.5 rounded uppercase tracking-wide">{status} ⌄</span>;
+  const col = projectColumns?.find(c => c.id === status);
+  const title = col ? col.title : status;
+  const lowerTitle = title.toLowerCase();
+
+  if (lowerTitle.includes("todo") || lowerTitle.includes("to do") || lowerTitle.includes("backlog")) {
+    return <span className="bg-[#DFE1E6]/10 text-[#DFE1E6] text-[11px] font-bold px-2 py-0.5 rounded uppercase tracking-wide">{title} ⌄</span>;
   }
+  if (lowerTitle.includes("progress")) {
+    return <span className="bg-[#0052CC]/30 text-[#4BADE8] text-[11px] font-bold px-2 py-0.5 rounded uppercase tracking-wide">{title} ⌄</span>;
+  }
+  if (lowerTitle.includes("review") || lowerTitle.includes("test")) {
+    return <span className="bg-[#FF991F]/20 text-[#FF991F] text-[11px] font-bold px-2 py-0.5 rounded uppercase tracking-wide">{title} ⌄</span>;
+  }
+  if (lowerTitle.includes("done") || lowerTitle.includes("complete")) {
+    return <span className="bg-[#00875A]/20 text-[#57A55A] text-[11px] font-bold px-2 py-0.5 rounded uppercase tracking-wide">{title} ⌄</span>;
+  }
+  if (lowerTitle.includes("cancel") || lowerTitle.includes("fail")) {
+    return <span className="bg-[#E5493A]/20 text-[#E5493A] text-[11px] font-bold px-2 py-0.5 rounded uppercase tracking-wide">{title} ⌄</span>;
+  }
+  
+  return <span className="bg-white/10 text-white text-[11px] font-bold px-2 py-0.5 rounded uppercase tracking-wide">{title} ⌄</span>;
 };
 
 export function BacklogIssueRow({ 
@@ -110,7 +119,11 @@ export function BacklogIssueRow({
         }
       })()}
       
-      <span className="text-foreground-muted font-medium text-xs w-10 flex-shrink-0">{issuePrefix}{String(issue.id).substring(0, 3)}</span>
+      <span className="text-foreground-muted font-medium text-xs w-16 flex-shrink-0">
+        {String(issue.id).startsWith("issue-") 
+          ? `${issuePrefix}${String(issue.id).substring(6, 9)}`
+          : issue.id}
+      </span>
       
       <span className="flex-1 text-[#DEE4EA] truncate hover:underline hover:text-accent transition-colors">{issue.title}</span>
       
@@ -125,7 +138,7 @@ export function BacklogIssueRow({
           </span>
         )}
         
-        {getStatusBadge(issue.status)}
+        {getStatusBadge(issue.status, project?.columns)}
         
         {issue.dueDate && (
           <span className="flex items-center gap-1 text-xs text-foreground-muted w-16">

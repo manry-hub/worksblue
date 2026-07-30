@@ -3,6 +3,7 @@
 import { useEffect, useState, use } from "react";
 import { useSprintStore } from "@/store/sprint-store";
 import { useIssueStore, type Issue } from "@/store/issue-store";
+import { useProjectStore } from "@/store/project-store";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -41,6 +42,8 @@ export default function BacklogPage(props: { params: Promise<{ id: string }> }) 
   
   const { sprints, fetchSprints, startSprint, completeSprint, cancelSprint, deleteSprint, updateSprint } = useSprintStore();
   const { issues, fetchIssues, updateIssue, deleteIssue, isLoading: issuesLoading } = useIssueStore();
+  const project = useProjectStore(state => state.projects.find(p => p.id === projectId));
+  const defaultTodoStatus = project?.columns?.find(c => c.id !== "backlog")?.id || "todo";
   
   const [selectedIssue, setSelectedIssue] = useState<Issue | null>(null);
   const [isCreateIssueModalOpen, setIsCreateIssueModalOpen] = useState(false);
@@ -112,7 +115,7 @@ export default function BacklogPage(props: { params: Promise<{ id: string }> }) 
         if (targetSprintId === "backlog") {
           return updateIssue(projectId, issueId, { sprintId: null, status: "backlog", updatedAt: new Date().toISOString() });
         } else {
-          return updateIssue(projectId, issueId, { sprintId: targetSprintId, status: "todo", updatedAt: new Date().toISOString() });
+          return updateIssue(projectId, issueId, { sprintId: targetSprintId, status: defaultTodoStatus, updatedAt: new Date().toISOString() });
         }
       })
     );
@@ -123,7 +126,7 @@ export default function BacklogPage(props: { params: Promise<{ id: string }> }) 
     if (targetSprintId === "backlog") {
       await updateIssue(projectId, issueId, { sprintId: null, status: "backlog", updatedAt: new Date().toISOString() });
     } else {
-      await updateIssue(projectId, issueId, { sprintId: targetSprintId, status: "todo", updatedAt: new Date().toISOString() });
+      await updateIssue(projectId, issueId, { sprintId: targetSprintId, status: defaultTodoStatus, updatedAt: new Date().toISOString() });
     }
   };
 
@@ -181,7 +184,7 @@ export default function BacklogPage(props: { params: Promise<{ id: string }> }) 
 
   const sendToBoard = async (e: React.MouseEvent, issue: Issue) => {
     e.stopPropagation();
-    await updateIssue(projectId, issue.id, { status: "todo", updatedAt: new Date().toISOString() });
+    await updateIssue(projectId, issue.id, { status: defaultTodoStatus, updatedAt: new Date().toISOString() });
   };
 
   const handleDeleteIssue = async (e: React.MouseEvent, issue: Issue) => {
@@ -222,20 +225,6 @@ export default function BacklogPage(props: { params: Promise<{ id: string }> }) 
     return <div className="w-4 h-4 rounded-[3px] bg-[#4BADE8] flex items-center justify-center flex-shrink-0 text-white"><CheckBadgeIcon className="w-3 h-3" /></div>;
   };
 
-  const getStatusBadge = (status: string) => {
-    switch (status.toLowerCase()) {
-      case "todo": return <span className="bg-[#DFE1E6]/10 text-[#DFE1E6] text-[11px] font-bold px-2 py-0.5 rounded uppercase tracking-wide">TO DO ⌄</span>;
-      case "in-progress":
-      case "inprogress":
-      case "in progress": return <span className="bg-[#0052CC]/30 text-[#4BADE8] text-[11px] font-bold px-2 py-0.5 rounded uppercase tracking-wide">IN PROGRESS ⌄</span>;
-      case "in-review":
-      case "in review":
-      case "review": return <span className="bg-[#FF991F]/20 text-[#FF991F] text-[11px] font-bold px-2 py-0.5 rounded uppercase tracking-wide">IN REVIEW ⌄</span>;
-      case "done": return <span className="bg-[#00875A]/20 text-[#57A55A] text-[11px] font-bold px-2 py-0.5 rounded uppercase tracking-wide">DONE ⌄</span>;
-      case "cancelled": return <span className="bg-[#E5493A]/20 text-[#E5493A] text-[11px] font-bold px-2 py-0.5 rounded uppercase tracking-wide">CANCELLED ⌄</span>;
-      default: return <span className="bg-white/10 text-white text-[11px] font-bold px-2 py-0.5 rounded uppercase tracking-wide">{status} ⌄</span>;
-    }
-  };
 
   if (issuesLoading) {
     return (
@@ -311,7 +300,7 @@ export default function BacklogPage(props: { params: Promise<{ id: string }> }) 
           if (targetSprintId === "backlog" || targetSprintId === null) {
             await updateIssue(projectId, issueId, { sprintId: null, status: "backlog", updatedAt: new Date().toISOString() });
           } else {
-            await updateIssue(projectId, issueId, { sprintId: targetSprintId, status: "todo", updatedAt: new Date().toISOString() });
+            await updateIssue(projectId, issueId, { sprintId: targetSprintId, status: defaultTodoStatus, updatedAt: new Date().toISOString() });
           }
         }}
       />
@@ -343,9 +332,9 @@ export default function BacklogPage(props: { params: Promise<{ id: string }> }) 
                 defaultValue=""
               >
                 <option value="">Set Priority...</option>
-                <option value="high">High</option>
-                <option value="medium">Medium</option>
-                <option value="low">Low</option>
+                {project?.priorities?.map(p => (
+                  <option key={p.id} value={p.id}>{p.name}</option>
+                ))}
               </select>
               <Button variant="ghost" size="sm" icon={<TrashIcon className="w-3 h-3" />} className="text-error hover:bg-error/10" onClick={handleBulkDelete}>
                 Delete

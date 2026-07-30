@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { PlusIcon, TrashIcon, ShieldCheckIcon, FolderPlusIcon, CheckIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
+import { EditableInput } from "@/components/ui/editable-input";
 
 type RbacReq = NonNullable<NonNullable<Project['design']>['rbac']>[0];
 
@@ -104,12 +105,11 @@ export function RbacMatrix({ projectId }: { projectId: string }) {
             {items.map(item => (
               <tr key={item.id} className="bg-white/[0.02] hover:bg-white/[0.04] transition-colors">
                 <td className="p-2">
-                  <input
-                    type="text"
+                  <EditableInput
                     value={item.permission}
-                    onChange={(e) => updatePermission(item.id, 'permission', e.target.value)}
+                    onSave={(val) => updatePermission(item.id, 'permission', val)}
                     placeholder="e.g. Create Task"
-                    className="w-full bg-transparent border-none text-foreground focus:ring-1 focus:ring-accent rounded px-2 py-1.5"
+                    className="w-full bg-transparent border-none text-foreground focus:ring-1 focus:ring-accent rounded px-2 py-1.5 outline-none"
                   />
                 </td>
                 {stakeholders.map(stakeholder => {
@@ -181,11 +181,10 @@ export function RbacMatrix({ projectId }: { projectId: string }) {
                 <div className="px-2 py-1 bg-white/10 text-foreground-muted text-xs font-mono rounded">
                   Module: {group.id}
                 </div>
-                <input
-                  type="text"
+                <EditableInput
                   value={group.name}
-                  onChange={(e) => updateGroupName(group.id, e.target.value)}
-                  className="bg-transparent border-none text-foreground font-medium focus:ring-1 focus:ring-accent rounded px-2 py-1 w-full max-w-sm"
+                  onSave={(val) => updateGroupName(group.id, val)}
+                  className="bg-transparent border-none text-foreground font-medium focus:ring-1 focus:ring-accent rounded px-2 py-1 w-full max-w-sm outline-none"
                   placeholder="Module Name"
                 />
               </div>

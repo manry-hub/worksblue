@@ -4,6 +4,7 @@ import { useProjectStore, type Project } from "@/store/project-store";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { PlusIcon, TrashIcon, CpuChipIcon } from "@heroicons/react/24/outline";
+import { EditableInput } from "@/components/ui/editable-input";
 
 type TechSpec = NonNullable<NonNullable<Project['design']>['techSpecs']>[0];
 
@@ -67,27 +68,24 @@ export function TechSpecsTable({ projectId }: { projectId: string }) {
               {techSpecs.map(item => (
                 <tr key={item.id} className="bg-white/[0.02] hover:bg-white/[0.04] transition-colors">
                   <td className="p-2">
-                    <input
-                      type="text"
+                    <EditableInput
                       value={item.need}
-                      onChange={(e) => updateSpec(item.id, 'need', e.target.value)}
-                      className="w-full bg-transparent border-none text-foreground focus:ring-1 focus:ring-accent rounded px-2 py-1.5"
+                      onSave={(val) => updateSpec(item.id, 'need', val)}
+                      className="w-full bg-transparent border-none text-foreground focus:ring-1 focus:ring-accent rounded px-2 py-1.5 outline-none"
                     />
                   </td>
                   <td className="p-2">
-                    <input
-                      type="text"
+                    <EditableInput
                       value={item.name}
-                      onChange={(e) => updateSpec(item.id, 'name', e.target.value)}
-                      className="w-full bg-transparent border-none text-foreground focus:ring-1 focus:ring-accent rounded px-2 py-1.5"
+                      onSave={(val) => updateSpec(item.id, 'name', val)}
+                      className="w-full bg-transparent border-none text-foreground focus:ring-1 focus:ring-accent rounded px-2 py-1.5 outline-none"
                     />
                   </td>
                   <td className="p-2">
-                    <input
-                      type="text"
+                    <EditableInput
                       value={item.version}
-                      onChange={(e) => updateSpec(item.id, 'version', e.target.value)}
-                      className="w-full bg-transparent border-none text-foreground font-mono text-xs focus:ring-1 focus:ring-accent rounded px-2 py-1.5"
+                      onSave={(val) => updateSpec(item.id, 'version', val)}
+                      className="w-full bg-transparent border-none text-foreground font-mono text-xs focus:ring-1 focus:ring-accent rounded px-2 py-1.5 outline-none"
                     />
                   </td>
                   <td className="p-2 text-center">
