@@ -3,8 +3,8 @@
     "id": "worksblue",
     "name": "WorksBlue",
     "description": "Developer workspace untuk Scrumban sekaligus dokumentasi project.",
-    "status": "Planning",
-    "progress": 0,
+    "status": "Completed",
+    "progress": 100,
     "version": "v1.0.0",
     "deadline": "2026-08-04T09:00:00Z",
     "stack": [
@@ -18,7 +18,7 @@
     "totalTasks": 1,
     "repository": "https://github.com/hilman/worksblue-core",
     "liveEnvironment": "https://worksblue.vercel.app",
-    "figmaDesign": "https://www.figma.com/design/k9sR5sLtxtk9tgSBugQUNg/hengketon?t=pfSZ4FbFVEEq9PHw-1",
+    "figmaDesign": "",
     "problemStatement": "WorksBlue adalah aplikasi web yang dirancang khusus untuk developer dalam mengelola seluruh siklus pengembangan perangkat lunak, mulai dari ide, perencanaan, implementasi, pengujian, hingga deployment dan maintenance.\n\nWorksBlue menyediakan satu workspace terstruktur sehingga seluruh aspek teknis dan manajemen project berada dalam satu tempat.",
     "objective": "WorksBlue membantu developer untuk:\n\n- Merencanakan project secara terstruktur.\n- Mendokumentasikan seluruh keputusan teknis.\n- Mengelola task dan progres pengembangan.\n- Memvisualisasikan timeline project.\n- Menyusun deployment checklist.\n- Menyimpan dokumentasi project secara terorganisir.\n- Memudahkan maintenance setelah project selesai.",
     "stakeholders": [
@@ -43,6 +43,11 @@
           "groupId": "FG2",
           "requirement": "Create Task",
           "description": "Users must be able to create new tasks with title, description, and assignee."
+        },
+        {
+          "id": "FR-FG1-002",
+          "groupId": "FG1",
+          "requirement": ""
         }
       ],
       "nonFunctional": [
@@ -57,6 +62,11 @@
           "groupId": "NFG1",
           "requirement": "Data Encryption",
           "description": "All passwords must be hashed using bcrypt."
+        },
+        {
+          "id": "NFR-NFG1-003",
+          "groupId": "NFG1",
+          "requirement": ""
         }
       ],
       "technology": [],
@@ -76,6 +86,11 @@
           "groupId": "EIG1",
           "requirement": "Email Service",
           "description": "Integrate with Resend for transactional emails."
+        },
+        {
+          "id": "EIR-EIG1-002",
+          "groupId": "EIG1",
+          "requirement": ""
         }
       ],
       "nonFunctionalGroups": [
@@ -92,20 +107,8 @@
       ]
     },
     "design": {
-      "contextDiagrams": [
-        {
-          "id": "1784048606831won6fa",
-          "title": "context",
-          "url": "/api/uploads/1784048606816-context.webp"
-        }
-      ],
-      "usecaseDiagrams": [
-        {
-          "id": "1784048618583grc30e",
-          "title": "usecase",
-          "url": "/api/uploads/1784048618559-usecase.webp"
-        }
-      ],
+      "contextDiagrams": [],
+      "usecaseDiagrams": [],
       "rbacGroups": [
         {
           "id": "RG1",
@@ -189,13 +192,7 @@
           "usedFor": "Create a new task in the database"
         }
       ],
-      "erds": [
-        {
-          "id": "1784048626078l13fx",
-          "title": "erd",
-          "url": "/api/uploads/1784048626061-erd.webp"
-        }
-      ],
+      "erds": [],
       "techSpecs": [
         {
           "id": "TS1",
@@ -226,6 +223,155 @@
           "need": "Authentication",
           "name": "jose + bcryptjs",
           "version": "Latest"
+        }
+      ],
+      "uiuxDiagrams": [
+        {
+          "id": "1785419445958lyjb2r",
+          "title": "tes",
+          "excalidrawElements": [
+            {
+              "id": "xpdNoVftE1Wnn1-YXEOUv",
+              "type": "rectangle",
+              "x": 600.2265625,
+              "y": 263.8828125,
+              "width": 548.5546875,
+              "height": 253.08984375,
+              "angle": 0,
+              "strokeColor": "#1e1e1e",
+              "backgroundColor": "transparent",
+              "fillStyle": "solid",
+              "strokeWidth": 2,
+              "strokeStyle": "solid",
+              "roughness": 1,
+              "opacity": 100,
+              "groupIds": [],
+              "frameId": null,
+              "index": "a0",
+              "roundness": {
+                "type": 3
+              },
+              "seed": 1684474308,
+              "version": 7,
+              "versionNonce": 1474061820,
+              "isDeleted": false,
+              "boundElements": null,
+              "updated": 1785419449607,
+              "link": null,
+              "locked": false
+            }
+          ],
+          "excalidrawAppState": {
+            "showWelcomeScreen": true,
+            "theme": "dark",
+            "collaborators": {},
+            "currentChartType": "bar",
+            "currentItemBackgroundColor": "transparent",
+            "currentItemEndArrowhead": "arrow",
+            "currentItemFillStyle": "solid",
+            "currentItemFontFamily": 5,
+            "currentItemFontSize": 20,
+            "currentItemOpacity": 100,
+            "currentItemRoughness": 1,
+            "currentItemStartArrowhead": null,
+            "currentItemStrokeColor": "#1e1e1e",
+            "currentItemRoundness": "round",
+            "currentItemArrowType": "round",
+            "currentItemStrokeStyle": "solid",
+            "currentItemStrokeWidth": 2,
+            "currentItemTextAlign": "left",
+            "currentHoveredFontFamily": null,
+            "cursorButton": "up",
+            "activeEmbeddable": null,
+            "newElement": null,
+            "editingTextElement": null,
+            "editingGroupId": null,
+            "editingLinearElement": null,
+            "activeTool": {
+              "type": "selection",
+              "customType": null,
+              "locked": false,
+              "lastActiveTool": null
+            },
+            "penMode": false,
+            "penDetected": false,
+            "errorMessage": null,
+            "exportBackground": true,
+            "exportScale": 1,
+            "exportEmbedScene": false,
+            "exportWithDarkMode": false,
+            "fileHandle": null,
+            "gridSize": 20,
+            "gridStep": 5,
+            "gridModeEnabled": false,
+            "isBindingEnabled": true,
+            "defaultSidebarDockedPreference": false,
+            "isLoading": false,
+            "isResizing": false,
+            "isRotating": false,
+            "lastPointerDownWith": "mouse",
+            "multiElement": null,
+            "name": "Untitled-2026-07-30-2050",
+            "contextMenu": null,
+            "openMenu": null,
+            "openPopup": null,
+            "openSidebar": null,
+            "openDialog": null,
+            "pasteDialog": {
+              "shown": false,
+              "data": null
+            },
+            "previousSelectedElementIds": {},
+            "resizingElement": null,
+            "scrolledOutside": false,
+            "scrollX": 0,
+            "scrollY": 0,
+            "selectedElementIds": {
+              "xpdNoVftE1Wnn1-YXEOUv": true
+            },
+            "hoveredElementIds": {},
+            "selectedGroupIds": {},
+            "selectedElementsAreBeingDragged": false,
+            "selectionElement": null,
+            "shouldCacheIgnoreZoom": false,
+            "stats": {
+              "open": false,
+              "panels": 3
+            },
+            "startBoundElement": null,
+            "suggestedBindings": [],
+            "frameRendering": {
+              "enabled": true,
+              "clip": true,
+              "name": true,
+              "outline": true
+            },
+            "frameToHighlight": null,
+            "editingFrame": null,
+            "elementsToHighlight": null,
+            "toast": null,
+            "viewBackgroundColor": "#ffffff",
+            "zenModeEnabled": false,
+            "zoom": {
+              "value": 1
+            },
+            "viewModeEnabled": false,
+            "pendingImageElementId": null,
+            "showHyperlinkPopup": false,
+            "selectedLinearElement": null,
+            "snapLines": [],
+            "originSnapOffset": null,
+            "objectsSnapModeEnabled": false,
+            "userToFollow": null,
+            "followedBy": {},
+            "isCropping": false,
+            "croppingElementId": null,
+            "searchMatches": [],
+            "offsetLeft": 0,
+            "offsetTop": 63,
+            "width": 1834,
+            "height": 910
+          }
         }
       ]
     },
@@ -295,28 +441,28 @@
       }
     ],
     "deployment": {
-      "platform": "Vercel",
+      "platform": "Verceldd",
       "accounts": [
         {
           "id": "ACC-1",
           "platform": "Vercel",
           "description": "Frontend Hosting",
           "email": "hilman@worksblue.com",
-          "password": "••••••••"
+          "password": "dd"
         },
         {
           "id": "ACC-2",
           "platform": "Supabase",
           "description": "PostgreSQL Database",
           "email": "hilman@worksblue.com",
-          "password": "••••••••"
+          "password": "sffsaj"
         },
         {
           "id": "ACC-3",
           "platform": "Resend",
           "description": "Transactional Emails",
           "email": "hilman@worksblue.com",
-          "password": "••••••••"
+          "password": "fff"
         }
       ],
       "environments": [
@@ -362,7 +508,7 @@
         "id": "in-progress",
         "title": "In Progress",
         "order": 1,
-        "wipLimit": null
+        "wipLimit": 2
       },
       {
         "id": "in-review",
@@ -436,7 +582,7 @@
       },
       {
         "id": "documentation",
-        "name": "Plan",
+        "name": "Story",
         "color": "bg-gray-500"
       },
       {
@@ -446,6 +592,8 @@
       }
     ],
     "openIssues": 0,
-    "totalIssues": 1
+    "totalIssues": 3,
+    "issueNumberPrefix": "Wo-",
+    "lastIssueCounter": 5
   }
 ]
