@@ -131,7 +131,12 @@ function Sidebar({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) 
 
           <div className="space-y-1">
             <p className="px-3 mb-2 text-xs font-mono tracking-widest uppercase text-foreground-subtle">Management</p>
-            <NavItem icon={ClipboardDocumentCheckIcon} label="Tasks" disabled />
+            <NavItem 
+              icon={ClipboardDocumentCheckIcon} 
+              label="Tasks" 
+              href="/tasks"
+              isActive={pathname.startsWith("/tasks")}
+            />
           </div>
 
          
