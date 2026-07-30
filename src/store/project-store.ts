@@ -15,9 +15,10 @@ export interface Project {
     endDate?: string;
   };
   design?: {
-    contextDiagrams?: { id: string; title: string; url: string }[];
-    usecaseDiagrams?: { id: string; title: string; url: string }[];
-    erds?: { id: string; title: string; url: string }[];
+    contextDiagrams?: { id: string; title: string; url?: string; excalidrawElements?: any; excalidrawAppState?: any }[];
+    usecaseDiagrams?: { id: string; title: string; url?: string; excalidrawElements?: any; excalidrawAppState?: any }[];
+    erds?: { id: string; title: string; url?: string; excalidrawElements?: any; excalidrawAppState?: any }[];
+    uiuxDiagrams?: { id: string; title: string; url?: string; excalidrawElements?: any; excalidrawAppState?: any }[];
     rbacGroups?: { id: string; name: string; }[];
     rbac?: {
        id: string;
@@ -115,6 +116,7 @@ export interface Project {
   labels?: LabelConfig[];
   estimateUnit?: "hour" | "day";
   issueNumberPrefix?: string;
+  lastIssueCounter?: number;
   sprintSettings?: SprintSettings;
   openIssues: number;
   totalIssues?: number;
