@@ -1,20 +1,7 @@
 import { NextResponse } from "next/server";
-import fs from "fs/promises";
-import path from "path";
-import bcrypt from "bcryptjs";
 import { createSession, COOKIE_NAME } from "@/lib/auth";
 
 export const dynamic = "force-dynamic";
-
-const DB_DIR = path.join(process.cwd(), ".worksblue");
-const USERS_FILE = path.join(DB_DIR, "users.json");
-
-interface StoredUser {
-  id: string;
-  username: string;
-  name: string;
-  passwordHash: string;
-}
 
 export async function POST(request: Request) {
   try {
@@ -27,21 +14,10 @@ export async function POST(request: Request) {
       );
     }
 
-    const data = await fs.readFile(USERS_FILE, "utf-8");
-    const users: StoredUser[] = JSON.parse(data);
+    const envUsername = process.env.ADMIN_USERNAME || "admin";
+    const envPassword = process.env.ADMIN_PASSWORD || "admin";
 
-    const user = users.find((u) => u.username === username);
-
-    if (!user) {
-      return NextResponse.json(
-        { error: "Invalid username or password" },
-        { status: 401 }
-      );
-    }
-
-    const isValid = await bcrypt.compare(password, user.passwordHash);
-
-    if (!isValid) {
+    if (username !== envUsername || password !== envPassword) {
       return NextResponse.json(
         { error: "Invalid username or password" },
         { status: 401 }
@@ -49,14 +25,14 @@ export async function POST(request: Request) {
     }
 
     const token = await createSession({
-      userId: user.id,
-      username: user.username,
-      name: user.name,
+      userId: "admin-id",
+      username: envUsername,
+      name: "Administrator",
     });
 
     const response = NextResponse.json({
       success: true,
-      user: { id: user.id, username: user.username, name: user.name },
+      user: { id: "admin-id", username: envUsername, name: "Administrator" },
     });
 
     response.cookies.set(COOKIE_NAME, token, {
