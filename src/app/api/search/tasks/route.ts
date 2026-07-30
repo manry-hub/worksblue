@@ -26,7 +26,7 @@ export async function GET(request: Request) {
     const projectsData = await fs.readFile(PROJECTS_FILE, "utf-8");
     const projects = JSON.parse(projectsData);
 
-    const matchedTasks: any[] = [];
+    const matchedTasks: Record<string, unknown>[] = [];
     const MAX_RESULTS = 20;
 
     for (const project of projects) {
