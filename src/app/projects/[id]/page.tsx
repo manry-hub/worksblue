@@ -84,8 +84,8 @@ export default function ProjectOverviewPage(props: { params: Promise<{ id: strin
             </div>
           </div>
           <div>
-            <span className="text-3xl font-bold tracking-tight">{project.openTasks}</span>
-            <p className="text-sm text-foreground-muted mt-1">Open Tasks</p>
+            <span className="text-3xl font-bold tracking-tight">{project.openIssues}</span>
+            <p className="text-sm text-foreground-muted mt-1">Open Issues</p>
           </div>
         </Card>
         

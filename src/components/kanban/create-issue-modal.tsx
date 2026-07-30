@@ -4,64 +4,100 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { useTaskStore, type TaskStatus } from "@/store/task-store";
+import { useIssueStore, type IssueStatus, type Issue } from "@/store/issue-store";
 import { useProjectStore } from "@/store/project-store";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 
-const taskSchema = z.object({
-  title: z.string().min(3, "Judul task minimal 3 karakter"),
+const issueSchema = z.object({
+  title: z.string().min(3, "Judul issue minimal 3 karakter"),
   description: z.string().optional(),
+  type: z.enum(["epic", "story", "task", "bug"]),
   status: z.string(),
   priority: z.enum(["low", "medium", "high"]),
   labels: z.string().optional(),
   dueDate: z.string().optional(),
+  estimate: z.string().optional(),
+  parentId: z.string().optional(),
 });
 
-type TaskFormValues = z.infer<typeof taskSchema>;
+type IssueFormValues = z.infer<typeof issueSchema>;
 
-export function CreateTaskModal({ 
+export function CreateIssueModal({ 
   isOpen, 
   onClose,
   projectId,
-  initialStatus = "todo"
+  initialStatus = "todo",
+  sprintId
 }: { 
   isOpen: boolean; 
   onClose: () => void;
   projectId: string;
-  initialStatus?: TaskStatus;
+  initialStatus?: IssueStatus;
+  sprintId?: string;
 }) {
-  const addTask = useTaskStore((state) => state.addTask);
+  const addIssue = useIssueStore((state) => state.addIssue);
+  const allIssues = useIssueStore((state) => state.issues);
   const project = useProjectStore((state) => state.projects.find(p => p.id === projectId));
   const [isSubmitting, setIsSubmitting] = useState(false);
   const columns = project?.columns || [];
+  const priorities = project?.priorities || [
+    { id: "low", name: "Low" },
+    { id: "medium", name: "Medium" },
+    { id: "high", name: "High" }
+  ];
 
   const {
     register,
     handleSubmit,
     reset,
+    watch,
     formState: { errors },
-  } = useForm<TaskFormValues>({
-    resolver: zodResolver(taskSchema),
+  } = useForm<IssueFormValues>({
+    resolver: zodResolver(issueSchema),
     defaultValues: {
+      type: "task",
       status: initialStatus,
       priority: "medium",
     }
   });
 
+  const selectedType = watch("type");
+
+  // Get parent options based on selected type
+  const getParentOptions = (): Issue[] => {
+    switch (selectedType) {
+      case "story":
+        return allIssues.filter(i => i.type === "epic" && i.projectId === projectId);
+      case "task":
+        return allIssues.filter(i => i.type === "story" && i.projectId === projectId);
+      case "bug":
+        return allIssues.filter(i => (i.type === "epic" || i.type === "story") && i.projectId === projectId);
+      default:
+        return [];
+    }
+  };
+
+  const parentOptions = getParentOptions();
+  const showParentSelector = selectedType !== "epic" && parentOptions.length > 0;
+
   if (!isOpen) return null;
 
-  const onSubmit = async (data: TaskFormValues) => {
+  const onSubmit = async (data: IssueFormValues) => {
     setIsSubmitting(true);
-    await addTask(projectId, {
+    await addIssue(projectId, {
       title: data.title,
       description: data.description,
+      type: data.type,
       status: data.status,
       priority: data.priority,
       labels: data.labels ? data.labels.split(",").map(l => l.trim()).filter(Boolean) : [],
       dueDate: data.dueDate,
       assignee: "Developer", // Mock assignee
+      sprintId: sprintId,
+      parentId: data.parentId || null,
+      estimate: data.estimate ? parseFloat(data.estimate) : undefined,
     });
     setIsSubmitting(false);
     reset();
@@ -77,7 +113,7 @@ export function CreateTaskModal({
       <div className="relative w-full max-w-lg z-10 animate-fade-in-up">
         <Card className="p-6 sm:p-8">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-semibold tracking-tight text-foreground">Create New Task</h2>
+            <h2 className="text-xl font-semibold tracking-tight text-foreground">Create New Issue</h2>
             <button 
               onClick={onClose}
               className="text-foreground-muted hover:text-foreground transition-colors"
@@ -89,7 +125,7 @@ export function CreateTaskModal({
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-foreground-muted mb-1">
-                Task Title
+                Issue Title
               </label>
               <input
                 {...register("title")}
@@ -110,8 +146,43 @@ export function CreateTaskModal({
                 {...register("description")}
                 rows={3}
                 className="w-full bg-white/[0.03] border border-white/[0.08] rounded-lg px-4 py-2 text-foreground focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent transition-colors resize-none"
-                placeholder="Add more details about this task..."
+                placeholder="Add more details about this issue..."
               />
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-foreground-muted mb-1">
+                  Issue Type
+                </label>
+                <select
+                  {...register("type")}
+                  className="w-full bg-white/[0.03] border border-white/[0.08] rounded-lg px-4 py-2 text-foreground focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent transition-colors appearance-none"
+                >
+                  <option value="task" className="bg-background-elevated">Task</option>
+                  <option value="story" className="bg-background-elevated">Story</option>
+                  <option value="bug" className="bg-background-elevated">Bug</option>
+                  <option value="epic" className="bg-background-elevated">Epic</option>
+                </select>
+              </div>
+              {showParentSelector && (
+                <div>
+                  <label className="block text-sm font-medium text-foreground-muted mb-1">
+                    Parent {selectedType === "task" ? "Story" : selectedType === "story" ? "Epic" : "Issue"}
+                  </label>
+                  <select
+                    {...register("parentId")}
+                    className="w-full bg-white/[0.03] border border-white/[0.08] rounded-lg px-4 py-2 text-foreground focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent transition-colors appearance-none"
+                  >
+                    <option value="" className="bg-background-elevated">None</option>
+                    {parentOptions.map(p => (
+                      <option key={p.id} value={p.id} className="bg-background-elevated">
+                        {p.type === "epic" ? "⚡" : "📖"} {p.title}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
             </div>
 
             <div className="grid grid-cols-2 gap-4">
@@ -141,6 +212,22 @@ export function CreateTaskModal({
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-foreground-muted mb-1">
+                  Estimate (Story Points)
+                </label>
+                <input
+                  {...register("estimate")}
+                  type="number"
+                  min="0"
+                  step="0.5"
+                  className="w-full bg-white/[0.03] border border-white/[0.08] rounded-lg px-4 py-2 text-foreground focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent transition-colors"
+                  placeholder="e.g. 3"
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-foreground-muted mb-1">
                   Status
                 </label>
                 <select
@@ -161,9 +248,9 @@ export function CreateTaskModal({
                   {...register("priority")}
                   className="w-full bg-white/[0.03] border border-white/[0.08] rounded-lg px-4 py-2 text-foreground focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent transition-colors appearance-none"
                 >
-                  <option value="low" className="bg-background-elevated">Low</option>
-                  <option value="medium" className="bg-background-elevated">Medium</option>
-                  <option value="high" className="bg-background-elevated">High</option>
+                  {priorities.map(p => (
+                    <option key={p.id} value={p.id} className="bg-background-elevated">{p.name}</option>
+                  ))}
                 </select>
               </div>
             </div>
@@ -173,7 +260,7 @@ export function CreateTaskModal({
                 Cancel
               </Button>
               <Button type="submit" variant="primary" disabled={isSubmitting}>
-                {isSubmitting ? "Saving..." : "Create Task"}
+                {isSubmitting ? "Saving..." : "Create Issue"}
               </Button>
             </div>
           </form>

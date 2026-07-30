@@ -34,16 +34,44 @@ export async function GET() {
     const data = await fs.readFile(DB_FILE, "utf-8");
     const parsed = JSON.parse(data);
     
-    // Backward compatibility for existing projects without columns
-    const withColumns = parsed.map((p: { id: string; columns?: { id: string; title: string }[] }) => ({
+    const withColumns = parsed.map((p: { 
+      id: string; 
+      columns?: { id: string; title: string; order: number; wipLimit: number | null }[]; 
+      priorities?: { id: string; name: string; color: string; order: number }[]; 
+      labels?: { id: string; name: string; color: string }[]; 
+      estimateUnit?: "hour" | "day"; 
+      issueNumberPrefix?: string; 
+      sprintSettings?: { defaultDurationWeeks: number; workingDays: number[]; autoCloseSprint: boolean; sprintPrefix: string };
+    }) => ({
       ...p,
       columns: p.columns || [
-        { id: "todo", title: "To Do" },
-        { id: "in-progress", title: "In Progress" },
-        { id: "testing", title: "Testing" },
-        { id: "done", title: "Done" },
-        { id: "failed", title: "Failed" },
-      ]
+        { id: "todo", title: "To Do", order: 0, wipLimit: null },
+        { id: "in-progress", title: "In Progress", order: 1, wipLimit: null },
+        { id: "testing", title: "Testing", order: 2, wipLimit: null },
+        { id: "done", title: "Done", order: 3, wipLimit: null },
+        { id: "failed", title: "Failed", order: 4, wipLimit: null },
+      ],
+      priorities: p.priorities || [
+        { id: "critical", name: "Critical", color: "bg-red-500", order: 0 },
+        { id: "high", name: "High", color: "bg-orange-500", order: 1 },
+        { id: "medium", name: "Medium", color: "bg-yellow-500", order: 2 },
+        { id: "low", name: "Low", color: "bg-green-500", order: 3 },
+      ],
+      labels: p.labels || [
+        { id: "bug", name: "Bug", color: "bg-red-500" },
+        { id: "feature", name: "Feature", color: "bg-blue-500" },
+        { id: "documentation", name: "Documentation", color: "bg-gray-500" },
+        { id: "enhancement", name: "Enhancement", color: "bg-purple-500" },
+        { id: "research", name: "Research", color: "bg-teal-500" },
+      ],
+      estimateUnit: p.estimateUnit || "hour",
+      issueNumberPrefix: p.issueNumberPrefix || "ISSUE-",
+      sprintSettings: p.sprintSettings || {
+        defaultDurationWeeks: 2,
+        workingDays: [1, 2, 3, 4, 5],
+        autoCloseSprint: false,
+        sprintPrefix: "SPRINT-"
+      }
     }));
     
     return NextResponse.json(withColumns);
@@ -61,7 +89,7 @@ export async function POST(request: Request) {
       ...body,
       id: `proj-${Math.random().toString(36).substr(2, 9)}`,
       progress: 0,
-      openTasks: 0,
+      openIssues: 0,
       version: "1.0.0",
       createdAt: new Date().toISOString(),
       repository: body.repository,
@@ -69,12 +97,33 @@ export async function POST(request: Request) {
       liveEnvironment: body.liveEnvironment,
       figmaDesign: body.figmaDesign,
       columns: [
-        { id: "todo", title: "To Do" },
-        { id: "in-progress", title: "In Progress" },
-        { id: "testing", title: "Testing" },
-        { id: "done", title: "Done" },
-        { id: "failed", title: "Failed" },
+        { id: "todo", title: "To Do", order: 0, wipLimit: null },
+        { id: "in-progress", title: "In Progress", order: 1, wipLimit: null },
+        { id: "testing", title: "Testing", order: 2, wipLimit: null },
+        { id: "done", title: "Done", order: 3, wipLimit: null },
+        { id: "failed", title: "Failed", order: 4, wipLimit: null },
       ],
+      priorities: [
+        { id: "critical", name: "Critical", color: "bg-red-500", order: 0 },
+        { id: "high", name: "High", color: "bg-orange-500", order: 1 },
+        { id: "medium", name: "Medium", color: "bg-yellow-500", order: 2 },
+        { id: "low", name: "Low", color: "bg-green-500", order: 3 },
+      ],
+      labels: [
+        { id: "bug", name: "Bug", color: "bg-red-500" },
+        { id: "feature", name: "Feature", color: "bg-blue-500" },
+        { id: "documentation", name: "Documentation", color: "bg-gray-500" },
+        { id: "enhancement", name: "Enhancement", color: "bg-purple-500" },
+        { id: "research", name: "Research", color: "bg-teal-500" },
+      ],
+      estimateUnit: "hour",
+      issueNumberPrefix: "ISSUE-",
+      sprintSettings: {
+        defaultDurationWeeks: 2,
+        workingDays: [1, 2, 3, 4, 5],
+        autoCloseSprint: false,
+        sprintPrefix: "SPRINT-"
+      }
     };
 
     const data = await fs.readFile(DB_FILE, "utf-8");

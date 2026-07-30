@@ -13,7 +13,8 @@ import {
   Bars3Icon,
   XMarkIcon,
   ArrowLeftIcon,
-  WindowIcon
+  WindowIcon,
+  Cog8ToothIcon
 } from "@heroicons/react/24/outline";
 import type { ReactNode } from "react";
 import { CommandPaletteSearch } from "@/components/shell/command-palette-search";
@@ -97,9 +98,13 @@ function ProjectSidebar({ isOpen, onClose, projectId }: { isOpen: boolean; onClo
             <NavItem icon={RocketLaunchIcon} label="Deployment" href={`${basePath}/deployment`} isActive={pathname === `${basePath}/deployment`} />
           </div>
           <div className="space-y-1">
-            <p className="px-3 mb-2 text-xs font-mono tracking-widest uppercase text-foreground-subtle">Scrumban Development</p>
+            <p className="px-3 mb-2 text-xs font-mono tracking-widest uppercase text-foreground-subtle">Scrumban Methodology</p>
             <NavItem icon={ClipboardDocumentCheckIcon} label="Backlog" href={`${basePath}/backlog`} isActive={pathname === `${basePath}/backlog`} />
             <NavItem icon={RectangleGroupIcon} label="Kanban" href={`${basePath}/kanban`} isActive={pathname === `${basePath}/kanban`} />
+          </div>
+          <div className="space-y-1">
+            <p className="px-3 mb-2 text-xs font-mono tracking-widest uppercase text-foreground-subtle">Project Settings</p>
+            <NavItem icon={Cog8ToothIcon} label="Configuration" href={`${basePath}/settings`} isActive={pathname === `${basePath}/settings`} />
           </div>
         </div>
       </aside>

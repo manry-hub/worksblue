@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { PriorityConfig, LabelConfig, SprintSettings } from "@/types/sprint";
 
 export interface Project {
   id: string;
@@ -109,9 +110,14 @@ export interface Project {
   deadline?: string;
   liveEnvironment?: string;
   figmaDesign?: string;
-  columns: { id: string; title: string }[];
-  openTasks: number;
-  totalTasks?: number;
+  columns: { id: string; title: string; order: number; wipLimit: number | null }[];
+  priorities?: PriorityConfig[];
+  labels?: LabelConfig[];
+  estimateUnit?: "hour" | "day";
+  issueNumberPrefix?: string;
+  sprintSettings?: SprintSettings;
+  openIssues: number;
+  totalIssues?: number;
   version: string;
   createdAt: string;
 }
@@ -121,7 +127,7 @@ interface ProjectState {
   isLoading: boolean;
   error: string | null;
   fetchProjects: () => Promise<void>;
-  addProject: (project: Omit<Project, "id" | "progress" | "openTasks" | "totalTasks" | "createdAt" | "version" | "columns">) => Promise<void>;
+  addProject: (project: Omit<Project, "id" | "progress" | "openIssues" | "totalIssues" | "createdAt" | "version" | "columns">) => Promise<void>;
   updateProject: (id: string, projectData: Partial<Project>) => Promise<void>;
   deleteProject: (id: string) => Promise<void>;
   getProject: (id: string) => Project | undefined;

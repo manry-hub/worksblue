@@ -4,7 +4,7 @@
     "name": "WorksBlue",
     "description": "Developer workspace untuk Scrumban sekaligus dokumentasi project.",
     "status": "Planning",
-    "progress": 100,
+    "progress": 0,
     "version": "v1.0.0",
     "deadline": "2026-08-04T09:00:00Z",
     "stack": [
@@ -350,6 +350,102 @@
           "password": "password123"
         }
       ]
-    }
+    },
+    "columns": [
+      {
+        "id": "todo",
+        "title": "To Do",
+        "order": 0,
+        "wipLimit": null
+      },
+      {
+        "id": "in-progress",
+        "title": "In Progress",
+        "order": 1,
+        "wipLimit": null
+      },
+      {
+        "id": "in-review",
+        "title": "In Review",
+        "order": 2,
+        "wipLimit": null
+      },
+      {
+        "id": "done",
+        "title": "Done",
+        "order": 3,
+        "wipLimit": null
+      },
+      {
+        "id": "cancelled",
+        "title": "Cancelled",
+        "order": 4,
+        "wipLimit": null
+      }
+    ],
+    "estimateUnit": "hour",
+    "taskNumberPrefix": "TASK-",
+    "sprintSettings": {
+      "defaultDurationWeeks": 2,
+      "workingDays": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "autoCloseSprint": true,
+      "sprintPrefix": "SPRINT-"
+    },
+    "priorities": [
+      {
+        "id": "critical",
+        "name": "Critical",
+        "color": "bg-red-500",
+        "order": 0
+      },
+      {
+        "id": "high",
+        "name": "High",
+        "color": "bg-orange-500",
+        "order": 1
+      },
+      {
+        "id": "medium",
+        "name": "Medium",
+        "color": "bg-yellow-500",
+        "order": 2
+      },
+      {
+        "id": "low",
+        "name": "Low",
+        "color": "bg-green-500",
+        "order": 3
+      }
+    ],
+    "labels": [
+      {
+        "id": "bug",
+        "name": "Bug",
+        "color": "bg-red-500"
+      },
+      {
+        "id": "feature",
+        "name": "Feature",
+        "color": "bg-blue-500"
+      },
+      {
+        "id": "documentation",
+        "name": "Plan",
+        "color": "bg-gray-500"
+      },
+      {
+        "id": "enhancement",
+        "name": "Epic",
+        "color": "bg-purple-500"
+      }
+    ],
+    "openIssues": 0,
+    "totalIssues": 1
   }
 ]

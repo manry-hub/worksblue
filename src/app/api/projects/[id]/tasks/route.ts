@@ -19,8 +19,8 @@ async function syncProjectStats(projectId: string, tasks: { status: string }[]) 
       const boardTasksCount = tasks.filter(t => t.status !== "backlog" && t.status !== "failed").length;
       const progress = boardTasksCount > 0 ? Math.round((doneTasksCount / boardTasksCount) * 100) : 0;
       
-      projects[index].openTasks = backlogTasksCount;
-      projects[index].totalTasks = boardTasksCount;
+      projects[index].openIssues = backlogTasksCount;
+      projects[index].totalIssues = boardTasksCount;
       projects[index].progress = progress;
       
       await fs.writeFile(PROJECTS_FILE, JSON.stringify(projects, null, 2));
@@ -73,7 +73,7 @@ export async function POST(
     const body = await request.json();
     const newTask = {
       ...body,
-      id: `task-${Math.random().toString(36).substr(2, 9)}`,
+      id: `issue-${Math.random().toString(36).substr(2, 9)}`,
       projectId: params.id,
       labels: body.labels || [],
       createdAt: new Date().toISOString(),

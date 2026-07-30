@@ -156,7 +156,7 @@ function ProjectCard({ p }: { p: Project }) {
         
         <div className="flex items-center gap-4 text-xs text-foreground-muted mt-auto pt-4 border-t border-white/[0.02]">
           <span className="text-xs text-foreground-subtle mr-2">{p.version}</span>
-          <span className="text-xs text-foreground-subtle mr-2">{p.openTasks} open tasks</span>
+          <span className="text-xs text-foreground-subtle mr-2">{p.openIssues} open issues</span>
         </div>
       </div>
     </Card>
@@ -309,18 +309,18 @@ export function Dashboard() {
     fetchProjects();
   }, [fetchProjects]);
 
-  const totalOpenTasks = projects.reduce((sum, p) => sum + (p.openTasks || 0), 0);
-  const totalTasksAll = projects.reduce((sum, p) => sum + (p.totalTasks || 0), 0);
+  const totalOpenIssues = projects.reduce((sum, p) => sum + (p.openIssues || 0), 0);
+  const totalIssuesAll = projects.reduce((sum, p) => sum + (p.totalIssues || 0), 0);
   
-  // Overall progress based on actual done tasks across all projects
-  // We can derive done tasks since we have progress % and totalTasks
-  const totalDoneTasks = projects.reduce((sum, p) => {
-    const pTotal = p.totalTasks || 0;
+  // Overall progress based on actual done issues across all projects
+  // We can derive done issues since we have progress % and totalIssues
+  const totalDoneIssues = projects.reduce((sum, p) => {
+    const pTotal = p.totalIssues || 0;
     const pDone = Math.round((p.progress / 100) * pTotal);
     return sum + pDone;
   }, 0);
   
-  const overallProgressPercentage = totalTasksAll > 0 ? Math.round((totalDoneTasks / totalTasksAll) * 100) : 0;
+  const overallProgressPercentage = totalIssuesAll > 0 ? Math.round((totalDoneIssues / totalIssuesAll) * 100) : 0;
   
   const avgProgress = overallProgressPercentage + "%";
 
@@ -339,7 +339,7 @@ export function Dashboard() {
       {/* Bento Grid layout */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <StatCard label="Active projects" value={projects.length} icon={FolderIcon} iconColor="accent" trend="+1" />
-        <StatCard label="Open tasks (Backlog)" value={totalOpenTasks} icon={ClipboardDocumentCheckIcon} iconColor="warning" trend="-5" trendDown />
+        <StatCard label="Open issues (Backlog)" value={totalOpenIssues} icon={ClipboardDocumentCheckIcon} iconColor="warning" trend="-5" trendDown />
         <StatCard label="Upcoming deadlines" value={deadlines.length} icon={ClockIcon} iconColor="error" />
         <StatCard label="Overall progress" value={avgProgress} icon={ChartBarIcon} iconColor="success" trend="+12%" />
       </div>
@@ -405,17 +405,17 @@ export function Dashboard() {
             <h4 className="text-lg font-semibold tracking-tight mb-4">Quick overview</h4>
             <div className="border-t border-white/[0.06] pt-4 mb-6">
               <div className="grid grid-cols-2 gap-y-4 gap-x-4">
-                <span className="text-sm text-foreground-muted">Total tasks</span>
-                <span className="text-sm font-medium text-right">{totalTasksAll}</span>
+                <span className="text-sm text-foreground-muted">Total issues</span>
+                <span className="text-sm font-medium text-right">{totalIssuesAll}</span>
 
-                <span className="text-sm text-foreground-muted">Completed tasks</span>
+                <span className="text-sm text-foreground-muted">Completed issues</span>
                 <span className="text-sm font-medium text-right">
-                  {totalDoneTasks}
+                  {totalDoneIssues}
                 </span>
 
                 <span className="text-sm text-foreground-muted">Open backlog</span>
                 <span className="text-sm font-medium text-right">
-                  {totalOpenTasks}
+                  {totalOpenIssues}
                 </span>
               </div>
             </div>

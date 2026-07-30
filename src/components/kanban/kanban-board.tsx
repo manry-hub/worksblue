@@ -16,38 +16,48 @@ import {
 } from "@dnd-kit/core";
 import { arrayMove, sortableKeyboardCoordinates } from "@dnd-kit/sortable";
 
-import { useTaskStore, type Task, type TaskStatus } from "@/store/task-store";
+import { useIssueStore, type Issue, type IssueStatus } from "@/store/issue-store";
 import { useProjectStore } from "@/store/project-store";
 import { KanbanColumn } from "./kanban-column";
 import { KanbanCard } from "./kanban-card";
 import { createPortal } from "react-dom";
+import { ColumnConfig } from "@/types/sprint";
 
 interface KanbanBoardProps {
   projectId: string;
-  onAddTask?: (status: TaskStatus) => void;
-  onTaskClick?: (task: Task) => void;
+  onAddIssue?: (status: IssueStatus) => void;
+  onIssueClick?: (issue: Issue) => void;
   filterAssignee?: "all" | "hilman" | "others";
+  sprintId?: string;
 }
 
-export function KanbanBoard({ projectId, onAddTask, onTaskClick, filterAssignee = "all" }: KanbanBoardProps) {
-  const { tasks, fetchTasks, updateTasksBulk } = useTaskStore();
+export function KanbanBoard({ projectId, onAddIssue, onIssueClick, filterAssignee = "all", sprintId }: KanbanBoardProps) {
+  const { issues, fetchIssues, updateIssuesBulk } = useIssueStore();
   const fetchProjects = useProjectStore(state => state.fetchProjects);
   const project = useProjectStore(state => state.projects.find(p => p.id === projectId));
-  const [activeTask, setActiveTask] = useState<Task | null>(null);
+  const [activeIssue, setActiveIssue] = useState<Issue | null>(null);
 
-  // Load tasks on mount
+  // Load issues on mount
   useEffect(() => {
-    fetchTasks(projectId);
+    fetchIssues(projectId);
     fetchProjects();
-  }, [fetchTasks, fetchProjects, projectId]);
+  }, [fetchIssues, fetchProjects, projectId]);
 
   const projectColumns = (project?.columns || []).filter(c => c.id !== "backlog");
+
+  // Convert to ColumnConfig with wipLimit and order
+  const columnConfigs: ColumnConfig[] = projectColumns.map((c, index) => ({
+    id: c.id,
+    title: c.title,
+    order: c.order ?? index,
+    wipLimit: c.wipLimit ?? null
+  }));
 
   // Setup sensors for drag-and-drop
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
-        distance: 5, // 5px movement required before drag starts
+        distance: 5,
       },
     }),
     useSensor(KeyboardSensor, {
@@ -55,14 +65,17 @@ export function KanbanBoard({ projectId, onAddTask, onTaskClick, filterAssignee 
     })
   );
 
-  // Memoize column tasks
+  // Memoize column issues
   const columnsData = useMemo(() => {
-    const data: Record<string, Task[]> = {};
+    const data: Record<string, Issue[]> = {};
     projectColumns.forEach(c => {
-      data[c.id] = tasks.filter((t) => {
-        if (t.status !== c.id) return false;
+      data[c.id] = issues.filter((i) => {
+        if (i.status !== c.id) return false;
         
-        const assignee = (t.assignee || "hilman").toLowerCase();
+        // Filter by sprint if specified
+        if (sprintId && i.sprintId !== sprintId) return false;
+        
+        const assignee = (i.assignee || "hilman").toLowerCase();
         if (filterAssignee === "hilman" && assignee !== "hilman") return false;
         if (filterAssignee === "others" && assignee === "hilman") return false;
         
@@ -70,12 +83,12 @@ export function KanbanBoard({ projectId, onAddTask, onTaskClick, filterAssignee 
       });
     });
     return data;
-  }, [tasks, projectColumns, filterAssignee]);
+  }, [issues, projectColumns, filterAssignee, sprintId]);
 
   const handleDragStart = (event: DragStartEvent) => {
     const { active } = event;
-    const task = tasks.find((t) => t.id === active.id);
-    if (task) setActiveTask(task);
+    const issue = issues.find((i) => i.id === active.id);
+    if (issue) setActiveIssue(issue);
   };
 
   const handleDragOver = (event: DragOverEvent) => {
@@ -87,58 +100,58 @@ export function KanbanBoard({ projectId, onAddTask, onTaskClick, filterAssignee 
 
     if (activeId === overId) return;
 
-    const isActiveTask = active.data.current?.type === "Task";
-    const isOverTask = over.data.current?.type === "Task";
+    const isActiveIssue = active.data.current?.type === "Issue";
+    const isOverIssue = over.data.current?.type === "Issue";
     const isOverColumn = over.data.current?.type === "Column";
 
-    if (!isActiveTask) return;
+    if (!isActiveIssue) return;
 
-    // Dropping a task over another task
-    if (isActiveTask && isOverTask) {
-      const activeTask = tasks.find((t) => t.id === activeId);
-      const overTask = tasks.find((t) => t.id === overId);
+    // Dropping an issue over another issue
+    if (isActiveIssue && isOverIssue) {
+      const activeIssue = issues.find((i) => i.id === activeId);
+      const overIssue = issues.find((i) => i.id === overId);
       
-      if (!activeTask || !overTask) return;
+      if (!activeIssue || !overIssue) return;
 
-      if (activeTask.status !== overTask.status) {
-        // Move task to new column
-        const updatedTasks = tasks.map((t) => {
-          if (t.id === activeId) {
-            return { ...t, status: overTask.status };
+      if (activeIssue.status !== overIssue.status) {
+        // Move issue to new column
+        const updatedIssues = issues.map((i) => {
+          if (i.id === activeId) {
+            return { ...i, status: overIssue.status };
           }
-          return t;
+          return i;
         });
         
         // Find indices in the new array to reorder
-        const activeIndex = updatedTasks.findIndex((t) => t.id === activeId);
-        const overIndex = updatedTasks.findIndex((t) => t.id === overId);
+        const activeIndex = updatedIssues.findIndex((i) => i.id === activeId);
+        const overIndex = updatedIssues.findIndex((i) => i.id === overId);
         
-        const finalTasks = arrayMove(updatedTasks, activeIndex, overIndex);
-        updateTasksBulk(projectId, finalTasks);
+        const finalIssues = arrayMove(updatedIssues, activeIndex, overIndex);
+        updateIssuesBulk(projectId, finalIssues);
       }
     }
 
-    // Dropping a task over an empty column area
-    if (isActiveTask && isOverColumn) {
-      const activeTask = tasks.find((t) => t.id === activeId);
-      if (!activeTask) return;
+    // Dropping an issue over an empty column area
+    if (isActiveIssue && isOverColumn) {
+      const activeIssue = issues.find((i) => i.id === activeId);
+      if (!activeIssue) return;
 
-      const newStatus = over.data.current?.status as TaskStatus;
+      const newStatus = over.data.current?.status as IssueStatus;
       
-      if (activeTask.status !== newStatus) {
-        const updatedTasks = tasks.map((t) => {
-          if (t.id === activeId) {
-            return { ...t, status: newStatus };
+      if (activeIssue.status !== newStatus) {
+        const updatedIssues = issues.map((i) => {
+          if (i.id === activeId) {
+            return { ...i, status: newStatus };
           }
-          return t;
+          return i;
         });
-        updateTasksBulk(projectId, updatedTasks);
+        updateIssuesBulk(projectId, updatedIssues);
       }
     }
   };
 
   const handleDragEnd = (event: DragEndEvent) => {
-    setActiveTask(null);
+    setActiveIssue(null);
     const { active, over } = event;
     if (!over) return;
 
@@ -147,18 +160,18 @@ export function KanbanBoard({ projectId, onAddTask, onTaskClick, filterAssignee 
 
     if (activeId === overId) return;
 
-    const isActiveTask = active.data.current?.type === "Task";
-    const isOverTask = over.data.current?.type === "Task";
+    const isActiveIssue = active.data.current?.type === "Issue";
+    const isOverIssue = over.data.current?.type === "Issue";
 
-    if (isActiveTask && isOverTask) {
-      const activeTask = tasks.find((t) => t.id === activeId);
-      const overTask = tasks.find((t) => t.id === overId);
+    if (isActiveIssue && isOverIssue) {
+      const activeIssue = issues.find((i) => i.id === activeId);
+      const overIssue = issues.find((i) => i.id === overId);
       
-      if (activeTask && overTask && activeTask.status === overTask.status) {
-        const activeIndex = tasks.findIndex((t) => t.id === activeId);
-        const overIndex = tasks.findIndex((t) => t.id === overId);
-        const updatedTasks = arrayMove(tasks, activeIndex, overIndex);
-        updateTasksBulk(projectId, updatedTasks);
+      if (activeIssue && overIssue && activeIssue.status === overIssue.status) {
+        const activeIndex = issues.findIndex((i) => i.id === activeId);
+        const overIndex = issues.findIndex((i) => i.id === overId);
+        const updatedIssues = arrayMove(issues, activeIndex, overIndex);
+        updateIssuesBulk(projectId, updatedIssues);
       }
     }
   };
@@ -173,14 +186,13 @@ export function KanbanBoard({ projectId, onAddTask, onTaskClick, filterAssignee 
         onDragEnd={handleDragEnd}
       >
         <div className="flex gap-6 h-full items-start">
-          {projectColumns.map((col) => (
+          {columnConfigs.map((col) => (
             <KanbanColumn 
               key={col.id} 
-              id={col.id} 
-              title={col.title} 
-              tasks={columnsData[col.id] || []} 
-              onAddTask={onAddTask} 
-              onTaskClick={onTaskClick}
+              column={col} 
+              issues={columnsData[col.id] || []} 
+              onAddIssue={onAddIssue} 
+              onIssueClick={onIssueClick}
             />
           ))}
         </div>
@@ -191,7 +203,7 @@ export function KanbanBoard({ projectId, onAddTask, onTaskClick, filterAssignee 
               sideEffects: defaultDropAnimationSideEffects({ styles: { active: { opacity: "0.4" } } }),
             }}
           >
-            {activeTask && <KanbanCard task={activeTask} />}
+            {activeIssue && <KanbanCard issue={activeIssue} />}
           </DragOverlay>,
           document.body
         )}

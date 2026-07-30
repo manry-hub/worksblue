@@ -9,7 +9,7 @@ export type Project = {
   version: string;
   deadline: string;
   stack: string[];
-  openTasks: number;
+  openIssues: number;
 };
 
 export type Activity = {
@@ -44,7 +44,7 @@ export const projects: Project[] = [
     version: "v1.0.0",
     deadline: "2026-08-04T09:00:00Z",
     stack: ["Next.js", "TypeScript", "Astryx"],
-    openTasks: 14,
+    openIssues: 14,
   },
   {
     id: "atlas-api",
@@ -55,7 +55,7 @@ export const projects: Project[] = [
     version: "v0.8.2",
     deadline: "2026-07-21T09:00:00Z",
     stack: ["Node.js", "PostgreSQL", "Docker"],
-    openTasks: 9,
+    openIssues: 9,
   },
   {
     id: "launchpad",
@@ -66,7 +66,7 @@ export const projects: Project[] = [
     version: "v0.2.0",
     deadline: "2026-09-12T09:00:00Z",
     stack: ["React", "GitHub Actions", "Vercel"],
-    openTasks: 18,
+    openIssues: 18,
   },
 ];
 

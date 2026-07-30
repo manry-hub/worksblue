@@ -1,29 +1,19 @@
 [
   {
-    "title": "tas baru",
+    "title": "tes",
     "description": "",
-    "status": "done",
-    "priority": "high",
+    "type": "epic",
+    "status": "todo",
+    "priority": "medium",
     "labels": [],
     "dueDate": "",
-    "id": "task-6tkrvsicl",
+    "assignee": "hilman",
+    "parentId": null,
+    "checklist": [],
+    "id": "issue-rj06z5nxe",
     "projectId": "worksblue",
-    "createdAt": "2026-07-14T01:43:48.686Z",
-    "updatedAt": "2026-07-14T01:57:05.426Z"
-  },
-  {
-    "title": "aaaa",
-    "description": "Lorem Ipsum is the printing and typesetting industry's standard dummy text. It is used as a placeholder to demonstrate visual layouts and fonts without distracting readers with readable content. The nonsensical text is derived from a scrambled 45 BCE philosophical treatise by Cicero",
-    "status": "failed",
-    "priority": "low",
-    "labels": [
-      "bug"
-    ],
-    "dueDate": "2026-07-13",
-    "assignee": "Developer",
-    "id": "task-cvkp1gi61",
-    "projectId": "worksblue",
-    "createdAt": "2026-07-13T23:46:32.580Z",
-    "updatedAt": "2026-07-14T00:37:28.782Z"
+    "createdAt": "2026-07-16T10:38:45.604Z",
+    "updatedAt": "2026-07-16T10:39:47.624Z",
+    "sprintId": "sprint-ri47dyvpv"
   }
 ]

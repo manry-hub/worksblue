@@ -3,53 +3,69 @@
 import { useState } from "react";
 import { SortableContext } from "@dnd-kit/sortable";
 import { useDroppable } from "@dnd-kit/core";
-import { Task, TaskStatus } from "@/store/task-store";
+import { Issue, IssueStatus } from "@/store/issue-store";
 import { KanbanCard } from "./kanban-card";
 import { cn } from "@/lib/utils";
-import { PlusIcon, ChevronRightIcon, ChevronLeftIcon } from "@heroicons/react/24/outline";
+import { PlusIcon, ChevronRightIcon, ChevronLeftIcon, ExclamationTriangleIcon } from "@heroicons/react/24/outline";
+import { ColumnConfig } from "@/types/sprint";
 
 interface KanbanColumnProps {
-  id: TaskStatus;
-  title: string;
-  tasks: Task[];
-  onAddTask?: (status: TaskStatus) => void;
-  onTaskClick?: (task: Task) => void;
+  column: ColumnConfig;
+  issues: Issue[];
+  onAddIssue?: (status: IssueStatus) => void;
+  onIssueClick?: (issue: Issue) => void;
 }
 
-export function KanbanColumn({ id, title, tasks, onAddTask, onTaskClick }: KanbanColumnProps) {
-  const [isCollapsed, setIsCollapsed] = useState(id === "failed");
+export function KanbanColumn({ column, issues, onAddIssue, onIssueClick }: KanbanColumnProps) {
+  const [isCollapsed, setIsCollapsed] = useState(column.id === "failed");
 
   const { setNodeRef, isOver } = useDroppable({
-    id,
+    id: column.id,
     data: {
       type: "Column",
-      status: id,
+      status: column.id,
     },
   });
+
+  const isOverWipLimit = column.wipLimit && column.wipLimit > 0 && issues.length >= column.wipLimit;
 
   return (
     <div 
       className={cn(
-        "flex flex-col flex-shrink-0 border rounded-2xl overflow-hidden h-full transition-all duration-300",
-        isCollapsed ? "w-12" : "w-80",
-        id === "done" ? "bg-green-500/5 border-green-500/20" : id === "failed" ? "bg-red-500/5 border-red-500/20" : "bg-white/[0.02] border-white/[0.05]"
+        "flex flex-col flex-shrink-0 rounded-md overflow-hidden h-full transition-all duration-300 bg-[#161A1D]",
+        isCollapsed ? "w-12" : "w-80"
       )}
     >
       {/* Column Header */}
       <div 
         className={cn(
-          "p-4 border-b flex items-center justify-between",
-          id === "done" ? "border-green-500/20 bg-green-500/10" : id === "failed" ? "border-red-500/20 bg-red-500/10" : "border-white/[0.05] bg-white/[0.01]",
-          isCollapsed && "flex-col items-center justify-start p-2 gap-4 h-full border-b-0"
+          "px-3 py-2 flex items-center justify-between sticky top-0 z-10 bg-[#161A1D]",
+          isCollapsed && "flex-col items-center justify-start p-2 gap-4 h-full"
         )}
       >
         {!isCollapsed ? (
           <>
             <div className="flex items-center gap-2">
-              <h3 className="font-semibold tracking-tight text-foreground">{title}</h3>
-              <span className="flex items-center justify-center bg-white/[0.1] text-foreground-muted text-xs font-medium w-5 h-5 rounded-full">
-                {tasks.length}
-              </span>
+              <h3 className="text-xs font-semibold uppercase tracking-wide text-foreground-muted">{column.title}</h3>
+              <div className="flex items-center gap-1">
+                <span className="flex items-center justify-center bg-white/[0.06] text-foreground-muted text-[11px] font-bold px-1.5 min-w-[20px] h-5 rounded-full">
+                  {issues.length}
+                </span>
+                {column.wipLimit && column.wipLimit > 0 && (
+                  <span className={cn(
+                    "flex items-center justify-center text-[11px] font-bold px-1.5 min-w-[20px] h-5 rounded-full",
+                    isOverWipLimit ? "bg-error/20 text-error" : "bg-white/[0.06] text-foreground-muted"
+                  )}>
+                    {column.wipLimit}
+                  </span>
+                )}
+              </div>
+              {isOverWipLimit && (
+                <span className="flex items-center gap-1 text-error text-xs font-medium px-2 py-0.5 bg-error/10 rounded">
+                  <ExclamationTriangleIcon className="w-3 h-3" />
+                  WIP Limit Reached
+                </span>
+              )}
             </div>
             <div className="flex items-center gap-1">
               <button 
@@ -59,11 +75,11 @@ export function KanbanColumn({ id, title, tasks, onAddTask, onTaskClick }: Kanba
               >
                 <ChevronLeftIcon className="w-4 h-4" />
               </button>
-              {onAddTask && (
+              {onAddIssue && (
                 <button 
-                  onClick={() => onAddTask(id)}
+                  onClick={() => onAddIssue(column.id)}
                   className="text-foreground-muted hover:text-foreground transition-colors p-1"
-                  title="Add Task"
+                  title="Add Issue"
                 >
                   <PlusIcon className="w-4 h-4" />
                 </button>
@@ -80,9 +96,11 @@ export function KanbanColumn({ id, title, tasks, onAddTask, onTaskClick }: Kanba
               <ChevronRightIcon className="w-4 h-4" />
             </button>
             <div className="[writing-mode:vertical-rl] rotate-180 flex items-center gap-2 mt-2">
-              <span className="font-semibold tracking-tight text-foreground whitespace-nowrap">{title}</span>
-              <span className="flex items-center justify-center bg-white/[0.1] text-foreground-muted text-xs font-medium w-5 h-5 rounded-full rotate-90">
-                {tasks.length}
+              <span className="text-xs font-semibold uppercase tracking-wide text-foreground-muted whitespace-nowrap">{column.title}</span>
+              <span className="flex items-center justify-center bg-white/[0.06] text-foreground-muted text-[11px] font-bold px-1.5 min-w-[20px] h-5 rounded-full rotate-90">
+                {issues.length}
+                {column.wipLimit && column.wipLimit > 0 && <span>/</span>}
+                {column.wipLimit && column.wipLimit > 0 && <span>{column.wipLimit}</span>}
               </span>
             </div>
           </>
@@ -94,21 +112,21 @@ export function KanbanColumn({ id, title, tasks, onAddTask, onTaskClick }: Kanba
         <div 
           ref={setNodeRef}
           className={cn(
-            "flex-1 p-3 overflow-y-auto min-h-[150px] transition-colors",
-            isOver ? "bg-white/[0.04]" : ""
+            "flex-1 p-2 overflow-y-auto min-h-[150px] transition-colors custom-scrollbar",
+            isOver ? "bg-white/[0.03]" : ""
           )}
         >
-          <SortableContext items={tasks.map((t) => t.id)}>
+          <SortableContext items={issues.map((i) => i.id)}>
             <div className="flex flex-col flex-1 min-h-[100px]">
-              {tasks.map((task) => (
-                <KanbanCard key={task.id} task={task} onClick={() => onTaskClick?.(task)} />
+              {issues.map((issue) => (
+                <KanbanCard key={issue.id} issue={issue} onClick={() => onIssueClick?.(issue)} />
               ))}
             </div>
           </SortableContext>
           
-          {tasks.length === 0 && (
+          {issues.length === 0 && (
             <div className="h-24 border border-dashed border-white/[0.1] rounded-xl flex items-center justify-center text-sm text-foreground-muted">
-              Drop tasks here
+              Drop issues here
             </div>
           )}
         </div>
