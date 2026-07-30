@@ -14,12 +14,13 @@ import {
 } from "@heroicons/react/24/outline";
 import { EditProjectModal } from "@/components/projects/edit-project-modal";
 import { useRouter } from "next/navigation";
-import { 
+import {
   generatePlanningMarkdown, 
   generateRequirementsMarkdown, 
   generateDesignMarkdown, 
   generateTestingMarkdown, 
   generateDeploymentMarkdown, 
+  generateBriefMarkdown,
   generateAllMarkdown, 
   downloadMarkdown 
 } from "@/lib/export-markdown";
@@ -173,6 +174,9 @@ export default function ProjectOverviewPage(props: { params: Promise<{ id: strin
           <section>
             <h3 className="text-xl font-semibold tracking-tight mb-4">Export Documentation</h3>
             <Card className="p-6 gap-3">
+               <Button variant="secondary" onClick={() => downloadMarkdown(generateBriefMarkdown(project), `${project.name}-Project-Brief.md`)} className="text-xs">
+                 Project Brief
+               </Button>
                <Button variant="secondary" onClick={() => downloadMarkdown(generatePlanningMarkdown(project), `${project.name}-Planning.md`)} className="text-xs">
                  Planning
                </Button>

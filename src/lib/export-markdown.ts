@@ -206,8 +206,43 @@ export function generateDeploymentMarkdown(project: Project): string {
   return md;
 }
 
+export function generateBriefMarkdown(project: Project): string {
+  let md = `# Project Brief: ${project.name}\n\n`;
+  
+  if (project.brief) {
+    const { 
+      mission, responsible, accountable, consulted, informed,
+      budget, timeline, culture, changeCapacity, guidingPrinciples, risksAssessment
+    } = project.brief;
+    
+    if (mission) md += `## Mission\n${mission}\n\n`;
+    
+    // RACI
+    if (responsible || accountable || consulted || informed) {
+      md += `## Roles & Responsibilities (RACI)\n`;
+      if (responsible) md += `- **Responsible:** ${responsible}\n`;
+      if (accountable) md += `- **Accountable:** ${accountable}\n`;
+      if (consulted) md += `- **Consulted:** ${consulted}\n`;
+      if (informed) md += `- **Informed:** ${informed}\n`;
+      md += `\n`;
+    }
+    
+    if (budget) md += `## High Level Budget\n${budget}\n\n`;
+    if (timeline) md += `## High Level Timeline\n${timeline}\n\n`;
+    if (culture) md += `## Culture\n${culture}\n\n`;
+    if (changeCapacity) md += `## Change Capacity\n${changeCapacity}\n\n`;
+    if (guidingPrinciples) md += `## Guiding Principles\n${guidingPrinciples}\n\n`;
+    if (risksAssessment) md += `## Risks Assessment\n${risksAssessment}\n\n`;
+  } else {
+    md += `*No project brief defined yet.*\n\n`;
+  }
+  
+  return md;
+}
+
 export function generateAllMarkdown(project: Project): string {
   return [
+    generateBriefMarkdown(project),
     generatePlanningMarkdown(project),
     generateRequirementsMarkdown(project),
     generateDesignMarkdown(project),

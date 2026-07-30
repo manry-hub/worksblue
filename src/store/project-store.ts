@@ -10,6 +10,19 @@ export interface Project {
   problemStatement?: string;
   objective?: string;
   stakeholders?: string[];
+  brief?: {
+    mission?: string;
+    responsible?: string;
+    accountable?: string;
+    consulted?: string;
+    informed?: string;
+    budget?: string;
+    timeline?: string;
+    culture?: string;
+    changeCapacity?: string;
+    guidingPrinciples?: string;
+    risksAssessment?: string;
+  };
   timeline?: {
     startDate?: string;
     endDate?: string;

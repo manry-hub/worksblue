@@ -14,7 +14,8 @@ import {
   XMarkIcon,
   ArrowLeftIcon,
   WindowIcon,
-  Cog8ToothIcon
+  Cog8ToothIcon,
+  DocumentChartBarIcon
 } from "@heroicons/react/24/outline";
 import type { ReactNode } from "react";
 import { CommandPaletteSearch } from "@/components/shell/command-palette-search";
@@ -88,8 +89,10 @@ function ProjectSidebar({ isOpen, onClose, projectId }: { isOpen: boolean; onClo
             
           </div>
 
+         
           <div className="space-y-1">
-            <p className="px-3 mb-2 text-xs font-mono tracking-widest uppercase text-foreground-subtle">SDLC Phase Docs</p>
+            <p className="px-3 mb-2 text-xs font-mono tracking-widest uppercase text-foreground-subtle">Blueprint</p>
+            <NavItem icon={DocumentChartBarIcon} label="Project Brief" href={`${basePath}/brief`} isActive={pathname === `${basePath}/brief`} />
             <NavItem icon={MapIcon} label="Planning" href={`${basePath}/planning`} isActive={pathname === `${basePath}/planning`} />
             <NavItem icon={DocumentMagnifyingGlassIcon} label="Requirements" href={`${basePath}/requirements`} isActive={pathname === `${basePath}/requirements`} />
             <NavItem icon={WindowIcon } label="Design" href={`${basePath}/design`} isActive={pathname === `${basePath}/design`} />
