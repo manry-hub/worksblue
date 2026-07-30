@@ -128,7 +128,7 @@ export default function ImplementationPage(props: { params: Promise<{ id: string
         {/* Connection line for desktop */}
         <div className="hidden md:block absolute left-1/2 top-8 bottom-8 w-px bg-gradient-to-b from-accent/0 via-accent/20 to-accent/0 -translate-x-1/2"></div>
         
-        {IMPLEMENTATION_TASKS.map((phase, index) => {
+        {IMPLEMENTATION_TASKS.map((phase, _index) => {
           const progress = getPhaseProgress(phase);
           const isComplete = progress === 100;
           

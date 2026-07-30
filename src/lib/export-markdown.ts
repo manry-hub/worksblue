@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Project } from "@/store/project-store";
 
 export function generatePlanningMarkdown(project: Project): string {
@@ -102,7 +103,7 @@ export function generateDesignMarkdown(project: Project): string {
   let md = `# System Design: ${project.name}\n\n`;
   
   if (project.design) {
-    const {  rbacGroups, rbac, apiDesignGroups, apiDesign, techSpecs } = project.design;
+    const {   rbac,  apiDesign, techSpecs } = project.design;
     
    
 

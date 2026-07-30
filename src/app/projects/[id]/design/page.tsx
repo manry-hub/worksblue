@@ -1,3 +1,4 @@
+
 "use client";
 
 import { use, useEffect, useState, useRef } from "react";
@@ -12,7 +13,7 @@ import dynamic from "next/dynamic";
 
 const ExcalidrawModal = dynamic(() => import("./components/excalidraw-modal"), { ssr: false });
 
-type DiagramItem = { id: string; title: string; url?: string; excalidrawElements?: any; excalidrawAppState?: any };
+type DiagramItem = { id: string; title: string; url?: string; excalidrawElements?: unknown; excalidrawAppState?: unknown };
 type DesignField = 'contextDiagrams' | 'usecaseDiagrams' | 'erds' | 'uiuxDiagrams';
 
 const DiagramCard = ({ 
@@ -95,8 +96,8 @@ export default function DesignPage(props: { params: Promise<{ id: string }> }) {
     field: DesignField;
     id: string;
     title: string;
-    elements: any;
-    appState: any;
+    elements: unknown;
+    appState: unknown;
     isNew: boolean;
   } | null>(null);
   
@@ -114,11 +115,7 @@ export default function DesignPage(props: { params: Promise<{ id: string }> }) {
     await updateProject(projectId, updates);
   };
 
-  const handleFigmaBlur = () => {
-    if (project?.figmaDesign !== figmaUrl) {
-      saveChanges({ figmaDesign: figmaUrl });
-    }
-  };
+
 
   const handleRemoveItem = (field: DesignField, id: string) => {
     if (!confirm("Hapus diagram ini?")) return;
@@ -138,7 +135,7 @@ export default function DesignPage(props: { params: Promise<{ id: string }> }) {
     });
   };
 
-  const handleSaveDiagram = (elements: any, appState: any, newTitle: string) => {
+  const handleSaveDiagram = (elements: unknown, appState: unknown, newTitle: string) => {
     if (!activeDiagram) return;
     const { field, id, isNew } = activeDiagram;
     

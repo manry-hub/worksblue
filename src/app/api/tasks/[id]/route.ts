@@ -17,7 +17,7 @@ export async function PATCH(
     const data = await fs.readFile(TASKS_FILE, "utf-8");
     const tasks = JSON.parse(data);
     
-    const index = tasks.findIndex((t: any) => t.id === params.id);
+    const index = tasks.findIndex((t: Record<string, unknown>) => t.id === params.id);
     if (index === -1) {
       return NextResponse.json({ error: "Task not found" }, { status: 404 });
     }
@@ -26,7 +26,7 @@ export async function PATCH(
     
     await fs.writeFile(TASKS_FILE, JSON.stringify(tasks, null, 2));
     return NextResponse.json(tasks[index]);
-  } catch (err) {
+  } catch {
     return NextResponse.json({ error: "Failed to update task" }, { status: 500 });
   }
 }
@@ -54,11 +54,11 @@ export async function DELETE(
       }
     }
 
-    tasks = tasks.filter((t: any) => !idsToDelete.has(t.id));
+    tasks = tasks.filter((t: Record<string, unknown>) => !idsToDelete.has(t.id as string));
     
     await fs.writeFile(TASKS_FILE, JSON.stringify(tasks, null, 2));
     return NextResponse.json({ success: true });
-  } catch (err) {
+  } catch {
     return NextResponse.json({ error: "Failed to delete task" }, { status: 500 });
   }
 }

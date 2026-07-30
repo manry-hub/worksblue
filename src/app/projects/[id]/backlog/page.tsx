@@ -4,27 +4,14 @@ import { useEffect, useState, use } from "react";
 import { useSprintStore } from "@/store/sprint-store";
 import { useIssueStore, type Issue } from "@/store/issue-store";
 import { useProjectStore } from "@/store/project-store";
-import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { IconButton } from "@/components/ui/icon-button";
 import { 
-  ClipboardDocumentCheckIcon, 
-  RocketLaunchIcon, 
-  PlusIcon, 
   TrashIcon,
-  PencilIcon,
   PlayIcon,
   CheckCircleIcon,
   XCircleIcon,
-  ChevronDownIcon,
-  ChevronUpIcon,
   FlagIcon,
-  CalendarIcon,
   MagnifyingGlassIcon,
-  FunnelIcon,
-  ChevronRightIcon,
-  Bars3Icon,
   AdjustmentsHorizontalIcon
 } from "@heroicons/react/24/outline";
 import { DocumentTextIcon, BugAntIcon, CheckBadgeIcon } from "@heroicons/react/24/solid";
@@ -32,7 +19,6 @@ import { IssueDetailsModal } from "@/components/kanban/issue-details-modal";
 import { CreateSprintModal } from "@/components/backlog/create-sprint-modal";
 import { EditSprintModal } from "@/components/backlog/edit-sprint-modal";
 import { BacklogBoard, SprintWithIssues } from "@/components/backlog/backlog-board";
-import { format } from "date-fns";
 
 type SprintStatus = "Planned" | "Active" | "Completed" | "Cancelled";
 
@@ -40,7 +26,7 @@ export default function BacklogPage(props: { params: Promise<{ id: string }> }) 
   const params = use(props.params);
   const projectId = params.id;
   
-  const { sprints, fetchSprints, startSprint, completeSprint, cancelSprint, deleteSprint, updateSprint } = useSprintStore();
+  const { sprints, fetchSprints, startSprint, completeSprint, cancelSprint, deleteSprint } = useSprintStore();
   const { issues, fetchIssues, updateIssue, deleteIssue, isLoading: issuesLoading } = useIssueStore();
   const project = useProjectStore(state => state.projects.find(p => p.id === projectId));
   const defaultTodoStatus = project?.columns?.find(c => c.id !== "backlog")?.id || "todo";
@@ -157,11 +143,7 @@ export default function BacklogPage(props: { params: Promise<{ id: string }> }) 
     await completeSprint(projectId, sprintId);
   };
 
-  const handleCancelSprint = async (sprintId: string) => {
-    if (confirm("Cancel this sprint? Issues will return to backlog.")) {
-      await cancelSprint(projectId, sprintId);
-    }
-  };
+
 
   const handleDeleteSprint = async (sprintId: string) => {
     if (confirm("Delete this sprint? This cannot be undone.")) {
@@ -182,10 +164,7 @@ export default function BacklogPage(props: { params: Promise<{ id: string }> }) 
     });
   };
 
-  const sendToBoard = async (e: React.MouseEvent, issue: Issue) => {
-    e.stopPropagation();
-    await updateIssue(projectId, issue.id, { status: defaultTodoStatus, updatedAt: new Date().toISOString() });
-  };
+
 
   const handleDeleteIssue = async (e: React.MouseEvent, issue: Issue) => {
     e.stopPropagation();
@@ -194,36 +173,7 @@ export default function BacklogPage(props: { params: Promise<{ id: string }> }) 
     }
   };
 
-  const getStatusColor = (status: SprintStatus) => {
-    switch (status) {
-      case "Planned": return "neutral";
-      case "Active": return "accent";
-      case "Completed": return "success";
-      case "Cancelled": return "error";
-      default: return "neutral";
-    }
-  };
 
-  const getStatusIcon = (status: SprintStatus) => {
-    switch (status) {
-      case "Planned": return <FlagIcon className="w-4 h-4" />;
-      case "Active": return <PlayIcon className="w-4 h-4" />;
-      case "Completed": return <CheckCircleIcon className="w-4 h-4" />;
-      case "Cancelled": return <XCircleIcon className="w-4 h-4" />;
-      default: return <FlagIcon className="w-4 h-4" />;
-    }
-  };
-
-  const getIssueIcon = (title: string) => {
-    const t = title.toLowerCase();
-    if (t.includes("bug") || t.includes("fix") || t.includes("error")) {
-      return <div className="w-4 h-4 rounded-[3px] bg-[#E5493A] flex items-center justify-center flex-shrink-0 text-white"><BugAntIcon className="w-3 h-3" /></div>;
-    }
-    if (t.includes("feature") || t.includes("story") || t.includes("add")) {
-      return <div className="w-4 h-4 rounded-[3px] bg-[#57A55A] flex items-center justify-center flex-shrink-0 text-white"><DocumentTextIcon className="w-3 h-3" /></div>;
-    }
-    return <div className="w-4 h-4 rounded-[3px] bg-[#4BADE8] flex items-center justify-center flex-shrink-0 text-white"><CheckBadgeIcon className="w-3 h-3" /></div>;
-  };
 
 
   if (issuesLoading) {

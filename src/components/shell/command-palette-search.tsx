@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useState, useEffect, useRef } from "react";
@@ -233,7 +234,7 @@ export function CommandPaletteSearch() {
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isOpen, filteredProjects, finalSdlcData, searchedTasks, selectedIndex, totalResults]);
+  }, [isOpen, filteredProjects, finalSdlcData, searchedTasks, selectedIndex, totalResults, router]);
 
   // Global keyboard shortcut to open palette (Ctrl+K / Cmd+K)
   useEffect(() => {
@@ -319,7 +320,7 @@ export function CommandPaletteSearch() {
                 </div>
               ) : totalResults === 0 && !isSearchingTasks ? (
                 <div className="p-12 text-center text-sm text-foreground-muted">
-                  No results found for "{searchQuery}"
+                  No results found for &quot;{searchQuery}&quot;
                 </div>
               ) : (
                 <div className="space-y-4">
@@ -385,7 +386,7 @@ export function CommandPaletteSearch() {
                                   <p className="text-sm font-medium text-foreground truncate">{match.title}</p>
                                 </div>
                                 <p className="text-xs text-foreground-subtle truncate mt-0.5">
-                                  {match.snippet && <span className="text-foreground-muted mr-2">"{match.snippet}"</span>}
+                                  {match.snippet && <span className="text-foreground-muted mr-2">&quot;{match.snippet}&quot;</span>}
                                   in <span className="font-medium text-indigo-300">{match.projectName}</span> &rsaquo; {match.phase}
                                 </p>
                               </div>

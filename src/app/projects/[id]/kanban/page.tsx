@@ -7,13 +7,13 @@ import { KanbanBoard } from "@/components/kanban/kanban-board";
 import { IssueDetailsModal } from "@/components/kanban/issue-details-modal";
 import { IssueStatus, type Issue } from "@/store/issue-store";
 import { Button } from "@/components/ui/button";
-import { PlusIcon, ChevronDownIcon } from "@heroicons/react/24/outline";
+import {  ChevronDownIcon } from "@heroicons/react/24/outline";
 
 export default function KanbanPage(props: { params: Promise<{ id: string }> }) {
   const params = use(props.params);
   const projectId = params.id;
   
-  const { sprints, fetchSprints } = useSprintStore();
+  const {  fetchSprints } = useSprintStore();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [createModalStatus, setCreateModalStatus] = useState<IssueStatus>("todo");
   const [selectedIssue, setSelectedIssue] = useState<Issue | null>(null);

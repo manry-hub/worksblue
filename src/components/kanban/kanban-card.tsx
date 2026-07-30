@@ -5,9 +5,9 @@ import { CSS } from "@dnd-kit/utilities";
 import { Issue } from "@/store/issue-store";
 import { useProjectStore } from "@/store/project-store";
 import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+
 import { cn } from "@/lib/utils";
-import { CalendarIcon, TagIcon, ArrowUpIcon, Bars2Icon, ChevronDoubleDownIcon, QueueListIcon } from "@heroicons/react/24/outline";
+import {      QueueListIcon } from "@heroicons/react/24/outline";
 import { DocumentTextIcon, BugAntIcon, CheckBadgeIcon } from "@heroicons/react/24/solid";
 
 interface KanbanCardProps {

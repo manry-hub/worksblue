@@ -22,7 +22,7 @@ export async function GET() {
   try {
     const data = await fs.readFile(dbFile, "utf-8");
     return NextResponse.json(JSON.parse(data));
-  } catch (err) {
+  } catch {
     return NextResponse.json({ error: "Failed to read global tasks" }, { status: 500 });
   }
 }
@@ -49,7 +49,7 @@ export async function POST(request: Request) {
     
     await fs.writeFile(dbFile, JSON.stringify(tasks, null, 2));
     return NextResponse.json(newTask, { status: 201 });
-  } catch (err) {
+  } catch {
     return NextResponse.json({ error: "Failed to create task" }, { status: 500 });
   }
 }

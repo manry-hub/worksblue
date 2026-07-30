@@ -4,7 +4,7 @@ import { use, useEffect } from "react";
 import { useProjectStore, type Project } from "@/store/project-store";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { PlusIcon, TrashIcon, RocketLaunchIcon, KeyIcon, CommandLineIcon, UsersIcon, GlobeAltIcon } from "@heroicons/react/24/outline";
+import { PlusIcon, TrashIcon,  KeyIcon, CommandLineIcon, UsersIcon, GlobeAltIcon } from "@heroicons/react/24/outline";
 import { EditableInput } from "@/components/ui/editable-input";
 
 type Account = NonNullable<NonNullable<Project['deployment']>['accounts']>[0];

@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { 
   FolderIcon, 
   ClockIcon, 
-  ClipboardDocumentCheckIcon, 
+   
   ArrowTrendingUpIcon 
 } from "@heroicons/react/24/outline";
 import { EditProjectModal } from "@/components/projects/edit-project-modal";
@@ -129,7 +129,7 @@ export default function ProjectOverviewPage(props: { params: Promise<{ id: strin
                 </div>
               ) : (
                 <div className="relative border-l-2 border-white/10 ml-3 md:ml-4 space-y-8 pb-2 pt-2">
-                  {projectSprints.map((sprint, index) => {
+                  {projectSprints.map((sprint, _index) => {
                     const isActive = sprint.status === "Active";
                     const isCompleted = sprint.status === "Completed";
                     

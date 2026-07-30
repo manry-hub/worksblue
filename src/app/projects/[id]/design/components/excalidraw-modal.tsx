@@ -1,8 +1,10 @@
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { Excalidraw } from "@excalidraw/excalidraw";
 import { useState } from "react";
-import { XMarkIcon, CheckIcon } from "@heroicons/react/24/outline";
+import { CheckIcon } from "@heroicons/react/24/outline";
 
 export interface ExcalidrawModalProps {
   initialElements?: any;
@@ -51,7 +53,7 @@ export default function ExcalidrawModal({ initialElements, initialAppState, onSa
         <Excalidraw
           initialData={{
             elements: initialElements,
-            appState: initialAppState ? { ...initialAppState, collaborators: new Map() } : undefined,
+            appState: initialAppState ? { ...(initialAppState as any), collaborators: new Map() } : undefined,
           }}
           onChange={(excalidrawElements, excalidrawAppState) => {
             setElements(excalidrawElements);

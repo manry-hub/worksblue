@@ -53,7 +53,7 @@ export async function GET(request: Request) {
             });
           }
         }
-      } catch (err) {
+      } catch {
         // Silently skip if tasks file doesn't exist for this project
         continue;
       }
