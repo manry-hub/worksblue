@@ -74,6 +74,10 @@ export const useIssueStore = create<IssueState>((set) => ({
   },
 
   updateIssue: async (projectId, issueId, data) => {
+    // Optimistic Update
+    set((state) => ({
+      issues: state.issues.map(i => i.id === issueId ? { ...i, ...data } as Issue : i)
+    }));
     try {
       const res = await fetch(`/api/projects/${projectId}/tasks/${issueId}`, {
         method: "PATCH",
@@ -93,15 +97,15 @@ export const useIssueStore = create<IssueState>((set) => ({
   },
 
   deleteIssue: async (projectId, issueId) => {
+    // Optimistic Update
+    set((state) => ({
+      issues: state.issues.filter(i => i.id !== issueId)
+    }));
     try {
       const res = await fetch(`/api/projects/${projectId}/tasks/${issueId}`, {
         method: "DELETE",
       });
       if (!res.ok) throw new Error("Failed to delete issue");
-      
-      set((state) => ({
-        issues: state.issues.filter(i => i.id !== issueId)
-      }));
     } catch (err) {
       console.error(err);
       set({ error: err instanceof Error ? err.message : "Unknown error" });

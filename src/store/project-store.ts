@@ -167,7 +167,22 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
   },
   
   addProject: async (projectData) => {
-    set({ isLoading: true, error: null });
+    // Optimistic Update
+    const tempId = `temp-${Date.now()}`;
+    const optimisticProject: Project = { 
+      ...projectData, 
+      id: tempId, 
+      progress: 0, 
+      openIssues: 0, 
+      createdAt: new Date().toISOString(),
+      version: "1.0",
+      columns: []
+    } as Project;
+
+    set((state) => ({
+      projects: [...state.projects, optimisticProject]
+    }));
+
     try {
       const res = await fetch("/api/projects", {
         method: "POST",
@@ -178,15 +193,20 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
       const newProject = await res.json();
       
       set((state) => ({
-        projects: [...state.projects, newProject],
-        isLoading: false
+        projects: state.projects.map(p => p.id === tempId ? newProject : p)
       }));
     } catch (err) {
-      set({ error: err instanceof Error ? err.message : "Unknown error", isLoading: false });
+      console.error(err);
+      set((state) => ({ projects: state.projects.filter(p => p.id !== tempId), error: err instanceof Error ? err.message : "Unknown error" }));
     }
   },
 
   updateProject: async (id, projectData) => {
+    // Optimistic Update
+    set((state) => ({
+      projects: state.projects.map(p => p.id === id ? { ...p, ...projectData } as Project : p)
+    }));
+
     try {
       const res = await fetch(`/api/projects/${id}`, {
         method: "PATCH",
@@ -206,15 +226,16 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
   },
 
   deleteProject: async (id) => {
+    // Optimistic Update
+    set((state) => ({
+      projects: state.projects.filter(p => p.id !== id)
+    }));
+
     try {
       const res = await fetch(`/api/projects/${id}`, {
         method: "DELETE",
       });
       if (!res.ok) throw new Error("Failed to delete project");
-      
-      set((state) => ({
-        projects: state.projects.filter(p => p.id !== id)
-      }));
     } catch (err) {
       console.error(err);
       set({ error: err instanceof Error ? err.message : "Unknown error" });

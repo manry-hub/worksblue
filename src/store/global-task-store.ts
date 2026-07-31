@@ -41,6 +41,12 @@ export const useGlobalTaskStore = create<GlobalTaskStore>((set, get) => ({
   },
 
   addTask: async (task: Partial<GlobalTask>) => {
+    // Generate a temporary ID for optimistic update
+    const tempId = `temp-${Date.now()}`;
+    const optimisticTask = { ...task, id: tempId, parentId: task.parentId || null } as GlobalTask;
+    
+    set((state) => ({ tasks: [...state.tasks, optimisticTask] }));
+
     try {
       const res = await fetch('/api/tasks', {
         method: 'POST',
@@ -49,10 +55,18 @@ export const useGlobalTaskStore = create<GlobalTaskStore>((set, get) => ({
       });
       if (res.ok) {
         const newTask = await res.json();
-        set((state) => ({ tasks: [...state.tasks, newTask] }));
+        // Replace temp task with actual task from server
+        set((state) => ({ 
+          tasks: state.tasks.map(t => t.id === tempId ? newTask : t)
+        }));
+      } else {
+        // Revert on failure
+        set((state) => ({ tasks: state.tasks.filter(t => t.id !== tempId) }));
       }
     } catch (e) {
       console.error(e);
+      // Revert on error
+      set((state) => ({ tasks: state.tasks.filter(t => t.id !== tempId) }));
     }
   },
 

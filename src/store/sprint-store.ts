@@ -55,6 +55,10 @@ export const useSprintStore = create<SprintState>((set, get) => ({
   },
 
   updateSprint: async (projectId, sprintId, data) => {
+    // Optimistic Update
+    set((state) => ({
+      sprints: state.sprints.map((s) => (s.id === sprintId ? { ...s, ...data } as Sprint : s)),
+    }));
     try {
       const res = await fetch(`/api/projects/${projectId}/sprints/${sprintId}`, {
         method: "PATCH",
@@ -73,12 +77,13 @@ export const useSprintStore = create<SprintState>((set, get) => ({
   },
 
   deleteSprint: async (projectId, sprintId) => {
+    // Optimistic Update
+    set((state) => ({ sprints: state.sprints.filter((s) => s.id !== sprintId) }));
     try {
       const res = await fetch(`/api/projects/${projectId}/sprints/${sprintId}`, {
         method: "DELETE",
       });
       if (!res.ok) throw new Error("Failed to delete sprint");
-      set((state) => ({ sprints: state.sprints.filter((s) => s.id !== sprintId) }));
     } catch (err) {
       console.error(err);
       set({ error: err instanceof Error ? err.message : "Unknown error" });
@@ -86,6 +91,10 @@ export const useSprintStore = create<SprintState>((set, get) => ({
   },
 
   startSprint: async (projectId, sprintId) => {
+    // Optimistic Update
+    set((state) => ({
+      sprints: state.sprints.map((s) => (s.id === sprintId ? { ...s, status: "Active" } as Sprint : s)),
+    }));
     try {
       const res = await fetch(`/api/projects/${projectId}/sprints/${sprintId}/start`, {
         method: "POST",
@@ -102,6 +111,10 @@ export const useSprintStore = create<SprintState>((set, get) => ({
   },
 
   completeSprint: async (projectId, sprintId) => {
+    // Optimistic Update
+    set((state) => ({
+      sprints: state.sprints.map((s) => (s.id === sprintId ? { ...s, status: "Completed" } as Sprint : s)),
+    }));
     try {
       const res = await fetch(`/api/projects/${projectId}/sprints/${sprintId}/complete`, {
         method: "POST",
@@ -118,6 +131,10 @@ export const useSprintStore = create<SprintState>((set, get) => ({
   },
 
   cancelSprint: async (projectId, sprintId) => {
+    // Optimistic Update
+    set((state) => ({
+      sprints: state.sprints.map((s) => (s.id === sprintId ? { ...s, status: "Cancelled" } as Sprint : s)),
+    }));
     try {
       const res = await fetch(`/api/projects/${projectId}/sprints/${sprintId}/cancel`, {
         method: "POST",
