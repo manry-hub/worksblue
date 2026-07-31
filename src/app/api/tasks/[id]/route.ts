@@ -1,11 +1,9 @@
 import { NextResponse } from "next/server";
-import fs from "fs/promises";
-import path from "path";
+import { readDB, writeDB } from "@/lib/blob-db";
 
 export const dynamic = "force-dynamic";
 
-const DB_DIR = path.join(process.cwd(), ".worksblue");
-const TASKS_FILE = path.join(DB_DIR, "tasks-global.json");
+const TASKS_FILE = "tasks-global.json";
 
 export async function PATCH(
   request: Request,
@@ -14,8 +12,7 @@ export async function PATCH(
   const params = await props.params;
   try {
     const body = await request.json();
-    const data = await fs.readFile(TASKS_FILE, "utf-8");
-    const tasks = JSON.parse(data);
+    const tasks = await readDB(TASKS_FILE, []);
     
     const index = tasks.findIndex((t: Record<string, unknown>) => t.id === params.id);
     if (index === -1) {
@@ -24,10 +21,11 @@ export async function PATCH(
 
     tasks[index] = { ...tasks[index], ...body };
     
-    await fs.writeFile(TASKS_FILE, JSON.stringify(tasks, null, 2));
+    await writeDB(TASKS_FILE, tasks);
     return NextResponse.json(tasks[index]);
-  } catch {
-    return NextResponse.json({ error: "Failed to update task" }, { status: 500 });
+  } catch (error: unknown) {
+    console.error("PATCH task error:", error);
+    return NextResponse.json({ error: "Failed to update task", details: (error as Error).message }, { status: 500 });
   }
 }
 
@@ -37,8 +35,7 @@ export async function DELETE(
 ) {
   const params = await props.params;
   try {
-    const data = await fs.readFile(TASKS_FILE, "utf-8");
-    let tasks = JSON.parse(data);
+    let tasks = await readDB(TASKS_FILE, []);
     
     // Find all children recursively to delete them as well
     const idsToDelete = new Set<string>([params.id]);
@@ -56,9 +53,10 @@ export async function DELETE(
 
     tasks = tasks.filter((t: Record<string, unknown>) => !idsToDelete.has(t.id as string));
     
-    await fs.writeFile(TASKS_FILE, JSON.stringify(tasks, null, 2));
+    await writeDB(TASKS_FILE, tasks);
     return NextResponse.json({ success: true });
-  } catch {
-    return NextResponse.json({ error: "Failed to delete task" }, { status: 500 });
+  } catch (error: unknown) {
+    console.error("DELETE task error:", error);
+    return NextResponse.json({ error: "Failed to delete task", details: (error as Error).message }, { status: 500 });
   }
 }

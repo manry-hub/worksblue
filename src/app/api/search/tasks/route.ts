@@ -1,11 +1,9 @@
 import { NextResponse } from "next/server";
-import fs from "fs/promises";
-import path from "path";
+import { readDB } from "@/lib/blob-db";
 
 export const dynamic = "force-dynamic";
 
-const DB_DIR = path.join(process.cwd(), ".worksblue");
-const PROJECTS_FILE = path.join(DB_DIR, "projects.json");
+const PROJECTS_FILE = "projects.json";
 
 export async function GET(request: Request) {
   try {
@@ -16,15 +14,7 @@ export async function GET(request: Request) {
       return NextResponse.json({ results: [] });
     }
 
-    // Ensure projects file exists
-    try {
-      await fs.access(PROJECTS_FILE);
-    } catch {
-      return NextResponse.json({ results: [] });
-    }
-
-    const projectsData = await fs.readFile(PROJECTS_FILE, "utf-8");
-    const projects = JSON.parse(projectsData);
+    const projects = await readDB(PROJECTS_FILE, []);
 
     const matchedTasks: Record<string, unknown>[] = [];
     const MAX_RESULTS = 20;
@@ -32,30 +22,23 @@ export async function GET(request: Request) {
     for (const project of projects) {
       if (matchedTasks.length >= MAX_RESULTS) break;
 
-      const tasksFile = path.join(DB_DIR, `tasks-${project.id}.json`);
-      try {
-        await fs.access(tasksFile);
-        const tasksData = await fs.readFile(tasksFile, "utf-8");
-        const tasks = JSON.parse(tasksData);
+      const tasksFile = `tasks-${project.id}.json`;
+      const tasks = await readDB(tasksFile, []);
 
-        for (const task of tasks) {
-          if (matchedTasks.length >= MAX_RESULTS) break;
+      for (const task of tasks) {
+        if (matchedTasks.length >= MAX_RESULTS) break;
 
-          const title = task.title?.toLowerCase() || "";
-          const description = task.description?.toLowerCase() || "";
-          const id = task.id?.toLowerCase() || "";
+        const title = task.title?.toLowerCase() || "";
+        const description = task.description?.toLowerCase() || "";
+        const id = task.id?.toLowerCase() || "";
 
-          if (title.includes(query) || description.includes(query) || id.includes(query)) {
-            matchedTasks.push({
-              ...task,
-              projectName: project.name,
-              projectId: project.id,
-            });
-          }
+        if (title.includes(query) || description.includes(query) || id.includes(query)) {
+          matchedTasks.push({
+            ...task,
+            projectName: project.name,
+            projectId: project.id,
+          });
         }
-      } catch {
-        // Silently skip if tasks file doesn't exist for this project
-        continue;
       }
     }
 

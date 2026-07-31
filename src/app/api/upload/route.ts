@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
-import { writeFile } from "fs/promises";
-import path from "path";
+import { put } from "@vercel/blob";
 
 export async function POST(request: Request) {
   try {
@@ -11,22 +10,17 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "No file provided" }, { status: 400 });
     }
 
-    const buffer = Buffer.from(await file.arrayBuffer());
     // Create a safe filename
     const filename = `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.-]/g, "_")}`;
-    const uploadDir = path.join(process.cwd(), ".worksblue", "uploads");
     
-    // Ensure directory exists
-    const fs = await import("fs");
-    if (!fs.existsSync(uploadDir)) {
-      await fs.promises.mkdir(uploadDir, { recursive: true });
-    }
-    
-    await writeFile(path.join(uploadDir, filename), buffer);
+    // Upload to Vercel Blob
+    const blob = await put(`uploads/${filename}`, file, {
+      access: 'private',
+    });
 
-    return NextResponse.json({ url: `/api/uploads/${filename}` });
-  } catch (err) {
-    console.error("Upload error:", err);
-    return NextResponse.json({ error: "Upload failed" }, { status: 500 });
+    return NextResponse.json({ url: `/api/file?pathname=${blob.pathname}` });
+  } catch (error: unknown) {
+    console.error("Upload error:", error);
+    return NextResponse.json({ error: "Upload failed", details: (error as Error).message }, { status: 500 });
   }
 }

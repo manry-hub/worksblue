@@ -20,6 +20,7 @@
     "@excalidraw/excalidraw": "^0.18.1",
     "@heroicons/react": "2.2.0",
     "@hookform/resolvers": "^5.4.0",
+    "@vercel/blob": "^2.6.1",
     "bcryptjs": "^3.0.3",
     "clsx": "^2.1.1",
     "date-fns": "^4.4.0",

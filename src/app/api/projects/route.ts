@@ -1,48 +1,23 @@
 import { NextResponse } from "next/server";
-import fs from "fs/promises";
-import path from "path";
+import { readDB, writeDB } from "@/lib/blob-db";
 import { projects as initialMockProjects } from "@/data/dashboard";
 
 export const dynamic = "force-dynamic";
 
-const DB_DIR = path.join(process.cwd(), ".worksblue");
-const DB_FILE = path.join(DB_DIR, "projects.json");
-
-// Helper to initialize DB if it doesn't exist
-async function initDB() {
-  try {
-    await fs.mkdir(DB_DIR, { recursive: true });
-    try {
-      await fs.access(DB_FILE);
-    } catch {
-      // File doesn't exist, seed with initial mock data
-      const seedData = initialMockProjects.map(p => ({
-        progress: 0,
-        createdAt: new Date().toISOString()
-      }));
-      await fs.writeFile(DB_FILE, JSON.stringify(seedData, null, 2));
-    }
-  } catch (error) {
-    console.error("Failed to initialize database:", error);
-  }
-}
+const DB_FILE = "projects.json";
 
 // GET all projects
 export async function GET() {
-  await initDB();
   try {
-    const data = await fs.readFile(DB_FILE, "utf-8");
-    const parsed = JSON.parse(data);
+    const seedData = initialMockProjects.map(p => ({
+      ...p,
+      progress: 0,
+      createdAt: new Date().toISOString()
+    }));
     
-    const withColumns = parsed.map((p: { 
-      id: string; 
-      columns?: { id: string; title: string; order: number; wipLimit: number | null }[]; 
-      priorities?: { id: string; name: string; color: string; order: number }[]; 
-      labels?: { id: string; name: string; color: string }[]; 
-      estimateUnit?: "hour" | "day"; 
-      issueNumberPrefix?: string; 
-      sprintSettings?: { defaultDurationWeeks: number; workingDays: number[]; autoCloseSprint: boolean; sprintPrefix: string };
-    }) => ({
+    const parsed = await readDB(DB_FILE, seedData);
+    
+    const withColumns = parsed.map((p: Record<string, unknown>) => ({
       ...p,
       columns: p.columns || [
         { id: "todo", title: "To Do", order: 0, wipLimit: null },
@@ -82,7 +57,6 @@ export async function GET() {
 
 // POST a new project
 export async function POST(request: Request) {
-  await initDB();
   try {
     const body = await request.json();
     const newProject = {
@@ -126,11 +100,10 @@ export async function POST(request: Request) {
       }
     };
 
-    const data = await fs.readFile(DB_FILE, "utf-8");
-    const projects = JSON.parse(data);
+    const projects = await readDB(DB_FILE);
     projects.push(newProject);
     
-    await fs.writeFile(DB_FILE, JSON.stringify(projects, null, 2));
+    await writeDB(DB_FILE, projects);
     
     return NextResponse.json(newProject, { status: 201 });
   } catch {

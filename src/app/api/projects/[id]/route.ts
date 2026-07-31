@@ -1,11 +1,9 @@
 import { NextResponse } from "next/server";
-import fs from "fs/promises";
-import path from "path";
+import { readDB, writeDB, deleteDB } from "@/lib/blob-db";
 
 export const dynamic = "force-dynamic";
 
-const DB_DIR = path.join(process.cwd(), ".worksblue");
-const DB_FILE = path.join(DB_DIR, "projects.json");
+const DB_FILE = "projects.json";
 
 export async function PATCH(
   request: Request,
@@ -13,9 +11,7 @@ export async function PATCH(
 ) {
   const params = await props.params;
   try {
-    const data = await fs.readFile(DB_FILE, "utf-8");
-    const projects = JSON.parse(data);
-    
+    const projects = await readDB(DB_FILE);
     const body = await request.json();
     const index = projects.findIndex((p: { id: string }) => p.id === params.id);
     
@@ -24,12 +20,13 @@ export async function PATCH(
     }
 
     projects[index] = { ...projects[index], ...body };
-    
-    await fs.writeFile(DB_FILE, JSON.stringify(projects, null, 2));
+    await writeDB(DB_FILE, projects);
     
     return NextResponse.json(projects[index]);
-  } catch {
-    return NextResponse.json({ error: "Failed to update project" }, { status: 500 });
+  } catch (err) {
+    const error = err as Error;
+    console.error("PATCH error:", error);
+    return NextResponse.json({ error: "Failed to update project", details: error.message }, { status: 500 });
   }
 }
 
@@ -39,9 +36,7 @@ export async function DELETE(
 ) {
   const params = await props.params;
   try {
-    const data = await fs.readFile(DB_FILE, "utf-8");
-    const projects = JSON.parse(data);
-    
+    const projects = await readDB(DB_FILE);
     const index = projects.findIndex((p: { id: string }) => p.id === params.id);
     
     if (index === -1) {
@@ -49,18 +44,15 @@ export async function DELETE(
     }
 
     projects.splice(index, 1);
-    await fs.writeFile(DB_FILE, JSON.stringify(projects, null, 2));
+    await writeDB(DB_FILE, projects);
     
     // Also delete the associated tasks file
-    const taskFile = path.join(DB_DIR, `tasks-${params.id}.json`);
-    try {
-      await fs.unlink(taskFile);
-    } catch {
-      // Ignore if task file doesn't exist
-    }
+    await deleteDB(`tasks-${params.id}.json`);
 
     return NextResponse.json({ success: true });
-  } catch {
-    return NextResponse.json({ error: "Failed to delete project" }, { status: 500 });
+  } catch (err) {
+    const error = err as Error;
+    console.error("DELETE error:", error);
+    return NextResponse.json({ error: "Failed to delete project", details: error.message }, { status: 500 });
   }
 }

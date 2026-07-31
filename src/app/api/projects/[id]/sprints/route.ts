@@ -1,25 +1,7 @@
 import { NextResponse } from "next/server";
-import fs from "fs/promises";
-import path from "path";
+import { readDB, writeDB } from "@/lib/blob-db";
 
 export const dynamic = "force-dynamic";
-
-const DB_DIR = path.join(process.cwd(), ".worksblue");
-
-async function getDbFile(projectId: string) {
-  await fs.mkdir(DB_DIR, { recursive: true });
-  return path.join(DB_DIR, `sprints-${projectId}.json`);
-}
-
-async function initDb(projectId: string) {
-  const dbFile = await getDbFile(projectId);
-  try {
-    await fs.access(dbFile);
-  } catch {
-    await fs.writeFile(dbFile, JSON.stringify([], null, 2));
-  }
-  return dbFile;
-}
 
 // GET all sprints for a project
 export async function GET(
@@ -27,12 +9,13 @@ export async function GET(
   props: { params: Promise<{ id: string }> }
 ) {
   const params = await props.params;
-  const dbFile = await initDb(params.id);
+  const dbFile = `sprints-${params.id}.json`;
   try {
-    const data = await fs.readFile(dbFile, "utf-8");
-    return NextResponse.json(JSON.parse(data));
-  } catch {
-    return NextResponse.json({ error: "Failed to read sprints" }, { status: 500 });
+    const sprints = await readDB(dbFile, []);
+    return NextResponse.json(sprints);
+  } catch (error: unknown) {
+    console.error("GET sprints error:", error);
+    return NextResponse.json({ error: "Failed to read sprints", details: (error as Error).message }, { status: 500 });
   }
 }
 
@@ -42,7 +25,7 @@ export async function POST(
   props: { params: Promise<{ id: string }> }
 ) {
   const params = await props.params;
-  const dbFile = await initDb(params.id);
+  const dbFile = `sprints-${params.id}.json`;
   try {
     const body = await request.json();
     const newSprint = {
@@ -54,14 +37,14 @@ export async function POST(
       updatedAt: new Date().toISOString(),
     };
 
-    const data = await fs.readFile(dbFile, "utf-8");
-    const sprints = JSON.parse(data);
+    const sprints = await readDB(dbFile, []);
     sprints.push(newSprint);
 
-    await fs.writeFile(dbFile, JSON.stringify(sprints, null, 2));
+    await writeDB(dbFile, sprints);
 
     return NextResponse.json(newSprint, { status: 201 });
-  } catch {
-    return NextResponse.json({ error: "Failed to create sprint" }, { status: 500 });
+  } catch (error: unknown) {
+    console.error("POST sprint error:", error);
+    return NextResponse.json({ error: "Failed to create sprint", details: (error as Error).message }, { status: 500 });
   }
 }

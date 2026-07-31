@@ -1,14 +1,7 @@
 import { NextResponse } from "next/server";
-import fs from "fs/promises";
-import path from "path";
+import { readDB, writeDB } from "@/lib/blob-db";
 
 export const dynamic = "force-dynamic";
-
-const DB_DIR = path.join(process.cwd(), ".worksblue");
-
-async function getDbFile(projectId: string) {
-  return path.join(DB_DIR, `sprints-${projectId}.json`);
-}
 
 // POST cancel sprint
 export async function POST(
@@ -16,10 +9,9 @@ export async function POST(
   props: { params: Promise<{ id: string; sprintId: string }> }
 ) {
   const params = await props.params;
-  const dbFile = await getDbFile(params.id);
+  const dbFile = `sprints-${params.id}.json`;
   try {
-    const data = await fs.readFile(dbFile, "utf-8");
-    const sprints = JSON.parse(data);
+    const sprints = await readDB(dbFile, []);
 
     const index = sprints.findIndex((s: { id: string }) => s.id === params.sprintId);
     if (index === -1) {
@@ -37,10 +29,11 @@ export async function POST(
       updatedAt: new Date().toISOString(),
     };
 
-    await fs.writeFile(dbFile, JSON.stringify(sprints, null, 2));
+    await writeDB(dbFile, sprints);
 
     return NextResponse.json(sprints[index]);
-  } catch {
-    return NextResponse.json({ error: "Failed to cancel sprint" }, { status: 500 });
+  } catch (error: unknown) {
+    console.error("POST sprint cancel error:", error);
+    return NextResponse.json({ error: "Failed to cancel sprint", details: (error as Error).message }, { status: 500 });
   }
 }

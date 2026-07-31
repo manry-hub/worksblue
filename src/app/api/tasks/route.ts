@@ -1,34 +1,21 @@
 import { NextResponse } from "next/server";
-import fs from "fs/promises";
-import path from "path";
+import { readDB, writeDB } from "@/lib/blob-db";
 
 export const dynamic = "force-dynamic";
 
-const DB_DIR = path.join(process.cwd(), ".worksblue");
-const TASKS_FILE = path.join(DB_DIR, "tasks-global.json");
-
-async function initDB() {
-  await fs.mkdir(DB_DIR, { recursive: true });
-  try {
-    await fs.access(TASKS_FILE);
-  } catch {
-    await fs.writeFile(TASKS_FILE, JSON.stringify([], null, 2));
-  }
-  return TASKS_FILE;
-}
+const TASKS_FILE = "tasks-global.json";
 
 export async function GET() {
-  const dbFile = await initDB();
   try {
-    const data = await fs.readFile(dbFile, "utf-8");
-    return NextResponse.json(JSON.parse(data));
-  } catch {
-    return NextResponse.json({ error: "Failed to read global tasks" }, { status: 500 });
+    const data = await readDB(TASKS_FILE, []);
+    return NextResponse.json(data);
+  } catch (error: unknown) {
+    console.error("GET tasks error:", error);
+    return NextResponse.json({ error: "Failed to read global tasks", details: (error as Error).message }, { status: 500 });
   }
 }
 
 export async function POST(request: Request) {
-  const dbFile = await initDB();
   try {
     const body = await request.json();
     const newTask = {
@@ -43,13 +30,13 @@ export async function POST(request: Request) {
       completed: body.completed || false,
     };
 
-    const data = await fs.readFile(dbFile, "utf-8");
-    const tasks = JSON.parse(data);
+    const tasks = await readDB(TASKS_FILE, []);
     tasks.push(newTask);
     
-    await fs.writeFile(dbFile, JSON.stringify(tasks, null, 2));
+    await writeDB(TASKS_FILE, tasks);
     return NextResponse.json(newTask, { status: 201 });
-  } catch {
-    return NextResponse.json({ error: "Failed to create task" }, { status: 500 });
+  } catch (error: unknown) {
+    console.error("POST tasks error:", error);
+    return NextResponse.json({ error: "Failed to create task", details: (error as Error).message }, { status: 500 });
   }
 }

@@ -1,16 +1,13 @@
 import { NextResponse } from "next/server";
-import fs from "fs/promises";
-import path from "path";
+import { readDB, writeDB } from "@/lib/blob-db";
 
 export const dynamic = "force-dynamic";
 
-const DB_DIR = path.join(process.cwd(), ".worksblue");
-const PROJECTS_FILE = path.join(DB_DIR, "projects.json");
+const PROJECTS_FILE = "projects.json";
 
 async function syncProjectStats(projectId: string, tasks: { status: string }[]) {
   try {
-    const data = await fs.readFile(PROJECTS_FILE, "utf-8");
-    const projects = JSON.parse(data);
+    const projects = await readDB(PROJECTS_FILE, []);
     const index = projects.findIndex((p: { id: string }) => p.id === projectId);
     
     if (index !== -1) {
@@ -23,15 +20,11 @@ async function syncProjectStats(projectId: string, tasks: { status: string }[]) 
       projects[index].totalIssues = boardTasksCount;
       projects[index].progress = progress;
       
-      await fs.writeFile(PROJECTS_FILE, JSON.stringify(projects, null, 2));
+      await writeDB(PROJECTS_FILE, projects);
     }
   } catch (e) {
     console.error("Failed to sync project stats", e);
   }
-}
-
-async function getDbFile(projectId: string) {
-  return path.join(DB_DIR, `tasks-${projectId}.json`);
 }
 
 export async function PATCH(
@@ -39,11 +32,9 @@ export async function PATCH(
   props: { params: Promise<{ id: string; taskId: string }> }
 ) {
   const params = await props.params;
-  const dbFile = await getDbFile(params.id);
+  const dbFile = `tasks-${params.id}.json`;
   try {
-    const data = await fs.readFile(dbFile, "utf-8");
-    const tasks = JSON.parse(data);
-    
+    const tasks = await readDB(dbFile, []);
     const body = await request.json();
     const index = tasks.findIndex((t: { id: string }) => t.id === params.taskId);
     
@@ -53,12 +44,13 @@ export async function PATCH(
 
     tasks[index] = { ...tasks[index], ...body, updatedAt: new Date().toISOString() };
     
-    await fs.writeFile(dbFile, JSON.stringify(tasks, null, 2));
+    await writeDB(dbFile, tasks);
     await syncProjectStats(params.id, tasks);
     
     return NextResponse.json(tasks[index]);
-  } catch {
-    return NextResponse.json({ error: "Failed to update task" }, { status: 500 });
+  } catch (error: unknown) {
+    console.error("PATCH task detail error:", error);
+    return NextResponse.json({ error: "Failed to update task", details: (error as Error).message }, { status: 500 });
   }
 }
 
@@ -67,11 +59,9 @@ export async function DELETE(
   props: { params: Promise<{ id: string; taskId: string }> }
 ) {
   const params = await props.params;
-  const dbFile = await getDbFile(params.id);
+  const dbFile = `tasks-${params.id}.json`;
   try {
-    const data = await fs.readFile(dbFile, "utf-8");
-    const tasks = JSON.parse(data);
-    
+    const tasks = await readDB(dbFile, []);
     const index = tasks.findIndex((t: { id: string }) => t.id === params.taskId);
     
     if (index === -1) {
@@ -79,11 +69,12 @@ export async function DELETE(
     }
 
     tasks.splice(index, 1);
-    await fs.writeFile(dbFile, JSON.stringify(tasks, null, 2));
+    await writeDB(dbFile, tasks);
     await syncProjectStats(params.id, tasks);
     
     return NextResponse.json({ success: true });
-  } catch {
-    return NextResponse.json({ error: "Failed to delete task" }, { status: 500 });
+  } catch (error: unknown) {
+    console.error("DELETE task detail error:", error);
+    return NextResponse.json({ error: "Failed to delete task", details: (error as Error).message }, { status: 500 });
   }
 }
