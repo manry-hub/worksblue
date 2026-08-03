@@ -245,32 +245,19 @@ export default function DesignPage(props: { params: Promise<{ id: string }> }) {
       </div>
 
       <div className="flex flex-col gap-6">
-        
+        <DiagramSection 
+        title="Context Diagram" 
+        description="High-level overview of the system and its environment."
+        field="contextDiagrams"
+        items={design.contextDiagrams}
+      />
         <DiagramSection 
           title="Usecase Diagram" 
           description="Actors and their interactions with the system."
           field="usecaseDiagrams"
           items={design.usecaseDiagrams}
         />
-
-        <DiagramSection 
-          title="Entity Relationship Diagram (ERD)" 
-          description="Database schema and data relationships."
-          field="erds"
-          items={design.erds}
-        />
-        <DiagramSection 
-          title="Context Diagram" 
-          description="High-level overview of the system and its environment."
-          field="contextDiagrams"
-          items={design.contextDiagrams}
-        />
-
-        <RbacMatrix projectId={projectId} />
-        
-        <ApiDesignTable projectId={projectId} />
-
-        <DiagramSection 
+       <DiagramSection 
           title="UI/UX Design" 
           description="Link to Figma or draw UI wireframes with Excalidraw."
           field="uiuxDiagrams"
@@ -325,7 +312,16 @@ export default function DesignPage(props: { params: Promise<{ id: string }> }) {
           </div>
         </DiagramSection>
 
-      <TechSpecsTable projectId={projectId} />
+        <DiagramSection 
+          title="Entity Relationship Diagram (ERD)" 
+          description="Database schema and data relationships."
+          field="erds"
+          items={design.erds}
+        />
+
+        <ApiDesignTable projectId={projectId} />
+        <RbacMatrix projectId={projectId} />
+        <TechSpecsTable projectId={projectId} />
       </div>
 
       {activeDiagram && (
