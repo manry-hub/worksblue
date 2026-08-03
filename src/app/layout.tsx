@@ -1,4 +1,8 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
+
+export const viewport: Viewport = {
+  themeColor: "#000000",
+};
 import "./globals.css";
 import "@excalidraw/excalidraw/index.css";
 import { AppProviders } from "@/components/app-providers";
