@@ -29,6 +29,7 @@ interface IssueState {
   issues: Issue[];
   isLoading: boolean;
   error: string | null;
+  lastMutatedAt: number;
   fetchIssues: (projectId: string) => Promise<void>;
   addIssue: (projectId: string, issue: Omit<Issue, "id" | "projectId" | "createdAt" | "updatedAt">) => Promise<void>;
   updateIssue: (projectId: string, issueId: string, data: Partial<Issue>) => Promise<void>;
@@ -36,10 +37,11 @@ interface IssueState {
   updateIssuesBulk: (projectId: string, newIssues: Issue[]) => Promise<void>;
 }
 
-export const useIssueStore = create<IssueState>((set) => ({
+export const useIssueStore = create<IssueState>((set, get) => ({
   issues: [],
   isLoading: false,
   error: null,
+  lastMutatedAt: 0,
   
   fetchIssues: async (projectId) => {
     set({ isLoading: true, error: null });
@@ -47,7 +49,11 @@ export const useIssueStore = create<IssueState>((set) => ({
       const res = await fetch(`/api/projects/${projectId}/tasks`);
       if (!res.ok) throw new Error("Failed to fetch issues");
       const data = await res.json();
-      set({ issues: data, isLoading: false });
+      if (Date.now() - get().lastMutatedAt > 5000) {
+        set({ issues: data, isLoading: false });
+      } else {
+        set({ isLoading: false });
+      }
     } catch (err) {
       set({ error: err instanceof Error ? err.message : "Unknown error", isLoading: false });
     }
@@ -66,7 +72,8 @@ export const useIssueStore = create<IssueState>((set) => ({
       
       set((state) => ({
         issues: [...state.issues, newIssue],
-        isLoading: false
+        isLoading: false,
+        lastMutatedAt: Date.now()
       }));
     } catch (err) {
       set({ error: err instanceof Error ? err.message : "Unknown error", isLoading: false });
@@ -76,7 +83,8 @@ export const useIssueStore = create<IssueState>((set) => ({
   updateIssue: async (projectId, issueId, data) => {
     // Optimistic Update
     set((state) => ({
-      issues: state.issues.map(i => i.id === issueId ? { ...i, ...data } as Issue : i)
+      issues: state.issues.map(i => i.id === issueId ? { ...i, ...data } as Issue : i),
+      lastMutatedAt: Date.now()
     }));
     try {
       const res = await fetch(`/api/projects/${projectId}/tasks/${issueId}`, {
@@ -88,7 +96,8 @@ export const useIssueStore = create<IssueState>((set) => ({
       const updatedIssue = await res.json();
       
       set((state) => ({
-        issues: state.issues.map(i => i.id === issueId ? updatedIssue : i)
+        issues: state.issues.map(i => i.id === issueId ? updatedIssue : i),
+        lastMutatedAt: Date.now()
       }));
     } catch (err) {
       console.error(err);
@@ -99,7 +108,8 @@ export const useIssueStore = create<IssueState>((set) => ({
   deleteIssue: async (projectId, issueId) => {
     // Optimistic Update
     set((state) => ({
-      issues: state.issues.filter(i => i.id !== issueId)
+      issues: state.issues.filter(i => i.id !== issueId),
+      lastMutatedAt: Date.now()
     }));
     try {
       const res = await fetch(`/api/projects/${projectId}/tasks/${issueId}`, {
@@ -114,7 +124,7 @@ export const useIssueStore = create<IssueState>((set) => ({
 
   updateIssuesBulk: async (projectId, newIssues) => {
     // Optimistic UI update
-    set({ issues: newIssues });
+    set({ issues: newIssues, lastMutatedAt: Date.now() });
     try {
       const res = await fetch(`/api/projects/${projectId}/tasks`, {
         method: "PATCH",

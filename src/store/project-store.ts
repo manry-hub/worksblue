@@ -142,6 +142,7 @@ interface ProjectState {
   projects: Project[];
   isLoading: boolean;
   error: string | null;
+  lastMutatedAt: number;
   fetchProjects: () => Promise<void>;
   addProject: (project: Omit<Project, "id" | "progress" | "openIssues" | "totalIssues" | "createdAt" | "version" | "columns">) => Promise<void>;
   updateProject: (id: string, projectData: Partial<Project>) => Promise<void>;
@@ -153,6 +154,7 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
   projects: [],
   isLoading: false,
   error: null,
+  lastMutatedAt: 0,
   
   fetchProjects: async () => {
     set({ isLoading: true, error: null });
@@ -160,7 +162,11 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
       const res = await fetch("/api/projects");
       if (!res.ok) throw new Error("Failed to fetch projects");
       const data = await res.json();
-      set({ projects: data, isLoading: false });
+      if (Date.now() - get().lastMutatedAt > 5000) {
+        set({ projects: data, isLoading: false });
+      } else {
+        set({ isLoading: false });
+      }
     } catch (err) {
       set({ error: err instanceof Error ? err.message : "Unknown error", isLoading: false });
     }
@@ -180,7 +186,8 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
     } as Project;
 
     set((state) => ({
-      projects: [...state.projects, optimisticProject]
+      projects: [...state.projects, optimisticProject],
+      lastMutatedAt: Date.now()
     }));
 
     try {
@@ -193,7 +200,8 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
       const newProject = await res.json();
       
       set((state) => ({
-        projects: state.projects.map(p => p.id === tempId ? newProject : p)
+        projects: state.projects.map(p => p.id === tempId ? newProject : p),
+        lastMutatedAt: Date.now()
       }));
     } catch (err) {
       console.error(err);
@@ -204,7 +212,8 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
   updateProject: async (id, projectData) => {
     // Optimistic Update
     set((state) => ({
-      projects: state.projects.map(p => p.id === id ? { ...p, ...projectData } as Project : p)
+      projects: state.projects.map(p => p.id === id ? { ...p, ...projectData } as Project : p),
+      lastMutatedAt: Date.now()
     }));
 
     try {
@@ -217,7 +226,8 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
       const updatedProject = await res.json();
       
       set((state) => ({
-        projects: state.projects.map(p => p.id === id ? updatedProject : p)
+        projects: state.projects.map(p => p.id === id ? updatedProject : p),
+        lastMutatedAt: Date.now()
       }));
     } catch (err) {
       console.error(err);
@@ -228,7 +238,8 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
   deleteProject: async (id) => {
     // Optimistic Update
     set((state) => ({
-      projects: state.projects.filter(p => p.id !== id)
+      projects: state.projects.filter(p => p.id !== id),
+      lastMutatedAt: Date.now()
     }));
 
     try {

@@ -6,6 +6,7 @@ interface SprintState {
   sprints: Sprint[];
   isLoading: boolean;
   error: string | null;
+  lastMutatedAt: number;
   fetchSprints: (projectId: string) => Promise<void>;
   addSprint: (projectId: string, sprint: Omit<Sprint, "id" | "projectId" | "createdAt" | "updatedAt">) => Promise<Sprint | null>;
   updateSprint: (projectId: string, sprintId: string, data: Partial<Sprint>) => Promise<void>;
@@ -23,6 +24,7 @@ export const useSprintStore = create<SprintState>((set, get) => ({
   sprints: [],
   isLoading: false,
   error: null,
+  lastMutatedAt: 0,
 
   fetchSprints: async (projectId) => {
     set({ isLoading: true, error: null });
@@ -30,7 +32,11 @@ export const useSprintStore = create<SprintState>((set, get) => ({
       const res = await fetch(`/api/projects/${projectId}/sprints`);
       if (!res.ok) throw new Error("Failed to fetch sprints");
       const data = await res.json();
-      set({ sprints: data, isLoading: false });
+      if (Date.now() - get().lastMutatedAt > 5000) {
+        set({ sprints: data, isLoading: false });
+      } else {
+        set({ isLoading: false });
+      }
     } catch (err) {
       set({ error: err instanceof Error ? err.message : "Unknown error", isLoading: false });
     }
@@ -46,7 +52,7 @@ export const useSprintStore = create<SprintState>((set, get) => ({
       });
       if (!res.ok) throw new Error("Failed to create sprint");
       const newSprint = await res.json();
-      set((state) => ({ sprints: [...state.sprints, newSprint], isLoading: false }));
+      set((state) => ({ sprints: [...state.sprints, newSprint], isLoading: false, lastMutatedAt: Date.now() }));
       return newSprint;
     } catch (err) {
       set({ error: err instanceof Error ? err.message : "Unknown error", isLoading: false });
@@ -58,6 +64,7 @@ export const useSprintStore = create<SprintState>((set, get) => ({
     // Optimistic Update
     set((state) => ({
       sprints: state.sprints.map((s) => (s.id === sprintId ? { ...s, ...data } as Sprint : s)),
+      lastMutatedAt: Date.now()
     }));
     try {
       const res = await fetch(`/api/projects/${projectId}/sprints/${sprintId}`, {
@@ -78,7 +85,7 @@ export const useSprintStore = create<SprintState>((set, get) => ({
 
   deleteSprint: async (projectId, sprintId) => {
     // Optimistic Update
-    set((state) => ({ sprints: state.sprints.filter((s) => s.id !== sprintId) }));
+    set((state) => ({ sprints: state.sprints.filter((s) => s.id !== sprintId), lastMutatedAt: Date.now() }));
     try {
       const res = await fetch(`/api/projects/${projectId}/sprints/${sprintId}`, {
         method: "DELETE",
@@ -94,6 +101,7 @@ export const useSprintStore = create<SprintState>((set, get) => ({
     // Optimistic Update
     set((state) => ({
       sprints: state.sprints.map((s) => (s.id === sprintId ? { ...s, status: "Active" } as Sprint : s)),
+      lastMutatedAt: Date.now()
     }));
     try {
       const res = await fetch(`/api/projects/${projectId}/sprints/${sprintId}/start`, {
@@ -103,6 +111,7 @@ export const useSprintStore = create<SprintState>((set, get) => ({
       const updatedSprint = await res.json();
       set((state) => ({
         sprints: state.sprints.map((s) => (s.id === sprintId ? updatedSprint : s)),
+        lastMutatedAt: Date.now()
       }));
     } catch (err) {
       console.error(err);
@@ -114,6 +123,7 @@ export const useSprintStore = create<SprintState>((set, get) => ({
     // Optimistic Update
     set((state) => ({
       sprints: state.sprints.map((s) => (s.id === sprintId ? { ...s, status: "Completed" } as Sprint : s)),
+      lastMutatedAt: Date.now()
     }));
     try {
       const res = await fetch(`/api/projects/${projectId}/sprints/${sprintId}/complete`, {
@@ -123,6 +133,7 @@ export const useSprintStore = create<SprintState>((set, get) => ({
       const updatedSprint = await res.json();
       set((state) => ({
         sprints: state.sprints.map((s) => (s.id === sprintId ? updatedSprint : s)),
+        lastMutatedAt: Date.now()
       }));
     } catch (err) {
       console.error(err);
@@ -134,6 +145,7 @@ export const useSprintStore = create<SprintState>((set, get) => ({
     // Optimistic Update
     set((state) => ({
       sprints: state.sprints.map((s) => (s.id === sprintId ? { ...s, status: "Cancelled" } as Sprint : s)),
+      lastMutatedAt: Date.now()
     }));
     try {
       const res = await fetch(`/api/projects/${projectId}/sprints/${sprintId}/cancel`, {
@@ -143,6 +155,7 @@ export const useSprintStore = create<SprintState>((set, get) => ({
       const updatedSprint = await res.json();
       set((state) => ({
         sprints: state.sprints.map((s) => (s.id === sprintId ? updatedSprint : s)),
+        lastMutatedAt: Date.now()
       }));
     } catch (err) {
       console.error(err);

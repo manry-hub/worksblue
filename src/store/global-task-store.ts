@@ -15,6 +15,7 @@ export interface GlobalTask {
 interface GlobalTaskStore {
   tasks: GlobalTask[];
   isLoading: boolean;
+  lastMutatedAt: number;
   fetchTasks: () => Promise<void>;
   addTask: (task: Partial<GlobalTask>) => Promise<void>;
   updateTask: (id: string, updates: Partial<GlobalTask>) => Promise<void>;
@@ -24,6 +25,7 @@ interface GlobalTaskStore {
 export const useGlobalTaskStore = create<GlobalTaskStore>((set, get) => ({
   tasks: [],
   isLoading: false,
+  lastMutatedAt: 0,
   
   fetchTasks: async () => {
     set({ isLoading: true });
@@ -31,7 +33,11 @@ export const useGlobalTaskStore = create<GlobalTaskStore>((set, get) => ({
       const res = await fetch('/api/tasks');
       if (res.ok) {
         const tasks = await res.json();
-        set({ tasks, isLoading: false });
+        if (Date.now() - get().lastMutatedAt > 5000) {
+          set({ tasks, isLoading: false });
+        } else {
+          set({ isLoading: false });
+        }
       } else {
         set({ isLoading: false });
       }
@@ -45,7 +51,10 @@ export const useGlobalTaskStore = create<GlobalTaskStore>((set, get) => ({
     const tempId = `temp-${Date.now()}`;
     const optimisticTask = { ...task, id: tempId, parentId: task.parentId || null } as GlobalTask;
     
-    set((state) => ({ tasks: [...state.tasks, optimisticTask] }));
+    set((state) => ({ 
+      tasks: [...state.tasks, optimisticTask],
+      lastMutatedAt: Date.now()
+    }));
 
     try {
       const res = await fetch('/api/tasks', {
@@ -57,7 +66,8 @@ export const useGlobalTaskStore = create<GlobalTaskStore>((set, get) => ({
         const newTask = await res.json();
         // Replace temp task with actual task from server
         set((state) => ({ 
-          tasks: state.tasks.map(t => t.id === tempId ? newTask : t)
+          tasks: state.tasks.map(t => t.id === tempId ? newTask : t),
+          lastMutatedAt: Date.now()
         }));
       } else {
         // Revert on failure
@@ -74,6 +84,7 @@ export const useGlobalTaskStore = create<GlobalTaskStore>((set, get) => ({
     // Optimistic update
     set((state) => ({
       tasks: state.tasks.map((t) => (t.id === id ? { ...t, ...updates } : t)),
+      lastMutatedAt: Date.now()
     }));
     
     try {
@@ -105,6 +116,7 @@ export const useGlobalTaskStore = create<GlobalTaskStore>((set, get) => ({
 
     set((state) => ({
       tasks: state.tasks.filter((t) => !idsToDelete.has(t.id)),
+      lastMutatedAt: Date.now()
     }));
 
     try {
