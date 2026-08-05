@@ -29,10 +29,10 @@ export const useSprintStore = create<SprintState>((set, get) => ({
   fetchSprints: async (projectId) => {
     set({ isLoading: true, error: null });
     try {
-      const res = await fetch(`/api/projects/${projectId}/sprints`);
+      const res = await fetch(`/api/projects/${projectId}/sprints?_t=${Date.now()}`);
       if (!res.ok) throw new Error("Failed to fetch sprints");
       const data = await res.json();
-      if (Date.now() - get().lastMutatedAt > 5000) {
+      if (Date.now() - get().lastMutatedAt > 15000) {
         set({ sprints: data, isLoading: false });
       } else {
         set({ isLoading: false });
@@ -73,10 +73,8 @@ export const useSprintStore = create<SprintState>((set, get) => ({
         body: JSON.stringify(data),
       });
       if (!res.ok) throw new Error("Failed to update sprint");
-      const updatedSprint = await res.json();
-      set((state) => ({
-        sprints: state.sprints.map((s) => (s.id === sprintId ? updatedSprint : s)),
-      }));
+      
+      set({ lastMutatedAt: Date.now() });
     } catch (err) {
       console.error(err);
       set({ error: err instanceof Error ? err.message : "Unknown error" });
@@ -104,15 +102,12 @@ export const useSprintStore = create<SprintState>((set, get) => ({
       lastMutatedAt: Date.now()
     }));
     try {
-      const res = await fetch(`/api/projects/${projectId}/sprints/${sprintId}/start`, {
+      const res = await fetch(`/api/projects/${projectId}/sprints/${sprintId}/start?_t=${Date.now()}`, {
         method: "POST",
       });
       if (!res.ok) throw new Error("Failed to start sprint");
-      const updatedSprint = await res.json();
-      set((state) => ({
-        sprints: state.sprints.map((s) => (s.id === sprintId ? updatedSprint : s)),
-        lastMutatedAt: Date.now()
-      }));
+      
+      set({ lastMutatedAt: Date.now() });
     } catch (err) {
       console.error(err);
       set({ error: err instanceof Error ? err.message : "Unknown error" });
@@ -130,11 +125,8 @@ export const useSprintStore = create<SprintState>((set, get) => ({
         method: "POST",
       });
       if (!res.ok) throw new Error("Failed to complete sprint");
-      const updatedSprint = await res.json();
-      set((state) => ({
-        sprints: state.sprints.map((s) => (s.id === sprintId ? updatedSprint : s)),
-        lastMutatedAt: Date.now()
-      }));
+      
+      set({ lastMutatedAt: Date.now() });
     } catch (err) {
       console.error(err);
       set({ error: err instanceof Error ? err.message : "Unknown error" });
@@ -152,11 +144,8 @@ export const useSprintStore = create<SprintState>((set, get) => ({
         method: "POST",
       });
       if (!res.ok) throw new Error("Failed to cancel sprint");
-      const updatedSprint = await res.json();
-      set((state) => ({
-        sprints: state.sprints.map((s) => (s.id === sprintId ? updatedSprint : s)),
-        lastMutatedAt: Date.now()
-      }));
+      
+      set({ lastMutatedAt: Date.now() });
     } catch (err) {
       console.error(err);
       set({ error: err instanceof Error ? err.message : "Unknown error" });

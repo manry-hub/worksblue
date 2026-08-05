@@ -46,6 +46,15 @@ async function getBlobUrl(filename: string): Promise<string | null> {
 export async function readDB(filename: string, seedData: any = null): Promise<any> {
   checkToken();
   try {
+    const url = await getBlobUrl(filename);
+    if (url) {
+      const res = await fetch(`${url}?_t=${Date.now()}`);
+      if (res.ok) {
+        return await res.json();
+      }
+    }
+    
+    // Fallback to get if url not found or fetch fails
     const result = await get(filename, { access: 'private', useCache: false });
     if (result && result.stream) {
       return await new Response(result.stream).json();

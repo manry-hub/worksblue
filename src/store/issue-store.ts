@@ -46,10 +46,10 @@ export const useIssueStore = create<IssueState>((set, get) => ({
   fetchIssues: async (projectId) => {
     set({ isLoading: true, error: null });
     try {
-      const res = await fetch(`/api/projects/${projectId}/tasks`);
+      const res = await fetch(`/api/projects/${projectId}/tasks?_t=${Date.now()}`);
       if (!res.ok) throw new Error("Failed to fetch issues");
       const data = await res.json();
-      if (Date.now() - get().lastMutatedAt > 5000) {
+      if (Date.now() - get().lastMutatedAt > 15000) {
         set({ issues: data, isLoading: false });
       } else {
         set({ isLoading: false });
@@ -93,12 +93,8 @@ export const useIssueStore = create<IssueState>((set, get) => ({
         body: JSON.stringify(data),
       });
       if (!res.ok) throw new Error("Failed to update issue");
-      const updatedIssue = await res.json();
       
-      set((state) => ({
-        issues: state.issues.map(i => i.id === issueId ? updatedIssue : i),
-        lastMutatedAt: Date.now()
-      }));
+      set({ lastMutatedAt: Date.now() });
     } catch (err) {
       console.error(err);
       set({ error: err instanceof Error ? err.message : "Unknown error" });
@@ -134,6 +130,7 @@ export const useIssueStore = create<IssueState>((set, get) => ({
       if (!res.ok) {
         throw new Error("Failed to sync issues");
       }
+      set({ lastMutatedAt: Date.now() });
     } catch (err) {
       console.error("Failed to sync issue reorder", err);
     }

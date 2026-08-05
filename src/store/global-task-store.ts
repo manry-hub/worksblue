@@ -30,10 +30,10 @@ export const useGlobalTaskStore = create<GlobalTaskStore>((set, get) => ({
   fetchTasks: async () => {
     set({ isLoading: true });
     try {
-      const res = await fetch('/api/tasks');
+      const res = await fetch(`/api/tasks?_t=${Date.now()}`);
       if (res.ok) {
         const tasks = await res.json();
-        if (Date.now() - get().lastMutatedAt > 5000) {
+        if (Date.now() - get().lastMutatedAt > 15000) {
           set({ tasks, isLoading: false });
         } else {
           set({ isLoading: false });

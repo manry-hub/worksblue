@@ -159,10 +159,10 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
   fetchProjects: async () => {
     set({ isLoading: true, error: null });
     try {
-      const res = await fetch("/api/projects");
+      const res = await fetch(`/api/projects?_t=${Date.now()}`);
       if (!res.ok) throw new Error("Failed to fetch projects");
       const data = await res.json();
-      if (Date.now() - get().lastMutatedAt > 5000) {
+      if (Date.now() - get().lastMutatedAt > 15000) {
         set({ projects: data, isLoading: false });
       } else {
         set({ isLoading: false });
@@ -223,12 +223,9 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
         body: JSON.stringify(projectData),
       });
       if (!res.ok) throw new Error("Failed to update project");
-      const updatedProject = await res.json();
+      // Do not override with server response to prevent flickering from stale reads during concurrent writes
       
-      set((state) => ({
-        projects: state.projects.map(p => p.id === id ? updatedProject : p),
-        lastMutatedAt: Date.now()
-      }));
+      set({ lastMutatedAt: Date.now() });
     } catch (err) {
       console.error(err);
       set({ error: err instanceof Error ? err.message : "Unknown error" });
