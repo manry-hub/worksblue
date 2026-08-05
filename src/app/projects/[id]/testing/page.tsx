@@ -70,6 +70,7 @@ export default function TestingPage(props: { params: Promise<{ id: string }> }) 
 
   const [isGrouped, setIsGrouped] = useState(true);
   const [previewCase, setPreviewCase] = useState<TestCase | null>(null);
+  const [focusedTcId, setFocusedTcId] = useState<string | null>(null);
 
   useEffect(() => {
     if (!project) {
@@ -105,6 +106,7 @@ export default function TestingPage(props: { params: Promise<{ id: string }> }) 
       executionStatus: "Pending",
       notes: ""
     };
+    setFocusedTcId(newId);
     saveChanges({ testCases: [...testCases, newCase] });
   };
 
@@ -149,6 +151,8 @@ export default function TestingPage(props: { params: Promise<{ id: string }> }) 
                   <EditableInput
                     value={item.testCaseId}
                     onSave={(val) => updateTestCase(item.id, 'testCaseId', val)}
+                    onCtrlEnter={() => addTestCase(groupId)}
+                    autoFocus={item.id === focusedTcId}
                     placeholder="TC-001"
                     className="w-full bg-transparent border-none text-foreground font-mono text-xs focus:ring-1 focus:ring-accent rounded px-2 py-1.5 outline-none"
                   />
@@ -158,6 +162,7 @@ export default function TestingPage(props: { params: Promise<{ id: string }> }) 
                     value={item.testSteps}
                     onSave={(val) => updateTestCase(item.id, 'testSteps', val)}
                     onInput={handleTextareaResize}
+                    onCtrlEnter={() => addTestCase(groupId)}
                     placeholder="1. Go to login..."
                     className="w-full bg-transparent border-none text-foreground text-sm focus:ring-1 focus:ring-accent rounded px-2 py-1.5 resize-none overflow-hidden min-h-[38px] custom-scrollbar outline-none"
                   />
@@ -167,6 +172,7 @@ export default function TestingPage(props: { params: Promise<{ id: string }> }) 
                     value={item.inputData}
                     onSave={(val) => updateTestCase(item.id, 'inputData', val)}
                     onInput={handleTextareaResize}
+                    onCtrlEnter={() => addTestCase(groupId)}
                     placeholder="user / pass"
                     className="w-full bg-transparent border-none text-foreground text-sm focus:ring-1 focus:ring-accent rounded px-2 py-1.5 resize-none overflow-hidden min-h-[38px] custom-scrollbar outline-none"
                   />
@@ -176,6 +182,7 @@ export default function TestingPage(props: { params: Promise<{ id: string }> }) 
                     value={item.expectedResult}
                     onSave={(val) => updateTestCase(item.id, 'expectedResult', val)}
                     onInput={handleTextareaResize}
+                    onCtrlEnter={() => addTestCase(groupId)}
                     placeholder="Login success"
                     className="w-full bg-transparent border-none text-foreground text-sm focus:ring-1 focus:ring-accent rounded px-2 py-1.5 resize-none overflow-hidden min-h-[38px] custom-scrollbar outline-none"
                   />
@@ -185,6 +192,7 @@ export default function TestingPage(props: { params: Promise<{ id: string }> }) 
                     value={item.actualResult}
                     onSave={(val) => updateTestCase(item.id, 'actualResult', val)}
                     onInput={handleTextareaResize}
+                    onCtrlEnter={() => addTestCase(groupId)}
                     placeholder="Actual outcome"
                     className="w-full bg-transparent border-none text-foreground text-sm focus:ring-1 focus:ring-accent rounded px-2 py-1.5 resize-none overflow-hidden min-h-[38px] custom-scrollbar outline-none"
                   />
@@ -209,6 +217,7 @@ export default function TestingPage(props: { params: Promise<{ id: string }> }) 
                     value={item.notes}
                     onSave={(val) => updateTestCase(item.id, 'notes', val)}
                     onInput={handleTextareaResize}
+                    onCtrlEnter={() => addTestCase(groupId)}
                     placeholder="Any notes..."
                     className="w-full bg-transparent border-none text-foreground text-sm focus:ring-1 focus:ring-accent rounded px-2 py-1.5 resize-none overflow-hidden min-h-[38px] custom-scrollbar outline-none"
                   />

@@ -1,6 +1,6 @@
 "use client";
 
-import { use, useEffect } from "react";
+import { use, useEffect, useState } from "react";
 import { useProjectStore, type Project } from "@/store/project-store";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -16,6 +16,10 @@ export default function DeploymentPage(props: { params: Promise<{ id: string }> 
   const projectId = params.id;
   const { getProject, updateProject, fetchProjects } = useProjectStore();
   const project = getProject(projectId);
+
+  const [focusedAccId, setFocusedAccId] = useState<string | null>(null);
+  const [focusedEnvId, setFocusedEnvId] = useState<string | null>(null);
+  const [focusedSeedId, setFocusedSeedId] = useState<string | null>(null);
 
   useEffect(() => {
     if (!project) {
@@ -41,6 +45,7 @@ export default function DeploymentPage(props: { params: Promise<{ id: string }> 
   // Generic helpers for arrays
   const addAccount = () => {
     const newId = `ACC-${Date.now().toString().substring(7)}`;
+    setFocusedAccId(newId);
     updateDeploymentField('accounts', [...accounts, { id: newId, platform: "", description: "", email: "", password: "" }]);
   };
   const removeAccount = (id: string) => {
@@ -52,6 +57,7 @@ export default function DeploymentPage(props: { params: Promise<{ id: string }> 
 
   const addEnvironment = () => {
     const newId = `ENV-${Date.now().toString().substring(7)}`;
+    setFocusedEnvId(newId);
     updateDeploymentField('environments', [...environments, { id: newId, name: "", value: "" }]);
   };
   const removeEnvironment = (id: string) => {
@@ -63,6 +69,7 @@ export default function DeploymentPage(props: { params: Promise<{ id: string }> 
 
   const addSeed = () => {
     const newId = `SED-${Date.now().toString().substring(7)}`;
+    setFocusedSeedId(newId);
     updateDeploymentField('seeds', [...seeds, { id: newId, role: "", email: "", password: "" }]);
   };
   const removeSeed = (id: string) => {
@@ -142,10 +149,10 @@ export default function DeploymentPage(props: { params: Promise<{ id: string }> 
               <tbody className="divide-y divide-white/5">
                 {accounts.map(acc => (
                   <tr key={acc.id} className="bg-white/[0.02] hover:bg-white/[0.04] transition-colors">
-                    <td className="p-2"><EditableInput value={acc.platform} onSave={val => updateAccount(acc.id, 'platform', val)} placeholder="Supabase" className="w-full bg-transparent border-none text-foreground focus:ring-1 focus:ring-accent rounded px-2 py-1.5 outline-none" /></td>
-                    <td className="p-2"><EditableInput value={acc.description} onSave={val => updateAccount(acc.id, 'description', val)} placeholder="Database Provider" className="w-full bg-transparent border-none text-foreground focus:ring-1 focus:ring-accent rounded px-2 py-1.5 outline-none" /></td>
-                    <td className="p-2"><EditableInput value={acc.email} onSave={val => updateAccount(acc.id, 'email', val)} placeholder="admin@example.com" className="w-full bg-transparent border-none text-foreground focus:ring-1 focus:ring-accent rounded px-2 py-1.5 outline-none" /></td>
-                    <td className="p-2"><EditableInput value={acc.password || ""} onSave={val => updateAccount(acc.id, 'password', val)} placeholder="••••••••" className="w-full bg-transparent border-none text-foreground font-mono focus:ring-1 focus:ring-accent rounded px-2 py-1.5 outline-none" /></td>
+                    <td className="p-2"><EditableInput value={acc.platform} onSave={val => updateAccount(acc.id, 'platform', val)} onCtrlEnter={addAccount} autoFocus={acc.id === focusedAccId} placeholder="Supabase" className="w-full bg-transparent border-none text-foreground focus:ring-1 focus:ring-accent rounded px-2 py-1.5 outline-none" /></td>
+                    <td className="p-2"><EditableInput value={acc.description} onSave={val => updateAccount(acc.id, 'description', val)} onCtrlEnter={addAccount} placeholder="Database Provider" className="w-full bg-transparent border-none text-foreground focus:ring-1 focus:ring-accent rounded px-2 py-1.5 outline-none" /></td>
+                    <td className="p-2"><EditableInput value={acc.email} onSave={val => updateAccount(acc.id, 'email', val)} onCtrlEnter={addAccount} placeholder="admin@example.com" className="w-full bg-transparent border-none text-foreground focus:ring-1 focus:ring-accent rounded px-2 py-1.5 outline-none" /></td>
+                    <td className="p-2"><EditableInput value={acc.password || ""} onSave={val => updateAccount(acc.id, 'password', val)} onCtrlEnter={addAccount} placeholder="••••••••" className="w-full bg-transparent border-none text-foreground font-mono focus:ring-1 focus:ring-accent rounded px-2 py-1.5 outline-none" /></td>
                     <td className="p-2 text-center"><button onClick={() => removeAccount(acc.id)} className="text-foreground-muted hover:text-red-400 p-1.5 rounded hover:bg-white/5 transition-colors"><TrashIcon className="w-4 h-4" /></button></td>
                   </tr>
                 ))}
@@ -184,8 +191,8 @@ export default function DeploymentPage(props: { params: Promise<{ id: string }> 
               <tbody className="divide-y divide-white/5">
                 {environments.map(env => (
                   <tr key={env.id} className="bg-white/[0.02] hover:bg-white/[0.04] transition-colors">
-                    <td className="p-2"><EditableInput value={env.name} onSave={val => updateEnvironment(env.id, 'name', val)} placeholder="DATABASE_URL" className="w-full bg-transparent border-none text-foreground font-mono text-xs focus:ring-1 focus:ring-accent rounded px-2 py-1.5 outline-none" /></td>
-                    <td className="p-2"><EditableInput value={env.value} onSave={val => updateEnvironment(env.id, 'value', val)} placeholder="..." className="w-full bg-transparent border-none text-foreground font-mono text-xs focus:ring-1 focus:ring-accent rounded px-2 py-1.5 outline-none" /></td>
+                    <td className="p-2"><EditableInput value={env.name} onSave={val => updateEnvironment(env.id, 'name', val)} onCtrlEnter={addEnvironment} autoFocus={env.id === focusedEnvId} placeholder="DATABASE_URL" className="w-full bg-transparent border-none text-foreground font-mono text-xs focus:ring-1 focus:ring-accent rounded px-2 py-1.5 outline-none" /></td>
+                    <td className="p-2"><EditableInput value={env.value} onSave={val => updateEnvironment(env.id, 'value', val)} onCtrlEnter={addEnvironment} placeholder="..." className="w-full bg-transparent border-none text-foreground font-mono text-xs focus:ring-1 focus:ring-accent rounded px-2 py-1.5 outline-none" /></td>
                     <td className="p-2 text-center"><button onClick={() => removeEnvironment(env.id)} className="text-foreground-muted hover:text-red-400 p-1.5 rounded hover:bg-white/5 transition-colors"><TrashIcon className="w-4 h-4" /></button></td>
                   </tr>
                 ))}
@@ -226,9 +233,9 @@ export default function DeploymentPage(props: { params: Promise<{ id: string }> 
               <tbody className="divide-y divide-white/5">
                 {seeds.map(seed => (
                   <tr key={seed.id} className="bg-white/[0.02] hover:bg-white/[0.04] transition-colors">
-                    <td className="p-2"><EditableInput value={seed.role} onSave={val => updateSeed(seed.id, 'role', val)} placeholder="Admin" className="w-full bg-transparent border-none text-foreground focus:ring-1 focus:ring-accent rounded px-2 py-1.5 outline-none" /></td>
-                    <td className="p-2"><EditableInput value={seed.email} onSave={val => updateSeed(seed.id, 'email', val)} placeholder="admin@example.com" className="w-full bg-transparent border-none text-foreground focus:ring-1 focus:ring-accent rounded px-2 py-1.5 outline-none" /></td>
-                    <td className="p-2"><EditableInput value={seed.password || ""} onSave={val => updateSeed(seed.id, 'password', val)} placeholder="••••••••" className="w-full bg-transparent border-none text-foreground font-mono focus:ring-1 focus:ring-accent rounded px-2 py-1.5 outline-none" /></td>
+                    <td className="p-2"><EditableInput value={seed.role} onSave={val => updateSeed(seed.id, 'role', val)} onCtrlEnter={addSeed} autoFocus={seed.id === focusedSeedId} placeholder="Admin" className="w-full bg-transparent border-none text-foreground focus:ring-1 focus:ring-accent rounded px-2 py-1.5 outline-none" /></td>
+                    <td className="p-2"><EditableInput value={seed.email} onSave={val => updateSeed(seed.id, 'email', val)} onCtrlEnter={addSeed} placeholder="admin@example.com" className="w-full bg-transparent border-none text-foreground focus:ring-1 focus:ring-accent rounded px-2 py-1.5 outline-none" /></td>
+                    <td className="p-2"><EditableInput value={seed.password || ""} onSave={val => updateSeed(seed.id, 'password', val)} onCtrlEnter={addSeed} placeholder="••••••••" className="w-full bg-transparent border-none text-foreground font-mono focus:ring-1 focus:ring-accent rounded px-2 py-1.5 outline-none" /></td>
                     <td className="p-2 text-center"><button onClick={() => removeSeed(seed.id)} className="text-foreground-muted hover:text-red-400 p-1.5 rounded hover:bg-white/5 transition-colors"><TrashIcon className="w-4 h-4" /></button></td>
                   </tr>
                 ))}

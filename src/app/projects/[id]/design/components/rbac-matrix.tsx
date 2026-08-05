@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useProjectStore, type Project } from "@/store/project-store";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -12,6 +13,7 @@ type RbacReq = NonNullable<NonNullable<Project['design']>['rbac']>[0];
 export function RbacMatrix({ projectId }: { projectId: string }) {
   const { getProject, updateProject } = useProjectStore();
   const project = getProject(projectId);
+  const [focusedRbacId, setFocusedRbacId] = useState<string | null>(null);
 
   if (!project) return null;
 
@@ -54,6 +56,7 @@ export function RbacMatrix({ projectId }: { projectId: string }) {
       roles: {}
     };
     const updated = [...rbac, newReq];
+    setFocusedRbacId(newId);
     saveChanges({ rbac: updated });
   };
 
@@ -108,6 +111,8 @@ export function RbacMatrix({ projectId }: { projectId: string }) {
                   <EditableInput
                     value={item.permission}
                     onSave={(val) => updatePermission(item.id, 'permission', val)}
+                    onCtrlEnter={() => addPermission(item.groupId)}
+                    autoFocus={item.id === focusedRbacId}
                     placeholder="e.g. Create Task"
                     className="w-full bg-transparent border-none text-foreground focus:ring-1 focus:ring-accent rounded px-2 py-1.5 outline-none"
                   />

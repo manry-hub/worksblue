@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useProjectStore, type Project } from "@/store/project-store";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -11,6 +12,7 @@ type TechSpec = NonNullable<NonNullable<Project['design']>['techSpecs']>[0];
 export function TechSpecsTable({ projectId }: { projectId: string }) {
   const { getProject, updateProject } = useProjectStore();
   const project = getProject(projectId);
+  const [focusedTechId, setFocusedTechId] = useState<string | null>(null);
 
   if (!project) return null;
 
@@ -30,6 +32,7 @@ export function TechSpecsTable({ projectId }: { projectId: string }) {
       version: ""
     };
     const updated = [...techSpecs, newSpec];
+    setFocusedTechId(newId);
     saveChanges({ techSpecs: updated });
   };
 
@@ -71,6 +74,8 @@ export function TechSpecsTable({ projectId }: { projectId: string }) {
                     <EditableInput
                       value={item.need}
                       onSave={(val) => updateSpec(item.id, 'need', val)}
+                      onCtrlEnter={addTechSpec}
+                      autoFocus={item.id === focusedTechId}
                       className="w-full bg-transparent border-none text-foreground focus:ring-1 focus:ring-accent rounded px-2 py-1.5 outline-none"
                     />
                   </td>
@@ -78,6 +83,7 @@ export function TechSpecsTable({ projectId }: { projectId: string }) {
                     <EditableInput
                       value={item.name}
                       onSave={(val) => updateSpec(item.id, 'name', val)}
+                      onCtrlEnter={addTechSpec}
                       className="w-full bg-transparent border-none text-foreground focus:ring-1 focus:ring-accent rounded px-2 py-1.5 outline-none"
                     />
                   </td>
@@ -85,6 +91,7 @@ export function TechSpecsTable({ projectId }: { projectId: string }) {
                     <EditableInput
                       value={item.version}
                       onSave={(val) => updateSpec(item.id, 'version', val)}
+                      onCtrlEnter={addTechSpec}
                       className="w-full bg-transparent border-none text-foreground font-mono text-xs focus:ring-1 focus:ring-accent rounded px-2 py-1.5 outline-none"
                     />
                   </td>

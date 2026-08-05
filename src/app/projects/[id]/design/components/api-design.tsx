@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useProjectStore, type Project } from "@/store/project-store";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -11,6 +12,7 @@ type ApiDesignReq = NonNullable<NonNullable<Project['design']>['apiDesign']>[0];
 export function ApiDesignTable({ projectId }: { projectId: string }) {
   const { getProject, updateProject } = useProjectStore();
   const project = getProject(projectId);
+  const [focusedApiId, setFocusedApiId] = useState<string | null>(null);
 
   if (!project) return null;
 
@@ -54,6 +56,7 @@ export function ApiDesignTable({ projectId }: { projectId: string }) {
       usedFor: ""
     };
     const updated = [...apiDesign, newReq];
+    setFocusedApiId(newId);
     saveChanges({ apiDesign: updated });
   };
 
@@ -114,6 +117,8 @@ export function ApiDesignTable({ projectId }: { projectId: string }) {
                   <EditableInput
                     value={item.path}
                     onSave={(val) => updateEndpoint(item.id, 'path', val)}
+                    onCtrlEnter={() => addEndpoint(item.groupId)}
+                    autoFocus={item.id === focusedApiId}
                     placeholder="/api/v1/..."
                     className="w-full bg-transparent border-none text-foreground font-mono text-xs focus:ring-1 focus:ring-accent rounded px-2 py-1.5 outline-none"
                   />
@@ -122,6 +127,7 @@ export function ApiDesignTable({ projectId }: { projectId: string }) {
                   <EditableInput
                     value={item.action}
                     onSave={(val) => updateEndpoint(item.id, 'action', val)}
+                    onCtrlEnter={() => addEndpoint(item.groupId)}
                     placeholder="e.g. Create new user"
                     className="w-full bg-transparent border-none text-foreground focus:ring-1 focus:ring-accent rounded px-2 py-1.5 outline-none"
                   />
@@ -130,6 +136,7 @@ export function ApiDesignTable({ projectId }: { projectId: string }) {
                   <EditableInput
                     value={item.usedFor}
                     onSave={(val) => updateEndpoint(item.id, 'usedFor', val)}
+                    onCtrlEnter={() => addEndpoint(item.groupId)}
                     placeholder="e.g. User registration form"
                     className="w-full bg-transparent border-none text-foreground focus:ring-1 focus:ring-accent rounded px-2 py-1.5 outline-none"
                   />

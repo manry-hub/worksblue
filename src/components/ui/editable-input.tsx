@@ -7,18 +7,29 @@ export function EditableInput({
   className,
   placeholder,
   type = "text",
+  onCtrlEnter,
+  autoFocus,
 }: {
   value: string;
   onSave: (val: string) => void;
   className?: string;
   placeholder?: string;
   type?: string;
+  onCtrlEnter?: () => void;
+  autoFocus?: boolean;
 }) {
   const [localValue, setLocalValue] = useState(value);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     setLocalValue(value);
   }, [value]);
+
+  useEffect(() => {
+    if (autoFocus && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [autoFocus]);
 
   const isDirty = localValue !== value;
 
@@ -31,11 +42,18 @@ export function EditableInput({
   return (
     <div className="relative flex items-center group w-full h-full">
       <input
+        ref={inputRef}
         type={type}
         value={localValue}
         onChange={(e) => setLocalValue(e.target.value)}
         onKeyDown={(e) => {
-          if (e.key === "Enter") {
+          if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) {
+            e.preventDefault();
+            handleSave();
+            if (onCtrlEnter) {
+              onCtrlEnter();
+            }
+          } else if (e.key === "Enter") {
             handleSave();
             e.currentTarget.blur();
           }
@@ -62,12 +80,16 @@ export function EditableTextarea({
   className,
   placeholder,
   onInput,
+  onCtrlEnter,
+  autoFocus,
 }: {
   value: string;
   onSave: (val: string) => void;
   className?: string;
   placeholder?: string;
   onInput?: React.FormEventHandler<HTMLTextAreaElement>;
+  onCtrlEnter?: () => void;
+  autoFocus?: boolean;
 }) {
   const [localValue, setLocalValue] = useState(value);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -83,6 +105,12 @@ export function EditableTextarea({
     setLocalValue(value);
     setTimeout(adjustHeight, 10);
   }, [value]);
+
+  useEffect(() => {
+    if (autoFocus && textareaRef.current) {
+      textareaRef.current.focus();
+    }
+  }, [autoFocus]);
 
   const isDirty = localValue !== value;
 
@@ -103,7 +131,13 @@ export function EditableTextarea({
         }}
         onInput={onInput}
         onKeyDown={(e) => {
-          if (e.key === "Enter" && !e.shiftKey) {
+          if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) {
+            e.preventDefault();
+            handleSave();
+            if (onCtrlEnter) {
+              onCtrlEnter();
+            }
+          } else if (e.key === "Enter" && !e.shiftKey) {
             e.preventDefault();
             handleSave();
             e.currentTarget.blur();

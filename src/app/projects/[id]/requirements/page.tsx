@@ -27,6 +27,7 @@ export default function RequirementsPage(props: { params: Promise<{ id: string }
   const [externalInterfaceGroups, setExternalInterfaceGroups] = useState<ExternalInterfaceGroup[]>([]);
   const [externalInterface, setExternalInterface] = useState<ExternalInterfaceReq[]>([]);
   
+  const [focusedReqId, setFocusedReqId] = useState<string | null>(null);
   const [detailModal, setDetailModal] = useState<{ type: 'functional' | 'nonFunctional' | 'externalInterface'; id: string } | null>(null);
 
   useEffect(() => {
@@ -99,6 +100,7 @@ export default function RequirementsPage(props: { params: Promise<{ id: string }
     const newReq: FunctionalReq = { id: newId, groupId, requirement: "" };
     const updated = [...functional, newReq];
     setFunctional(updated);
+    setFocusedReqId(newId);
     saveChanges({ functional: updated });
   };
 
@@ -160,6 +162,7 @@ export default function RequirementsPage(props: { params: Promise<{ id: string }
     const newReq: NonFunctionalReq = { id: newId, groupId, requirement: "" };
     const updated = [...nonFunctional, newReq];
     setNonFunctional(updated);
+    setFocusedReqId(newId);
     saveChanges({ nonFunctional: updated });
   };
 
@@ -221,6 +224,7 @@ export default function RequirementsPage(props: { params: Promise<{ id: string }
     const newReq: ExternalInterfaceReq = { id: newId, groupId, requirement: "" };
     const updated = [...externalInterface, newReq];
     setExternalInterface(updated);
+    setFocusedReqId(newId);
     saveChanges({ externalInterface: updated });
   };
 
@@ -329,6 +333,8 @@ export default function RequirementsPage(props: { params: Promise<{ id: string }
                         <EditableInput
                           value={req.requirement}
                           onSave={(val) => updateFunctionalReq(req.id, 'requirement', val)}
+                          onCtrlEnter={() => addFunctionalReq(req.groupId)}
+                          autoFocus={req.id === focusedReqId}
                           placeholder="e.g. User can login"
                           className="w-full bg-transparent border-none p-0 focus:ring-0 text-foreground text-sm placeholder:text-foreground-muted/50 outline-none"
                         />
@@ -460,6 +466,8 @@ export default function RequirementsPage(props: { params: Promise<{ id: string }
                         <EditableInput
                           value={req.requirement}
                           onSave={(val) => updateNonFunctionalReq(req.id, 'requirement', val)}
+                          onCtrlEnter={() => addNonFunctionalReq(req.groupId)}
+                          autoFocus={req.id === focusedReqId}
                           placeholder="e.g. Response time < 3s"
                           className="w-full bg-transparent border-none p-0 focus:ring-0 text-foreground text-sm placeholder:text-foreground-muted/50 outline-none"
                         />
@@ -591,6 +599,8 @@ export default function RequirementsPage(props: { params: Promise<{ id: string }
                         <EditableInput
                           value={req.requirement}
                           onSave={(val) => updateExternalInterfaceReq(req.id, 'requirement', val)}
+                          onCtrlEnter={() => addExternalInterfaceReq(req.groupId)}
+                          autoFocus={req.id === focusedReqId}
                           placeholder="e.g. API Integration with Stripe"
                           className="w-full bg-transparent border-none p-0 focus:ring-0 text-foreground text-sm placeholder:text-foreground-muted/50 outline-none"
                         />
