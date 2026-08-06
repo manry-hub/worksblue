@@ -7,14 +7,9 @@ import { useProjectStore } from "@/store/project-store";
 import { Button } from "@/components/ui/button";
 import { 
   TrashIcon,
-  PlayIcon,
-  CheckCircleIcon,
-  XCircleIcon,
-  FlagIcon,
   MagnifyingGlassIcon,
   AdjustmentsHorizontalIcon
 } from "@heroicons/react/24/outline";
-import { DocumentTextIcon, BugAntIcon, CheckBadgeIcon } from "@heroicons/react/24/solid";
 import { IssueDetailsModal } from "@/components/kanban/issue-details-modal";
 import { CreateSprintModal } from "@/components/backlog/create-sprint-modal";
 import { EditSprintModal } from "@/components/backlog/edit-sprint-modal";

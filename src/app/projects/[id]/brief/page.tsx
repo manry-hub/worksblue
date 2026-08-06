@@ -17,7 +17,6 @@ import {
   SparklesIcon, 
   ShieldExclamationIcon,
   
-  DocumentChartBarIcon
 } from "@heroicons/react/24/outline";
 
 export default function ProjectBriefBoard(props: { params: Promise<{ id: string }> }) {
