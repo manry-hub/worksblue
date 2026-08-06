@@ -1,27 +1,31 @@
 import { NextResponse } from "next/server";
-import { readDB, writeDB } from "@/lib/blob-db";
+import { readDB, mutateDB } from "@/lib/blob-db";
+import { issueSchema } from "@/lib/validations";
+import { z } from "zod";
 
 export const dynamic = "force-dynamic";
 
 const PROJECTS_FILE = "projects.json";
 
-async function syncProjectStats(projectId: string, tasks: { status: string }[]) {
+async function syncProjectStats(projectId: string, tasks: Record<string, unknown>[]) {
   try {
-    const projects = await readDB(PROJECTS_FILE, []);
-    const index = projects.findIndex((p: { id: string }) => p.id === projectId);
-    
-    if (index !== -1) {
-      const backlogTasksCount = tasks.filter(t => t.status === "backlog").length;
-      const doneTasksCount = tasks.filter(t => t.status === "done").length;
-      const boardTasksCount = tasks.filter(t => t.status !== "backlog" && t.status !== "failed").length;
-      const progress = boardTasksCount > 0 ? Math.round((doneTasksCount / boardTasksCount) * 100) : 0;
-      
-      projects[index].openIssues = backlogTasksCount;
-      projects[index].totalIssues = boardTasksCount;
-      projects[index].progress = progress;
-      
-      await writeDB(PROJECTS_FILE, projects);
-    }
+    await mutateDB(PROJECTS_FILE, (projects: Record<string, unknown>[]) => {
+      const index = projects.findIndex((p) => p.id === projectId);
+      if (index !== -1) {
+        const backlogTasksCount = tasks.filter(t => t.status === "backlog").length;
+        const doneTasksCount = tasks.filter(t => t.status === "done").length;
+        const boardTasksCount = tasks.filter(t => (t.status as string) !== "backlog" && (t.status as string) !== "failed").length;
+        const progress = boardTasksCount > 0 ? Math.round((doneTasksCount / boardTasksCount) * 100) : 0;
+        
+        projects[index] = {
+          ...projects[index],
+          openIssues: backlogTasksCount,
+          totalIssues: boardTasksCount,
+          progress: progress,
+        };
+      }
+      return projects;
+    }, []);
   } catch (e) {
     console.error("Failed to sync project stats", e);
   }
@@ -51,22 +55,29 @@ export async function POST(
   const params = await props.params;
   const dbFile = `tasks-${params.id}.json`;
   try {
-    const body = await request.json();
-    
-    // Generate sequential ID
-    const projects = await readDB(PROJECTS_FILE, []);
-    const index = projects.findIndex((p: { id: string }) => p.id === params.id);
-    
-    let newId = `issue-${Math.random().toString(36).substr(2, 9)}`;
-    if (index !== -1) {
-      const project = projects[index];
-      const nextCounter = (project.lastIssueCounter || 0) + 1;
-      project.lastIssueCounter = nextCounter;
-      await writeDB(PROJECTS_FILE, projects);
-      
-      const prefix = project.issueNumberPrefix || "ISSUE-";
-      newId = `${prefix}${nextCounter}`;
+    const rawBody = await request.json();
+    const parseResult = issueSchema.safeParse(rawBody);
+
+    if (!parseResult.success) {
+      return NextResponse.json({ error: "Invalid data", details: parseResult.error.format() }, { status: 400 });
     }
+
+    const body = parseResult.data;
+    
+    // Generate sequential ID using mutateDB on the project file
+    let newId = `issue-${Math.random().toString(36).substr(2, 9)}`;
+    await mutateDB(PROJECTS_FILE, (projects: Record<string, unknown>[]) => {
+      const index = projects.findIndex((p) => p.id === params.id);
+      if (index !== -1) {
+        const project = projects[index] as Record<string, unknown>;
+        const nextCounter = ((project.lastIssueCounter as number) || 0) + 1;
+        project.lastIssueCounter = nextCounter;
+        
+        const prefix = (project.issueNumberPrefix as string) || "ISSUE-";
+        newId = `${prefix}${nextCounter}`;
+      }
+      return projects;
+    }, []);
 
     const newTask = {
       ...body,
@@ -77,11 +88,14 @@ export async function POST(
       updatedAt: new Date().toISOString(),
     };
 
-    const tasks = await readDB(dbFile, []);
-    tasks.push(newTask);
+    let allTasks: Record<string, unknown>[] = [];
+    await mutateDB(dbFile, (tasks: Record<string, unknown>[]) => {
+      tasks.push(newTask);
+      allTasks = tasks;
+      return tasks;
+    }, []);
     
-    await writeDB(dbFile, tasks);
-    await syncProjectStats(params.id, tasks);
+    await syncProjectStats(params.id, allTasks);
     
     return NextResponse.json(newTask, { status: 201 });
   } catch (error: unknown) {
@@ -99,10 +113,23 @@ export async function PATCH(
   const dbFile = `tasks-${params.id}.json`;
   try {
     // Expect an array of updated tasks
-    const updatedTasks = await request.json();
+    const rawBody = await request.json();
+    
+    // We expect an array of issues, so validate as an array
+    const bulkSchema = z.array(issueSchema.passthrough());
+    const parseResult = bulkSchema.safeParse(rawBody);
+    
+    if (!parseResult.success) {
+      return NextResponse.json({ error: "Invalid data", details: parseResult.error.format() }, { status: 400 });
+    }
+
+    const updatedTasks = parseResult.data;
     
     // We simply overwrite the entire file with the new array to save order and status
-    await writeDB(dbFile, updatedTasks);
+    await mutateDB(dbFile, () => {
+      return updatedTasks;
+    }, []);
+    
     await syncProjectStats(params.id, updatedTasks);
     
     return NextResponse.json({ success: true }, { status: 200 });

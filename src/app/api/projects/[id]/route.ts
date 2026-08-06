@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
-import { readDB, writeDB, deleteDB } from "@/lib/blob-db";
+import { mutateDB, deleteDB } from "@/lib/blob-db";
+import { projectUpdateSchema } from "@/lib/validations";
 
 export const dynamic = "force-dynamic";
 
@@ -11,21 +12,34 @@ export async function PATCH(
 ) {
   const params = await props.params;
   try {
-    const projects = await readDB(DB_FILE);
-    const body = await request.json();
-    const index = projects.findIndex((p: { id: string }) => p.id === params.id);
+    const rawBody = await request.json();
+    const parseResult = projectUpdateSchema.safeParse(rawBody);
     
-    if (index === -1) {
-      return NextResponse.json({ error: "Project not found" }, { status: 404 });
+    if (!parseResult.success) {
+      return NextResponse.json({ error: "Invalid data", details: parseResult.error.format() }, { status: 400 });
     }
 
-    projects[index] = { ...projects[index], ...body };
-    await writeDB(DB_FILE, projects);
+    const body = parseResult.data;
+    let updatedProject = null;
+
+    await mutateDB(DB_FILE, (projects: Record<string, unknown>[]) => {
+      const index = projects.findIndex((p) => p.id === params.id);
+      if (index === -1) {
+        throw new Error("Project not found");
+      }
+      
+      projects[index] = { ...projects[index], ...body };
+      updatedProject = projects[index];
+      return projects;
+    });
     
-    return NextResponse.json(projects[index]);
+    return NextResponse.json(updatedProject);
   } catch (err) {
     const error = err as Error;
     console.error("PATCH error:", error);
+    if (error.message === "Project not found") {
+      return NextResponse.json({ error: "Project not found" }, { status: 404 });
+    }
     return NextResponse.json({ error: "Failed to update project", details: error.message }, { status: 500 });
   }
 }
@@ -36,15 +50,14 @@ export async function DELETE(
 ) {
   const params = await props.params;
   try {
-    const projects = await readDB(DB_FILE);
-    const index = projects.findIndex((p: { id: string }) => p.id === params.id);
-    
-    if (index === -1) {
-      return NextResponse.json({ error: "Project not found" }, { status: 404 });
-    }
-
-    projects.splice(index, 1);
-    await writeDB(DB_FILE, projects);
+    await mutateDB(DB_FILE, (projects: Record<string, unknown>[]) => {
+      const index = projects.findIndex((p) => p.id === params.id);
+      if (index === -1) {
+        throw new Error("Project not found");
+      }
+      projects.splice(index, 1);
+      return projects;
+    });
     
     // Also delete the associated tasks file
     await deleteDB(`tasks-${params.id}.json`);
@@ -53,6 +66,9 @@ export async function DELETE(
   } catch (err) {
     const error = err as Error;
     console.error("DELETE error:", error);
+    if (error.message === "Project not found") {
+      return NextResponse.json({ error: "Project not found" }, { status: 404 });
+    }
     return NextResponse.json({ error: "Failed to delete project", details: error.message }, { status: 500 });
   }
 }

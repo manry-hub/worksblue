@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
-import { readDB, writeDB } from "@/lib/blob-db";
+import { readDB, mutateDB } from "@/lib/blob-db";
 import { projects as initialMockProjects } from "@/data/dashboard";
+import { projectSchema } from "@/lib/validations";
 
 export const dynamic = "force-dynamic";
 
@@ -58,7 +59,14 @@ export async function GET() {
 // POST a new project
 export async function POST(request: Request) {
   try {
-    const body = await request.json();
+    const rawBody = await request.json();
+    const parseResult = projectSchema.safeParse(rawBody);
+    
+    if (!parseResult.success) {
+      return NextResponse.json({ error: "Invalid data", details: parseResult.error.format() }, { status: 400 });
+    }
+    
+    const body = parseResult.data;
     const newProject = {
       ...body,
       id: `proj-${Math.random().toString(36).substr(2, 9)}`,
@@ -66,33 +74,29 @@ export async function POST(request: Request) {
       openIssues: 0,
       version: "1.0.0",
       createdAt: new Date().toISOString(),
-      repository: body.repository,
-      deadline: body.deadline,
-      liveEnvironment: body.liveEnvironment,
-      figmaDesign: body.figmaDesign,
-      columns: [
+      columns: body.columns || [
         { id: "todo", title: "To Do", order: 0, wipLimit: null },
         { id: "in-progress", title: "In Progress", order: 1, wipLimit: null },
         { id: "testing", title: "Testing", order: 2, wipLimit: null },
         { id: "done", title: "Done", order: 3, wipLimit: null },
         { id: "failed", title: "Failed", order: 4, wipLimit: null },
       ],
-      priorities: [
+      priorities: body.priorities || [
         { id: "critical", name: "Critical", color: "bg-red-500", order: 0 },
         { id: "high", name: "High", color: "bg-orange-500", order: 1 },
         { id: "medium", name: "Medium", color: "bg-yellow-500", order: 2 },
         { id: "low", name: "Low", color: "bg-green-500", order: 3 },
       ],
-      labels: [
+      labels: body.labels || [
         { id: "bug", name: "Bug", color: "bg-red-500" },
         { id: "feature", name: "Feature", color: "bg-blue-500" },
         { id: "documentation", name: "Documentation", color: "bg-gray-500" },
         { id: "enhancement", name: "Enhancement", color: "bg-purple-500" },
         { id: "research", name: "Research", color: "bg-teal-500" },
       ],
-      estimateUnit: "hour",
-      issueNumberPrefix: "ISSUE-",
-      sprintSettings: {
+      estimateUnit: body.estimateUnit || "hour",
+      issueNumberPrefix: body.issueNumberPrefix || "ISSUE-",
+      sprintSettings: body.sprintSettings || {
         defaultDurationWeeks: 2,
         workingDays: [1, 2, 3, 4, 5],
         autoCloseSprint: false,
@@ -100,13 +104,13 @@ export async function POST(request: Request) {
       }
     };
 
-    const projects = await readDB(DB_FILE);
-    projects.push(newProject);
-    
-    await writeDB(DB_FILE, projects);
+    await mutateDB(DB_FILE, (projects: Record<string, unknown>[]) => {
+      return [...projects, newProject];
+    }, []);
     
     return NextResponse.json(newProject, { status: 201 });
-  } catch {
+  } catch (error) {
+    console.error("POST project error:", error);
     return NextResponse.json({ error: "Failed to create project" }, { status: 500 });
   }
 }

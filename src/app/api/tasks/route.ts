@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
-import { readDB, writeDB } from "@/lib/blob-db";
+import { readDB, mutateDB } from "@/lib/blob-db";
+import { globalTaskSchema } from "@/lib/validations";
 
 export const dynamic = "force-dynamic";
 
@@ -17,7 +18,14 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
-    const body = await request.json();
+    const rawBody = await request.json();
+    const parseResult = globalTaskSchema.safeParse(rawBody);
+
+    if (!parseResult.success) {
+      return NextResponse.json({ error: "Invalid data", details: parseResult.error.format() }, { status: 400 });
+    }
+
+    const body = parseResult.data;
     const newTask = {
       id: `task-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`,
       parentId: body.parentId || null,
@@ -30,10 +38,10 @@ export async function POST(request: Request) {
       completed: body.completed || false,
     };
 
-    const tasks = await readDB(TASKS_FILE, []);
-    tasks.push(newTask);
+    await mutateDB(TASKS_FILE, (tasks: Record<string, unknown>[]) => {
+      return [...tasks, newTask];
+    }, []);
     
-    await writeDB(TASKS_FILE, tasks);
     return NextResponse.json(newTask, { status: 201 });
   } catch (error: unknown) {
     console.error("POST tasks error:", error);

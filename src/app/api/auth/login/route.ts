@@ -14,8 +14,20 @@ export async function POST(request: Request) {
       );
     }
 
-    const envUsername = process.env.ADMIN_USERNAME || "admin";
-    const envPassword = process.env.ADMIN_PASSWORD || "admin";
+    const envUsername = process.env.ADMIN_USERNAME;
+    const envPassword = process.env.ADMIN_PASSWORD;
+
+    // Fail-safe: if credentials are not configured in environment, reject all logins
+    if (!envUsername || !envPassword || !process.env.JWT_SECRET) {
+      console.error("CRITICAL: Authentication environment variables are not set properly.");
+      return NextResponse.json(
+        { error: "Server misconfiguration. Please contact administrator." },
+        { status: 500 }
+      );
+    }
+
+    // Basic mitigation for timing attacks / brute-force
+    await new Promise(resolve => setTimeout(resolve, 1000));
 
     if (username !== envUsername || password !== envPassword) {
       return NextResponse.json(

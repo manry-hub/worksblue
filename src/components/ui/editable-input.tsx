@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { CheckIcon } from "@heroicons/react/24/outline";
+import { CheckIcon, EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
 
 export function EditableInput({
   value,
@@ -19,6 +19,7 @@ export function EditableInput({
   autoFocus?: boolean;
 }) {
   const [localValue, setLocalValue] = useState(value);
+  const [showPassword, setShowPassword] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -39,11 +40,13 @@ export function EditableInput({
     }
   };
 
+  const currentType = type === "password" ? (showPassword ? "text" : "password") : type;
+
   return (
     <div className="relative flex items-center group w-full h-full">
       <input
         ref={inputRef}
-        type={type}
+        type={currentType}
         value={localValue}
         onChange={(e) => setLocalValue(e.target.value)}
         onKeyDown={(e) => {
@@ -61,15 +64,32 @@ export function EditableInput({
         placeholder={placeholder}
         className={className}
       />
-      {isDirty && (
-        <button
-          onClick={handleSave}
-          className="absolute right-2 text-green-400 hover:text-green-300 p-0.5 bg-green-400/10 rounded transition-colors z-10"
-          title="Save"
-        >
-          <CheckIcon className="w-4 h-4" />
-        </button>
-      )}
+      <div className="absolute right-2 flex items-center gap-1 z-10">
+        {type === "password" && (
+          <button
+            type="button"
+            onClick={() => setShowPassword(!showPassword)}
+            className="text-foreground-muted hover:text-foreground p-0.5 rounded transition-colors"
+            title={showPassword ? "Hide password" : "Show password"}
+          >
+            {showPassword ? (
+              <EyeSlashIcon className="w-4 h-4" />
+            ) : (
+              <EyeIcon className="w-4 h-4" />
+            )}
+          </button>
+        )}
+        {isDirty && (
+          <button
+            type="button"
+            onClick={handleSave}
+            className="text-green-400 hover:text-green-300 p-0.5 bg-green-400/10 rounded transition-colors"
+            title="Save"
+          >
+            <CheckIcon className="w-4 h-4" />
+          </button>
+        )}
+      </div>
     </div>
   );
 }

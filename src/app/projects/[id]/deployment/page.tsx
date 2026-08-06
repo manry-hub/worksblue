@@ -134,6 +134,19 @@ export default function DeploymentPage(props: { params: Promise<{ id: string }> 
           </h3>
           <p className="text-xs text-foreground-muted mt-1">Credentials used for third-party platforms (e.g., Vercel, Supabase, Stripe).</p>
         </div>
+        
+        <div className="px-6 pt-6">
+          <div className="p-4 bg-orange-500/10 border border-orange-500/20 rounded-lg flex gap-3 text-orange-500">
+            <svg className="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+            <div>
+              <p className="text-sm font-semibold">Security Warning</p>
+              <p className="text-xs mt-1 opacity-90">Passwords are stored unencrypted in the project database. Please do not store actual production passwords or highly sensitive credentials here. Use a secure vault for production secrets.</p>
+            </div>
+          </div>
+        </div>
+
         <div className="p-6 bg-black/10">
           <div className="overflow-x-auto rounded-lg border border-white/5">
             <table className="w-full text-sm text-left">
@@ -152,7 +165,7 @@ export default function DeploymentPage(props: { params: Promise<{ id: string }> 
                     <td className="p-2"><EditableInput value={acc.platform} onSave={val => updateAccount(acc.id, 'platform', val)} onCtrlEnter={addAccount} autoFocus={acc.id === focusedAccId} placeholder="Supabase" className="w-full bg-transparent border-none text-foreground focus:ring-1 focus:ring-accent rounded px-2 py-1.5 outline-none" /></td>
                     <td className="p-2"><EditableInput value={acc.description} onSave={val => updateAccount(acc.id, 'description', val)} onCtrlEnter={addAccount} placeholder="Database Provider" className="w-full bg-transparent border-none text-foreground focus:ring-1 focus:ring-accent rounded px-2 py-1.5 outline-none" /></td>
                     <td className="p-2"><EditableInput value={acc.email} onSave={val => updateAccount(acc.id, 'email', val)} onCtrlEnter={addAccount} placeholder="admin@example.com" className="w-full bg-transparent border-none text-foreground focus:ring-1 focus:ring-accent rounded px-2 py-1.5 outline-none" /></td>
-                    <td className="p-2"><EditableInput value={acc.password || ""} onSave={val => updateAccount(acc.id, 'password', val)} onCtrlEnter={addAccount} placeholder="••••••••" className="w-full bg-transparent border-none text-foreground font-mono focus:ring-1 focus:ring-accent rounded px-2 py-1.5 outline-none" /></td>
+                    <td className="p-2"><EditableInput type="password" value={acc.password || ""} onSave={val => updateAccount(acc.id, 'password', val)} onCtrlEnter={addAccount} placeholder="••••••••" className="w-full bg-transparent border-none text-foreground font-mono focus:ring-1 focus:ring-accent rounded px-2 py-1.5 outline-none" /></td>
                     <td className="p-2 text-center"><button onClick={() => removeAccount(acc.id)} className="text-foreground-muted hover:text-red-400 p-1.5 rounded hover:bg-white/5 transition-colors"><TrashIcon className="w-4 h-4" /></button></td>
                   </tr>
                 ))}
@@ -235,7 +248,7 @@ export default function DeploymentPage(props: { params: Promise<{ id: string }> 
                   <tr key={seed.id} className="bg-white/[0.02] hover:bg-white/[0.04] transition-colors">
                     <td className="p-2"><EditableInput value={seed.role} onSave={val => updateSeed(seed.id, 'role', val)} onCtrlEnter={addSeed} autoFocus={seed.id === focusedSeedId} placeholder="Admin" className="w-full bg-transparent border-none text-foreground focus:ring-1 focus:ring-accent rounded px-2 py-1.5 outline-none" /></td>
                     <td className="p-2"><EditableInput value={seed.email} onSave={val => updateSeed(seed.id, 'email', val)} onCtrlEnter={addSeed} placeholder="admin@example.com" className="w-full bg-transparent border-none text-foreground focus:ring-1 focus:ring-accent rounded px-2 py-1.5 outline-none" /></td>
-                    <td className="p-2"><EditableInput value={seed.password || ""} onSave={val => updateSeed(seed.id, 'password', val)} onCtrlEnter={addSeed} placeholder="••••••••" className="w-full bg-transparent border-none text-foreground font-mono focus:ring-1 focus:ring-accent rounded px-2 py-1.5 outline-none" /></td>
+                    <td className="p-2"><EditableInput type="password" value={seed.password || ""} onSave={val => updateSeed(seed.id, 'password', val)} onCtrlEnter={addSeed} placeholder="••••••••" className="w-full bg-transparent border-none text-foreground font-mono focus:ring-1 focus:ring-accent rounded px-2 py-1.5 outline-none" /></td>
                     <td className="p-2 text-center"><button onClick={() => removeSeed(seed.id)} className="text-foreground-muted hover:text-red-400 p-1.5 rounded hover:bg-white/5 transition-colors"><TrashIcon className="w-4 h-4" /></button></td>
                   </tr>
                 ))}

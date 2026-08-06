@@ -2,7 +2,7 @@ import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
 
 const JWT_SECRET = new TextEncoder().encode(
-  process.env.JWT_SECRET || "worksblue-secret-key-change-in-production-2026"
+  process.env.JWT_SECRET
 );
 
 const COOKIE_NAME = "worksblue-session";

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
-import { readDB, writeDB } from "@/lib/blob-db";
+import { readDB, mutateDB } from "@/lib/blob-db";
+import { sprintSchema } from "@/lib/validations";
 
 export const dynamic = "force-dynamic";
 
@@ -27,7 +28,14 @@ export async function POST(
   const params = await props.params;
   const dbFile = `sprints-${params.id}.json`;
   try {
-    const body = await request.json();
+    const rawBody = await request.json();
+    const parseResult = sprintSchema.safeParse(rawBody);
+
+    if (!parseResult.success) {
+      return NextResponse.json({ error: "Invalid data", details: parseResult.error.format() }, { status: 400 });
+    }
+
+    const body = parseResult.data;
     const newSprint = {
       ...body,
       id: `sprint-${Math.random().toString(36).substr(2, 9)}`,
@@ -37,10 +45,9 @@ export async function POST(
       updatedAt: new Date().toISOString(),
     };
 
-    const sprints = await readDB(dbFile, []);
-    sprints.push(newSprint);
-
-    await writeDB(dbFile, sprints);
+    await mutateDB(dbFile, (sprints: Record<string, unknown>[]) => {
+      return [...sprints, newSprint];
+    }, []);
 
     return NextResponse.json(newSprint, { status: 201 });
   } catch (error: unknown) {

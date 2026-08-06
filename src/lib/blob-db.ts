@@ -109,3 +109,39 @@ export async function deleteDB(filename: string): Promise<void> {
     }
   }
 }
+
+// Basic in-memory lock for the current Node/Edge instance
+// This mitigates race conditions if multiple requests hit the same instance simultaneously.
+const locks = new Map<string, Promise<void>>();
+
+/**
+ * Optimistically mutates the database. It queues operations per filename to ensure
+ * read-modify-write cycles don't overlap within the same server instance.
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export async function mutateDB<T = any>(
+  filename: string,
+  updater: (data: T) => T | Promise<T>,
+  seedData: T | null = null
+): Promise<T> {
+  // Wait for the previous lock on this file to release
+  while (locks.has(filename)) {
+    await locks.get(filename);
+  }
+
+  let releaseLock: () => void;
+  const lockPromise = new Promise<void>((resolve) => {
+    releaseLock = resolve;
+  });
+  locks.set(filename, lockPromise);
+
+  try {
+    const currentData = await readDB(filename, seedData);
+    const updatedData = await updater(currentData);
+    await writeDB(filename, updatedData);
+    return updatedData;
+  } finally {
+    locks.delete(filename);
+    releaseLock!();
+  }
+}
