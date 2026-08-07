@@ -29,10 +29,10 @@ export interface Project {
     endDate?: string;
   };
   design?: {
-    contextDiagrams?: { id: string; title: string; url?: string; excalidrawElements?: any; excalidrawAppState?: any }[];
-    usecaseDiagrams?: { id: string; title: string; url?: string; excalidrawElements?: any; excalidrawAppState?: any }[];
-    erds?: { id: string; title: string; url?: string; excalidrawElements?: any; excalidrawAppState?: any }[];
-    uiuxDiagrams?: { id: string; title: string; url?: string; excalidrawElements?: any; excalidrawAppState?: any }[];
+    contextDiagrams?: { id: string; title: string; url?: string; excalidrawElements?: any; excalidrawAppState?: any; excalidrawFiles?: any }[];
+    usecaseDiagrams?: { id: string; title: string; url?: string; excalidrawElements?: any; excalidrawAppState?: any; excalidrawFiles?: any }[];
+    erds?: { id: string; title: string; url?: string; excalidrawElements?: any; excalidrawAppState?: any; excalidrawFiles?: any }[];
+    uiuxDiagrams?: { id: string; title: string; url?: string; excalidrawElements?: any; excalidrawAppState?: any; excalidrawFiles?: any }[];
     rbacGroups?: { id: string; name: string; }[];
     rbac?: {
        id: string;

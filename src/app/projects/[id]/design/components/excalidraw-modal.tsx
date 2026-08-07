@@ -9,18 +9,20 @@ import { CheckIcon } from "@heroicons/react/24/outline";
 export interface ExcalidrawModalProps {
   initialElements?: any;
   initialAppState?: any;
-  onSave: (elements: any, appState: any, newTitle: string) => void;
+  initialFiles?: any;
+  onSave: (elements: any, appState: any, files: any, newTitle: string) => void;
   onClose: () => void;
   title: string;
 }
 
-export default function ExcalidrawModal({ initialElements, initialAppState, onSave, onClose, title }: ExcalidrawModalProps) {
+export default function ExcalidrawModal({ initialElements, initialAppState, initialFiles, onSave, onClose, title }: ExcalidrawModalProps) {
   const [elements, setElements] = useState(initialElements || []);
   const [appState, setAppState] = useState(initialAppState || {});
+  const [files, setFiles] = useState(initialFiles || {});
   const [diagramTitle, setDiagramTitle] = useState(title);
 
   const handleSave = () => {
-    onSave(elements, appState, diagramTitle);
+    onSave(elements, appState, files, diagramTitle);
   };
 
   return (
@@ -54,10 +56,12 @@ export default function ExcalidrawModal({ initialElements, initialAppState, onSa
           initialData={{
             elements: initialElements,
             appState: initialAppState ? { ...(initialAppState as any), collaborators: new Map() } : undefined,
+            files: initialFiles,
           }}
-          onChange={(excalidrawElements, excalidrawAppState) => {
+          onChange={(excalidrawElements, excalidrawAppState, excalidrawFiles) => {
             setElements(excalidrawElements);
             setAppState(excalidrawAppState);
+            setFiles(excalidrawFiles);
           }}
           theme="dark"
         />

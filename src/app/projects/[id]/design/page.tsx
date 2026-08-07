@@ -13,7 +13,7 @@ import dynamic from "next/dynamic";
 
 const ExcalidrawModal = dynamic(() => import("./components/excalidraw-modal"), { ssr: false });
 
-type DiagramItem = { id: string; title: string; url?: string; excalidrawElements?: unknown; excalidrawAppState?: unknown };
+type DiagramItem = { id: string; title: string; url?: string; excalidrawElements?: unknown; excalidrawAppState?: unknown; excalidrawFiles?: unknown };
 type DesignField = 'contextDiagrams' | 'usecaseDiagrams' | 'erds' | 'uiuxDiagrams';
 
 const DiagramCard = ({ 
@@ -98,6 +98,7 @@ export default function DesignPage(props: { params: Promise<{ id: string }> }) {
     title: string;
     elements: unknown;
     appState: unknown;
+    files: unknown;
     isNew: boolean;
   } | null>(null);
   
@@ -135,7 +136,7 @@ export default function DesignPage(props: { params: Promise<{ id: string }> }) {
     });
   };
 
-  const handleSaveDiagram = (elements: unknown, appState: unknown, newTitle: string) => {
+  const handleSaveDiagram = (elements: unknown, appState: unknown, files: unknown, newTitle: string) => {
     if (!activeDiagram) return;
     const { field, id, isNew } = activeDiagram;
     
@@ -148,13 +149,14 @@ export default function DesignPage(props: { params: Promise<{ id: string }> }) {
         title: newTitle,
         excalidrawElements: elements,
         excalidrawAppState: appState,
+        excalidrawFiles: files,
       };
       saveChanges({ design: { ...currentDesign, [field]: [...currentItems, newItem] } });
     } else {
       saveChanges({ 
         design: { 
           ...currentDesign, 
-          [field]: currentItems.map(item => item.id === id ? { ...item, title: newTitle, excalidrawElements: elements, excalidrawAppState: appState } : item) 
+          [field]: currentItems.map(item => item.id === id ? { ...item, title: newTitle, excalidrawElements: elements, excalidrawAppState: appState, excalidrawFiles: files } : item) 
         } 
       });
     }
@@ -208,6 +210,7 @@ export default function DesignPage(props: { params: Promise<{ id: string }> }) {
                     title: item.title,
                     elements: item.excalidrawElements,
                     appState: item.excalidrawAppState,
+                    files: item.excalidrawFiles,
                     isNew: false
                   })}
                 />
@@ -225,6 +228,7 @@ export default function DesignPage(props: { params: Promise<{ id: string }> }) {
                 title: "New Diagram",
                 elements: [],
                 appState: {},
+                files: {},
                 isNew: true
               })}
             >
@@ -329,6 +333,7 @@ export default function DesignPage(props: { params: Promise<{ id: string }> }) {
           title={activeDiagram.title}
           initialElements={activeDiagram.elements}
           initialAppState={activeDiagram.appState}
+          initialFiles={activeDiagram.files}
           onSave={handleSaveDiagram}
           onClose={() => setActiveDiagram(null)}
         />
